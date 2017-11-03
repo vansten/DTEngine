@@ -28,12 +28,16 @@ void Scene::Load()
 
 	GameObject* gridObject = SpawnObject(DT_TEXT("Grid"));
 	GameObject* cameraObject = SpawnObject(DT_TEXT("Camera"));
+	GameObject* testObject = SpawnObject(DT_TEXT("Test"));
 	HexagonalGrid* grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridObject);
 
 	cameraObject->AddComponent<Camera>();
 	cameraObject->GetTransform().SetPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
 	cameraObject->GetTransform().SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
 	cameraObject->AddComponent<CameraControl>();
+
+	testObject->AddComponent<MeshRenderer>()->SetMesh(gResourceManager->Load<CubeMesh>(CUBE_MESH));
+	testObject->GetTransform().SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
 
 	Hexagon* h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));
 	Hexagon* h2 = grid->GetHexagonAt(AxialCoordinates(3, 1));

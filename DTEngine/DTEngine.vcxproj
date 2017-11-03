@@ -153,6 +153,10 @@
     <ClCompile Include="src\Rendering\Material.cpp" />
     <ClCompile Include="src\Rendering\MeshBase.cpp" />
     <ClCompile Include="src\Rendering\Meshes\HexagonMesh.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\PlaneMesh.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\QuadMesh.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\CubeMesh.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\SphereMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\TriangleMesh.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
     <ClCompile Include="src\ResourceManagement\Asset.cpp" />
@@ -179,7 +183,11 @@
     <ClInclude Include="src\Rendering\Graphics.h" />
     <ClInclude Include="src\Rendering\Material.h" />
     <ClInclude Include="src\Rendering\MeshBase.h" />
+    <ClInclude Include="src\Rendering\Meshes\CubeMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\HexagonMesh.h" />
+    <ClInclude Include="src\Rendering\Meshes\PlaneMesh.h" />
+    <ClInclude Include="src\Rendering\Meshes\QuadMesh.h" />
+    <ClInclude Include="src\Rendering\Meshes\SphereMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\TriangleMesh.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
     <ClInclude Include="src\ResourceManagement\Asset.h" />

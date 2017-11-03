@@ -23,12 +23,12 @@ bool ResourceManager::Initialize()
 		gResourceManager = this;
 	}
 
-	MeshBase* mesh = new HexagonMesh();
-	mesh->Initialize(HEXAGON_MESH);
-	_assetsMap.insert(std::pair<string, Asset*>(HEXAGON_MESH, mesh));
-	mesh = new TriangleMesh();
-	mesh->Initialize(TRIANGLE_MESH);
-	_assetsMap.insert(std::pair<string, Asset*>(TRIANGLE_MESH, mesh));
+	Load<HexagonMesh>(HEXAGON_MESH);
+	Load<TriangleMesh>(TRIANGLE_MESH);
+	Load<QuadMesh>(QUAD_MESH);
+	Load<PlaneMesh>(PLANE_MESH);
+	Load<SphereMesh>(SPHERE_MESH);
+	Load<CubeMesh>(CUBE_MESH);
 
 	Shader* colorShader = Load<Shader>(COLOR_SHADER);
 	Material* material = nullptr;

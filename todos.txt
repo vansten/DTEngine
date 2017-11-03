@@ -16,11 +16,12 @@ TODOs:
 -- HexagonalGrid 		|> IN PROGRESS (TODO: Serialization, Deserialization (XML? Binary? JSON?))
 -- Smart pointers, std::unique_ptr, std::shared_ptr, std::weak_ptr, std::move, std::forward
 -- Rework architecture a little bit (no more gGraphics, gWindow and other things like that... maybe Singleton as some Utility class with static GetInstance creating instance and FreeInstance destroying instance?)
--- QuadMesh
--- PlaneMesh (similar to QuadMesh but with density and much more vertices)
--- SphereMesh (as MeshBase)
--- CubeMesh (as MeshBase)
+-- QuadMesh			|> ALL DONE
+-- PlaneMesh 			|> ALL DONE
+-- SphereMesh			|> ALL DONE
+-- CubeMesh			|> ALL DONE
 -- CylinderMesh (as MeshBase)
+-- CapsuleMesh (as MeshBase)
 -- Mesh (as MeshBase, loaded from obj)
 -- GUI (delegates on click for buttons using std::function, elements created once and rendered, gui renderer, components, rendering order (first scene then gui?), texts)
 -- Debug console rendered by texts on GUI, toggled by ~ (maybe commands?)
