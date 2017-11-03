@@ -1,0 +1,70 @@
+TODOs:
+-- GameObject			|> ALL DONE
+-- Component			|> ALL DONE
+-- Scene			|> IN PROGRESS (TODO: Load, Save methods. Will be done after Archive implementation!)
+-- Camera 			|> ALL DONE
+-- Shader 			|> ALL DONE
+-- MeshBase 			|> ALL DONE
+-- MeshRenderer			|> ALL DONE
+-- HexagonMesh 			|> ALL DONE
+-- TriangleMesh			|> ALL DONE
+-- CameraControl		|> IN PROGRESS (TODO: Raycasting, Camera::GetMainCamera()->ConvertScreenPointToRay()?)
+-- Asset			|> ALL DONE
+-- ResourceManager		|> ALL DONE
+-- Transform hierarchy 		|> ALL DONE
+-- Material 			|> IN PROGRESS (TODO: Serialization and deserialization (XML? Binary? JSON?))
+-- HexagonalGrid 		|> IN PROGRESS (TODO: Serialization, Deserialization (XML? Binary? JSON?))
+-- Smart pointers, std::unique_ptr, std::shared_ptr, std::weak_ptr, std::move, std::forward
+-- Rework architecture a little bit (no more gGraphics, gWindow and other things like that... maybe Singleton as some Utility class with static GetInstance creating instance and FreeInstance destroying instance?)
+-- QuadMesh
+-- PlaneMesh (similar to QuadMesh but with density and much more vertices)
+-- SphereMesh (as MeshBase)
+-- CubeMesh (as MeshBase)
+-- CylinderMesh (as MeshBase)
+-- Mesh (as MeshBase, loaded from obj)
+-- GUI (delegates on click for buttons using std::function, elements created once and rendered, gui renderer, components, rendering order (first scene then gui?), texts)
+-- Debug console rendered by texts on GUI, toggled by ~ (maybe commands?)
+-- Physics (simple raycasting with PhysX? simple colliders box, sphere, capsule, hexagon)
+-- MemoryManagers/Allocators (new and delete overrides, with lines and files parameters)
+-- RTTI (simple, T::GetType(), T::_type, Type::Get(typeName).CreateInstance(line, file))
+-- Archive (Utility class, Archive* FileSystem::GetArchive(path)? Or simple static function Archive::Get(path)?)
+-- Basic lighting (PhongBlinn? Lambert?)
+-- Serialization and deserialization using Archive class (XML? JSON? Binary? Multiple?)
+
+ENGINE architecture/function order/lifetime cycle:
+App::Initialize()
+	Game::Initialize()	//Editor::Initialize()
+		Scene::Load(basicScene)
+			Scene::Unload()
+			new GameObject
+			GameObject::Initialize()	// No cross references allowed here
+			GameObject::Load(someArchive)
+				new Component
+				Component::Initialize()	// No cross references allowed here
+				Component::Load(someArchive)
+		Scene::PostLoad()
+			GameObject::PostLoad()		// Load references (since all objects are loaded)
+				Component::PostLoad() 	// Load references (since all objects are loaded)
+App::Loop()
+	Game::Update(dt)	//Editor::Update(dt) (maybe some flag in GameObject bUpdatesWithEditor)
+		Scene::Update(dt)
+			GameObject::Update(dt)
+				Component::Update(dt)	
+	Game::Render()		//Editor::Render()
+		Scene::Render()
+			GameObject::Render()
+				Component::Render()
+
+App::Shutdown()
+	Game::Shutdown()	//Editor::Shutdown()
+		Scene::Unload()
+			GameObject::Shutdown()
+				Component::Shutdown()
+			delete GameObject;
+				delete Component;
+
+Scene::Save()
+	GameObject::PreSave()
+		Component::PreSave()
+	GameObject::Save(someArchive)
+		Component::Save(someArchive)
