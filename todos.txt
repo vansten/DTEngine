@@ -1,25 +1,26 @@
 TODOs:
--- GameObject			|> ALL DONE
--- Component			|> ALL DONE
--- Scene			|> IN PROGRESS (TODO: Serialization and deserialization (XML? Binary? JSON?))
--- Camera 			|> ALL DONE
--- Shader 			|> ALL DONE
--- MeshBase 			|> ALL DONE
--- MeshRenderer			|> ALL DONE
--- HexagonMesh 			|> ALL DONE
--- TriangleMesh			|> ALL DONE
--- CameraControl		|> IN PROGRESS (TODO: Raycasting, Camera::GetMainCamera()->ConvertScreenPointToRay()?)
--- Asset			|> ALL DONE
--- ResourceManager		|> ALL DONE
+-- GameObject				|> ALL DONE
+-- Component				|> ALL DONE
+-- Scene					|> IN PROGRESS (TODO: Serialization and deserialization (XML? Binary? JSON?))
+-- Camera 					|> ALL DONE
+-- Shader 					|> ALL DONE
+-- MeshBase 				|> ALL DONE
+-- MeshRenderer				|> ALL DONE
+-- HexagonMesh 				|> ALL DONE
+-- TriangleMesh				|> ALL DONE
+-- CameraControl			|> IN PROGRESS (TODO: Raycasting, Camera::GetMainCamera()->ConvertScreenPointToRay()?)
+-- Asset					|> ALL DONE
+-- ResourceManager			|> ALL DONE
 -- Transform hierarchy 		|> ALL DONE
--- Material 			|> IN PROGRESS (TODO: Serialization and deserialization (XML? Binary? JSON?))
--- HexagonalGrid 		|> IN PROGRESS (TODO: Serialization, Deserialization (XML? Binary? JSON?))
--- QuadMesh			|> ALL DONE
--- PlaneMesh 			|> ALL DONE
--- SphereMesh			|> ALL DONE
--- CubeMesh			|> ALL DONE
--- CylinderMesh (as MeshBase)
--- CapsuleMesh (as MeshBase)
+-- Material 				|> IN PROGRESS (TODO: Serialization and deserialization (XML? Binary? JSON?))
+-- HexagonalGrid 			|> IN PROGRESS (TODO: Serialization, Deserialization (XML? Binary? JSON?))
+-- QuadMesh					|> ALL DONE
+-- PlaneMesh 				|> ALL DONE
+-- SphereMesh				|> ALL DONE
+-- CubeMesh					|> ALL DONE
+-- CylinderMesh 			|> ALL DONE
+-- ConeMesh					|> ALL DONE
+-- CapsuleMesh				|> ALL DONE
 -- Mesh (as MeshBase, loaded from obj)
 -- Smart pointers, std::unique_ptr, std::shared_ptr, std::weak_ptr, std::move, std::forward
 -- Rework architecture a little bit (no more gGraphics, gWindow and other things like that... maybe Singleton as some Utility class with static GetInstance creating instance and FreeInstance destroying instance?)

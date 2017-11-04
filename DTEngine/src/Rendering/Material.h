@@ -24,4 +24,5 @@ public:
 	inline void SetColor(const XMFLOAT4& newColor) { _color = newColor; }
 
 	const Shader* GetShader() const { return _shader; }
+	void SetShader(Shader* shader) {_shader = shader;}
 };

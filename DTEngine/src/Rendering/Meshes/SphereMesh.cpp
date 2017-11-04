@@ -1,7 +1,5 @@
 #include "SphereMesh.h"
 
-#include "Rendering/Graphics.h"
-
 SphereMesh::SphereMesh()
 {
 
@@ -21,8 +19,6 @@ bool SphereMesh::Initialize(const string& path)
 {
 	MeshBase::Initialize(path);
 	
-	assert(gGraphics);
-
 	const float radius = 0.5f;
 	const uint32 rings = 12;
 	const uint32 sectors = 12;
@@ -42,9 +38,9 @@ bool SphereMesh::Initialize(const string& path)
 	{
 		for(uint32 s = 0; s < sectors; ++s, ++i, j += 6)
 		{
-			float y = sin(-XM_PIDIV2 + XM_PI * r * R);
-			float x = cos(XM_2PI * s * S) * sin(XM_PI * r * R);
-			float z = sin(XM_2PI * s * S) * sin(XM_PI * r * R);
+			float y = sin(-XM_PIDIV2 + XM_PI * r * R) * radius;
+			float x = cos(XM_2PI * s * S) * sin(XM_PI * r * R) * radius;
+			float z = sin(XM_2PI * s * S) * sin(XM_PI * r * R) * radius;
 
 			vertices[i].Position = XMFLOAT3(x, y, z);
 

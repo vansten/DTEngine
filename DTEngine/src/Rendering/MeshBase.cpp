@@ -17,6 +17,11 @@ MeshBase::~MeshBase()
 
 bool MeshBase::CreateBuffers(VertexType* vertices, uint64* indices)
 {
+	if(!gGraphics)
+	{
+		return false;
+	}
+
 	D3D11_BUFFER_DESC bufferDesc = { 0 };
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
 

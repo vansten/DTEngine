@@ -17,7 +17,8 @@ bool Material::Initialize(const string& path)
 
 	assert(gResourceManager);
 
-	_shader = gResourceManager->Load<Shader>(path);
+	// Basic shader
+	_shader = gResourceManager->Load<Shader>(COLOR_SHADER);
 	_color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	assert(gGraphics);

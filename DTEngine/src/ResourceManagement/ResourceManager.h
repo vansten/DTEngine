@@ -11,6 +11,9 @@
 #include "Rendering/Meshes/PlaneMesh.h"
 #include "Rendering/Meshes/SphereMesh.h"
 #include "Rendering/Meshes/CubeMesh.h"
+#include "Rendering/Meshes/CylinderMesh.h"
+#include "Rendering/Meshes/ConeMesh.h"
+#include "Rendering/Meshes/CapsuleMesh.h"
 
 #include <map>
 
@@ -22,6 +25,7 @@
 #define CUBE_MESH DT_TEXT("Hidden/Primitives/Cube")
 #define CYLINDER_MESH DT_TEXT("Hidden/Primitives/Cylinder")
 #define CAPSULE_MESH DT_TEXT("Hidden/Primitives/Capsule")
+#define CONE_MESH DT_TEXT("Hidden/Primitives/Cone")
 
 #define WHITE_MATERIAL DT_TEXT("Hidden/Materials/White")
 #define RED_MATERIAL DT_TEXT("Hidden/Materials/Red")

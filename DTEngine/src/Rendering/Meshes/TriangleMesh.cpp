@@ -1,7 +1,5 @@
 #include "TriangleMesh.h"
 
-#include "Rendering/Graphics.h"
-
 TriangleMesh::TriangleMesh() : MeshBase()
 {
 
@@ -20,8 +18,6 @@ TriangleMesh::~TriangleMesh()
 bool TriangleMesh::Initialize(const string& path)
 {
 	MeshBase::Initialize(path);
-
-	assert(gGraphics);
 
 	_verticesCount = 3;
 	_indicesCount = 3;

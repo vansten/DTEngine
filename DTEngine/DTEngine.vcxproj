@@ -152,6 +152,9 @@
     <ClCompile Include="src\Rendering\Graphics.cpp" />
     <ClCompile Include="src\Rendering\Material.cpp" />
     <ClCompile Include="src\Rendering\MeshBase.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\CapsuleMesh.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\ConeMesh.cpp" />
+    <ClCompile Include="src\Rendering\Meshes\CylinderMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\HexagonMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\PlaneMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\QuadMesh.cpp" />
@@ -183,7 +186,10 @@
     <ClInclude Include="src\Rendering\Graphics.h" />
     <ClInclude Include="src\Rendering\Material.h" />
     <ClInclude Include="src\Rendering\MeshBase.h" />
+    <ClInclude Include="src\Rendering\Meshes\CapsuleMesh.h" />
+    <ClInclude Include="src\Rendering\Meshes\ConeMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\CubeMesh.h" />
+    <ClInclude Include="src\Rendering\Meshes\CylinderMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\HexagonMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\PlaneMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\QuadMesh.h" />

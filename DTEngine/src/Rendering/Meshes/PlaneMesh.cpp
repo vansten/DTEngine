@@ -1,7 +1,5 @@
 #include "PlaneMesh.h"
 
-#include "Rendering/Graphics.h"
-
 PlaneMesh::PlaneMesh() : MeshBase()
 {
 
@@ -20,8 +18,6 @@ PlaneMesh::~PlaneMesh()
 bool PlaneMesh::Initialize(const string& path)
 {
 	MeshBase::Initialize(path);
-
-	assert(gGraphics);
 
 	uint32 size = 16;
 	_verticesCount = (size + 1) * (size + 1);

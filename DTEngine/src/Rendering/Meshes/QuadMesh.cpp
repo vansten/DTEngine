@@ -1,7 +1,5 @@
 #include "QuadMesh.h"
 
-#include "Rendering/Graphics.h"
-
 QuadMesh::QuadMesh() : MeshBase()
 {
 
@@ -20,8 +18,6 @@ QuadMesh::~QuadMesh()
 bool QuadMesh::Initialize(const string& path)
 {
 	MeshBase::Initialize(path);
-
-	assert(gGraphics);
 
 	_verticesCount = 4;
 	_indicesCount = 6;

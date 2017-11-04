@@ -1,7 +1,5 @@
 #include "CubeMesh.h"
 
-#include "Rendering/Graphics.h"
-
 CubeMesh::CubeMesh() : MeshBase()
 {
 
@@ -20,8 +18,6 @@ CubeMesh::~CubeMesh()
 bool CubeMesh::Initialize(const string& path)
 {
 	MeshBase::Initialize(path);
-
-	assert(gGraphics);
 
 	_verticesCount = 8;
 	_indicesCount = 36;

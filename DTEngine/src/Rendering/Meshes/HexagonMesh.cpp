@@ -1,7 +1,5 @@
 #include "HexagonMesh.h"
 
-#include "Rendering/Graphics.h"
-
 HexagonMesh::HexagonMesh()
 {
 }
@@ -17,8 +15,6 @@ HexagonMesh::~HexagonMesh()
 bool HexagonMesh::Initialize(const string& path)
 {
 	MeshBase::Initialize(path);
-
-	assert(gGraphics);
 
 	_verticesCount = 7;
 	_indicesCount = 18;
