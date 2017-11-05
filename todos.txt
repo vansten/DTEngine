@@ -21,7 +21,7 @@ TODOs:
 -- CylinderMesh 			|> ALL DONE
 -- ConeMesh					|> ALL DONE
 -- CapsuleMesh				|> ALL DONE
--- Mesh (as MeshBase, loaded from obj)
+-- StaticMesh				|> IN PROGRESS (TODO: fbx loading)
 -- Smart pointers, std::unique_ptr, std::shared_ptr, std::weak_ptr, std::move, std::forward
 -- Rework architecture a little bit (no more gGraphics, gWindow and other things like that... maybe Singleton as some Utility class with static GetInstance creating instance and FreeInstance destroying instance?)
 -- GUI (delegates on click for buttons using std::function, elements created once and rendered, gui renderer, components, rendering order (first scene then gui?), texts)
@@ -31,6 +31,7 @@ TODOs:
 -- RTTI (simple, T::GetType(), T::_type, Type::Get(typeName).CreateInstance(line, file))
 -- Archive (Utility class, Archive* FileSystem::GetArchive(path)? Or simple static function Archive::Get(path)?)
 -- Basic lighting (PhongBlinn? Lambert?)
+-- Textures (2D only for now, simple TGA/PNG loading)
 
 ENGINE architecture/function order/lifetime cycle:
 App::Initialize()
