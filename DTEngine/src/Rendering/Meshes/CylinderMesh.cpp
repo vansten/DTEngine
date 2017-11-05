@@ -40,7 +40,12 @@ bool CylinderMesh::Initialize(const string& path)
 		float32 cosAngle = cos(angleRad) * 0.5f;
 		float32 sinAngle = sin(angleRad) * 0.5f;
 		vertices[i].Position = XMFLOAT3(cosAngle, 0.0f, sinAngle);
+		vertices[i].Normal = XMFLOAT3(0.0f, -1.0f, 0.0f);
+		vertices[i].UV = XMFLOAT2((cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
+
 		vertices[baseTriangles + 1 + i].Position = XMFLOAT3(cosAngle, 1.0f, sinAngle);
+		vertices[baseTriangles + 1 + i].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
+		vertices[baseTriangles + 1 + i].UV = XMFLOAT2(0.5f + (cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
 
 		// Bottom triangle
 		indices[i * 3] = (i + 1) % baseTriangles;

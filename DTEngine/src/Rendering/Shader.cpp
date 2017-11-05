@@ -44,12 +44,22 @@ bool Shader::Initialize(const string& path)
 
 	RELEASE_COM(pixelShaderBuffer);
 
-	D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[1];
+	D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[3];
 	inputLayoutDesc[0] = {0};
+	inputLayoutDesc[1] = {0};
+	inputLayoutDesc[2] = {0};
 
 	inputLayoutDesc[0].SemanticName = "POSITION";
 	inputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	inputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputLayoutDesc[1].SemanticName = "NORMAL";
+	inputLayoutDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputLayoutDesc[2].SemanticName = "TEXCOORD";
+	inputLayoutDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
 	if(!gGraphics->CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), vertexShaderBuffer->GetBufferPointer(), (uint64)vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{

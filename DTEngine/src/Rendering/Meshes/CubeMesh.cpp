@@ -26,14 +26,41 @@ bool CubeMesh::Initialize(const string& path)
 	uint64* indices = new uint64[_indicesCount];
 
 	vertices[0].Position = XMFLOAT3(-0.5f, -0.5f, -0.5f);
+	vertices[0].Normal = XMFLOAT3(-1.0f, -1.0f, -1.0f);
+	vertices[0].UV = XMFLOAT2(0.0f, 0.0f);
+
 	vertices[1].Position = XMFLOAT3(-0.5f, 0.5f, -0.5f);
+	vertices[1].Normal = XMFLOAT3(-1.0f, 1.0f, -1.0f);
+	vertices[1].UV = XMFLOAT2(0.0f, 1.0f);
+
 	vertices[2].Position = XMFLOAT3(0.5f, -0.5f, -0.5f);
+	vertices[2].Normal = XMFLOAT3(1.0f, -1.0f, -1.0f);
+	vertices[2].UV = XMFLOAT2(1.0f, 0.0f);
+
 	vertices[3].Position = XMFLOAT3(0.5f, 0.5f, -0.5f);
+	vertices[3].Normal = XMFLOAT3(1.0f, 1.0f, -1.0f);
+	vertices[3].UV = XMFLOAT2(1.0f, 1.0f);
 
 	vertices[4].Position = XMFLOAT3(-0.5f, -0.5f, 0.5f);
+	vertices[4].Normal = XMFLOAT3(-1.0f, -1.0f, 1.0f);
+	vertices[0].UV = XMFLOAT2(0.0f, 0.0f);
+
 	vertices[5].Position = XMFLOAT3(-0.5f, 0.5f, 0.5f);
+	vertices[5].Normal = XMFLOAT3(-1.0f, 1.0f, 1.0f);
+	vertices[1].UV = XMFLOAT2(0.0f, 1.0f);
+
 	vertices[6].Position = XMFLOAT3(0.5f, -0.5f, 0.5f);
+	vertices[6].Normal = XMFLOAT3(1.0f, -1.0f, 1.0f);
+	vertices[3].UV = XMFLOAT2(1.0f, 0.0f);
+
 	vertices[7].Position = XMFLOAT3(0.5f, 0.5f, 0.5f);
+	vertices[7].Normal = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	vertices[7].UV = XMFLOAT2(1.0f, 1.0f);
+
+	for(uint32 i = 0; i < 8; ++i)
+	{
+		Normalize(vertices[i].Normal);
+	}
 
 	// Front face
 	indices[0] = 0;

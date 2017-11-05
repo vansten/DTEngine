@@ -43,6 +43,10 @@ bool SphereMesh::Initialize(const string& path)
 			float z = sin(XM_2PI * s * S) * sin(XM_PI * r * R) * radius;
 
 			vertices[i].Position = XMFLOAT3(x, y, z);
+			vertices[i].Normal = XMFLOAT3(x, y, z);
+			XMVECTOR normal = XMVector3Normalize(XMLoadFloat3(&vertices[i].Normal));
+			XMStoreFloat3(&vertices[i].Normal, normal);
+			vertices[i].UV = XMFLOAT2(s * S, 1.0f - r * R);
 
 			if(r < rings - 1 && s < sectors - 1)
 			{

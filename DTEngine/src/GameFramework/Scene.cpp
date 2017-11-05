@@ -36,7 +36,7 @@ void Scene::Load()
 	cameraObject->GetTransform().SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
 	cameraObject->AddComponent<CameraControl>();
 
-	testObject->AddComponent<MeshRenderer>()->SetMesh(gResourceManager->Load<CapsuleMesh>(CAPSULE_MESH));
+	testObject->AddComponent<MeshRenderer>()->SetMesh(gResourceManager->Load<StaticMesh>(DT_TEXT("Resources/Meshes/sword.obj")));
 	testObject->GetTransform().SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
 
 	Hexagon* h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));

@@ -272,8 +272,8 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 	HexagonMesh* hexagonMesh = gResourceManager->Load<HexagonMesh>(HEXAGON_MESH);
 	Material* material = gResourceManager->Load<Material>(RED_MATERIAL);
 
-	const float32 hexagonWidth =  2.0f * hexagonSize;
-	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize;
+	const float32 hexagonWidth =  2.0f * hexagonSize * 0.5f;
+	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
 
 	const XMFLOAT3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
 	const XMFLOAT3 yDirection(0.0f, 0.0f, hexagonHeight);

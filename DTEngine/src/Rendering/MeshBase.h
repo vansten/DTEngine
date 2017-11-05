@@ -12,6 +12,8 @@ public:
 	{
 	public:
 		XMFLOAT3 Position;
+		XMFLOAT3 Normal;
+		XMFLOAT2 UV;
 	};
 
 protected:

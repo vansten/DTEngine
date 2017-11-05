@@ -53,6 +53,9 @@ bool CapsuleMesh::Initialize(const string& path)
 			const float32 z0 = r0 * sin(seg * deltaSegAngle);
 
 			vertices[index].Position = XMFLOAT3(x0, 0.5f * height + y0, z0);
+			vertices[index].Normal = XMFLOAT3(x0, y0, z0);
+			Normalize(vertices[index].Normal);
+			vertices[index].UV = XMFLOAT2((float32)seg / numSegments, (float32)ring / numRings * sphereRatio);
 
 			indices[indicesIndex] = index + numSegments + 1;
 			indices[indicesIndex + 1] = index + numSegments;
@@ -78,6 +81,9 @@ bool CapsuleMesh::Initialize(const string& path)
 			float32 z0 = radius * sin(j * deltaAngle);
 
 			vertices[index].Position = XMFLOAT3(x0, 0.5f * height - i * deltaHeight, z0);
+			vertices[index].Normal = XMFLOAT3(x0, 0.0f, z0);
+			Normalize(vertices[index].Normal);
+			vertices[index].UV = XMFLOAT2(j / (float32)numSegments, i / (float32)numSegmentsHeight * cylinderRatio + sphereRatio);
 
 			indices[indicesIndex] = index + numSegments + 1;
 			indices[indicesIndex + 1] = index + numSegments;
@@ -103,6 +109,9 @@ bool CapsuleMesh::Initialize(const string& path)
 			const float32 z0 = r0 * sin(seg * deltaSegAngle);
 
 			vertices[index].Position = XMFLOAT3(x0, -0.5f * height + y0, z0);
+			vertices[index].Normal = XMFLOAT3(x0, y0, z0);
+			Normalize(vertices[index].Normal);
+			vertices[index].UV = XMFLOAT2((float32)seg / numSegments, (float32)ring / numRings * sphereRatio + cylinderRatio + sphereRatio);
 
 			if(ring != numRings)
 			{

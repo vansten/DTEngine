@@ -33,6 +33,8 @@ bool PlaneMesh::Initialize(const string& path)
 		{
 			float32 xF = -0.5f + (float32)x / size;
 			vertices[i].Position = XMFLOAT3(xF, yF, 0);
+			vertices[i].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+			vertices[i].UV = XMFLOAT2(xF + 0.5f, yF + 0.5f);
 		}
 	}
 

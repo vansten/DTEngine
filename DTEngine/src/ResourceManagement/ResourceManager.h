@@ -14,6 +14,7 @@
 #include "Rendering/Meshes/CylinderMesh.h"
 #include "Rendering/Meshes/ConeMesh.h"
 #include "Rendering/Meshes/CapsuleMesh.h"
+#include "Rendering/Meshes/StaticMesh.h"
 
 #include <map>
 
