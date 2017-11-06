@@ -25,5 +25,6 @@ public:
 	void Render();
 
 	GameObject* SpawnObject(const string& name);
+	GameObject* SpawnObject(const GameObject& original);
 	GameObject* SpawnObject(const GameObject& original, const string& name);
 };

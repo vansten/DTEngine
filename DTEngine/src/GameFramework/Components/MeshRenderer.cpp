@@ -20,6 +20,13 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
+MeshRenderer* MeshRenderer::Copy(GameObject* newOwner) const
+{
+	MeshRenderer* copy = new MeshRenderer(*this);
+	copy->_owner = newOwner;
+	return copy;
+}
+
 void MeshRenderer::Render()
 {
 	assert(gGraphics);

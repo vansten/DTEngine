@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
 #include "Rendering/Graphics.h"
+#include "Game.h"
 
 void Transform::CalculateModelMatrix()
 {
@@ -59,21 +60,36 @@ void Transform::SetParent(Transform* newParent)
 	CalculateModelMatrix();
 }
 
-GameObject::GameObject() : _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
+GameObject::GameObject() : _transform(this), _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
 {
 
 }
 
-GameObject::GameObject(const string& name) : _name(name), _enabled(true), _isInUpdate(false)
+GameObject::GameObject(const string& name) : _transform(this), _name(name), _enabled(true), _isInUpdate(false)
 {
 
 }
 
-GameObject::GameObject(const GameObject& other) : _name(other._name), _enabled(other._enabled), _isInUpdate(false)
+GameObject::GameObject(const GameObject& other) : _transform(other._transform), _name(other._name), _enabled(other._enabled), _isInUpdate(false)
 {
 	_name += DT_TEXT(" (copy)");
-	// TODO: Smart copy components array!
-	// TODO: Smart copy transform
+	_transform._owner = this;
+	auto it = other._components.begin();
+	auto end = other._components.end();
+	for(it; it != end; ++it)
+	{
+		_components.push_back((*it)->Copy(this));
+	}
+
+	auto childIt = other._transform._children.begin();
+	auto childEnd = other._transform._children.end();
+
+	for(childIt; childIt != childEnd; ++childIt)
+	{
+		GameObject* childGO = (*childIt)->_owner;
+		GameObject* newChildGO = gGame->GetActiveScene()->SpawnObject(*childGO);
+		newChildGO->GetTransform().SetParent(&_transform);
+	}
 }
 
 void GameObject::Initialize()

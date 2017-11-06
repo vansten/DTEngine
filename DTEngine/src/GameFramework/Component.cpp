@@ -17,6 +17,13 @@ Component::~Component()
 
 }
 
+Component* Component::Copy(GameObject* newOwner) const
+{
+	Component* copy = new Component(*this);
+	copy->_owner = newOwner;
+	return copy;
+}
+
 void Component::Initialize()
 {
 

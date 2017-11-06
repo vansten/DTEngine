@@ -13,9 +13,21 @@ Camera::Camera(GameObject* owner) : Component(owner)
 	}
 }
 
-Camera::Camera(const Camera& other) : Component(other)
+Camera::Camera(const Camera& other) : Component(other), _fov(other._fov), _near(other._near), _far(other._far)
 {
 
+}
+
+Camera::~Camera()
+{
+
+}
+
+Camera* Camera::Copy(GameObject* newOwner) const
+{
+	Camera* copy = new Camera(*this);
+	copy->_owner = newOwner;
+	return copy;
 }
 
 void Camera::Initialize()
@@ -23,6 +35,8 @@ void Camera::Initialize()
 	_fov = 60.0f;
 	_near = 0.01f;
 	_far = 100.0f;
+
+	PostLoad();
 }
 
 void Camera::PostLoad()

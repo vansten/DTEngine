@@ -8,6 +8,8 @@ struct Transform;
 
 class Component
 {
+	friend class GameObject;
+
 protected:
 	GameObject* _owner;
 	bool _enabled;
@@ -17,6 +19,10 @@ public:
 	Component(const Component& other);
 	virtual ~Component();
 
+protected:
+	virtual Component* Copy(GameObject* newOwner) const;
+
+public:
 	virtual void Initialize();
 	virtual void Shutdown();
 	virtual void Load(Archive* archive);

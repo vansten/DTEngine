@@ -28,7 +28,6 @@ void Scene::Load()
 
 	GameObject* gridObject = SpawnObject(DT_TEXT("Grid"));
 	GameObject* cameraObject = SpawnObject(DT_TEXT("Camera"));
-	GameObject* testObject = SpawnObject(DT_TEXT("Test"));
 	HexagonalGrid* grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridObject);
 
 	cameraObject->AddComponent<Camera>();
@@ -36,7 +35,7 @@ void Scene::Load()
 	cameraObject->GetTransform().SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
 	cameraObject->AddComponent<CameraControl>();
 
-	testObject->AddComponent<MeshRenderer>()->SetMesh(gResourceManager->Load<StaticMesh>(DT_TEXT("Resources/Meshes/sword.obj")));
+	GameObject* testObject = SpawnObject(*gridObject, DT_TEXT("Test"));
 	testObject->GetTransform().SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
 
 	Hexagon* h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));
@@ -136,6 +135,16 @@ void Scene::Render()
 GameObject* Scene::SpawnObject(const string& name)
 {
 	GameObject* newGO = new GameObject(name);
+
+	_newGameObjects.push_back(newGO);
+	newGO->Initialize();
+
+	return newGO;
+}
+
+GameObject* Scene::SpawnObject(const GameObject& original)
+{
+	GameObject* newGO = new GameObject(original);
 
 	_newGameObjects.push_back(newGO);
 	newGO->Initialize();

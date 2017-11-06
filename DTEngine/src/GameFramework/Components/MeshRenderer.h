@@ -16,6 +16,10 @@ public:
 	MeshRenderer(const MeshRenderer& other);
 	virtual ~MeshRenderer();
 
+protected:
+	virtual MeshRenderer* Copy(GameObject* newOwner) const override;
+
+public:
 	virtual void Render() override;
 
 	inline void SetMesh(MeshBase* mesh) { _mesh = mesh; }

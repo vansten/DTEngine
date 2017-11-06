@@ -12,7 +12,7 @@ CameraControl::CameraControl(GameObject* owner) : Component(owner)
 
 }
 
-CameraControl::CameraControl(const CameraControl& other) : Component(other)
+CameraControl::CameraControl(const CameraControl& other) : Component(other), _movementSpeed(other._movementSpeed), _shiftMultiplier(other._shiftMultiplier), _mouseSensitivity(other._mouseSensitivity)
 {
 
 }
@@ -20,6 +20,13 @@ CameraControl::CameraControl(const CameraControl& other) : Component(other)
 CameraControl::~CameraControl()
 {
 
+}
+
+CameraControl* CameraControl::Copy(GameObject* newOwner) const
+{
+	CameraControl* copy = new CameraControl(*this);
+	copy->_owner = newOwner;
+	return copy;
 }
 
 bool CameraControl::OnWPressed()

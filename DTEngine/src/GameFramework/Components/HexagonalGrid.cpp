@@ -73,6 +73,13 @@ Hexagon::~Hexagon()
 
 }
 
+Hexagon* Hexagon::Copy(GameObject* newOwner) const
+{
+	Hexagon* copy = new Hexagon(*this);
+	copy->_owner = newOwner;
+	return copy;
+}
+
 void HexagonalGridPath::ReversePath()
 {
 	// Path reversal
@@ -109,7 +116,7 @@ HexagonalGrid::HexagonalGrid(GameObject* owner) : Component(owner)
 
 }
 
-HexagonalGrid::HexagonalGrid(const HexagonalGrid& other) : Component(other)
+HexagonalGrid::HexagonalGrid(const HexagonalGrid& other) : Component(other), _width(other._width), _height(other._height), _hexagonSize(other._hexagonSize)
 {
 
 }
@@ -117,6 +124,13 @@ HexagonalGrid::HexagonalGrid(const HexagonalGrid& other) : Component(other)
 HexagonalGrid::~HexagonalGrid()
 {
 
+}
+
+HexagonalGrid* HexagonalGrid::Copy(GameObject* newOwner) const
+{
+	HexagonalGrid* copy = new HexagonalGrid(*this);
+	copy->_owner = newOwner;
+	return copy;
 }
 
 Hexagon* HexagonalGrid::GetNeighboor(const Hexagon* hexagon, HexagonDirection direction) const
@@ -267,12 +281,12 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 	// Calculate half width and half height to properly position hexagons
 	const int32 halfW = (int32)(width * 0.5f);
 	const int32 halfH = (int32)(height * 0.5f);
-	
+
 	// Load hexagon mesh and default material
 	HexagonMesh* hexagonMesh = gResourceManager->Load<HexagonMesh>(HEXAGON_MESH);
 	Material* material = gResourceManager->Load<Material>(RED_MATERIAL);
 
-	const float32 hexagonWidth =  2.0f * hexagonSize * 0.5f;
+	const float32 hexagonWidth = 2.0f * hexagonSize * 0.5f;
 	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
 
 	const XMFLOAT3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
@@ -280,10 +294,12 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 
 	// Store hexagon size in grid
 	gridComponent->_hexagonSize = hexagonSize;
+	gridComponent->_width = width;
+	gridComponent->_height = height;
 
-	for (int32 w = 0; w < (int32)width; ++w)
+	for(int32 w = 0; w < (int32)width; ++w)
 	{
-		for (int32 h = 0; h < (int32)height; ++h)
+		for(int32 h = 0; h < (int32)height; ++h)
 		{
 			AxialCoordinates coordinates(w - halfW, h - halfH);
 
@@ -293,21 +309,21 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 			// Set visuals
 			hexagonRenderer->SetMesh(hexagonMesh);
 			hexagonRenderer->SetMaterial(material);
-			
+
 			// Create new hexagon with coordinates
 			Hexagon* hexagon = newHexagonObject->AddComponent<Hexagon>();
 			hexagon->SetCoordinates(coordinates);
 			// Sets scale and parent
 			newHexagonObject->GetTransform().SetParent(&gridTransform);
 			newHexagonObject->GetTransform().SetScale(XMFLOAT3(hexagonSize, 1.0f, hexagonSize));
-			
+
 			// Calculate hexagon's position
 			XMFLOAT3 position;
 			position.x = xDirection.x * coordinates.X;
 			position.y = 0.0f;
 			position.z = xDirection.z * coordinates.X + yDirection.z * coordinates.Y;
 			newHexagonObject->GetTransform().SetPosition(position);
-			
+
 			// Add hexagon to map
 			gridComponent->_hexagonalMap.insert({coordinates, hexagon});
 		}

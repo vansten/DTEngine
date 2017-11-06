@@ -16,6 +16,7 @@ protected:
 	std::vector<Transform*> _children;
 	Transform* _parent;
 	XMMATRIX _modelMatrix;
+	GameObject* _owner;
 
 	XMFLOAT3 _position;
 	XMFLOAT3 _rotation;
@@ -24,7 +25,12 @@ protected:
 	bool _shouldCalculateMatrix;
 
 public:
-	inline Transform() : _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f), _parent(nullptr), _shouldCalculateMatrix(false)
+	inline Transform(GameObject* owner) : _owner(owner), _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f), _parent(nullptr), _shouldCalculateMatrix(false)
+	{
+
+	}
+
+	inline Transform(const Transform& other) : _owner(other._owner), _position(other._position), _rotation(other._rotation), _scale(other._scale), _parent(other._parent), _shouldCalculateMatrix(false)
 	{
 
 	}

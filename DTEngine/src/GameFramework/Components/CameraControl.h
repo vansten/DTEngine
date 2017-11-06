@@ -25,6 +25,8 @@ public:
 	virtual ~CameraControl();
 
 protected:
+	virtual CameraControl* Copy(GameObject* newOwner) const override;
+
 	bool OnWPressed();
 	bool OnWReleased();
 	bool OnSPressed();

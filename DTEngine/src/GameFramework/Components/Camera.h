@@ -18,7 +18,12 @@ protected:
 public:
 	Camera(GameObject* owner);
 	Camera(const Camera& other);
+	virtual ~Camera();
 
+protected:
+	virtual Camera* Copy(GameObject* newOwner) const override;
+
+public:
 	virtual void Initialize() override;
 	virtual void PostLoad() override;
 

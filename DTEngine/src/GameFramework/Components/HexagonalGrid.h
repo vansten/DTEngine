@@ -107,6 +107,10 @@ public:
 	Hexagon(const Hexagon& other);
 	virtual ~Hexagon();
 
+protected:
+	virtual Hexagon* Copy(GameObject* newOwner) const override;
+
+public:
 	// Returns distance from this hexagon to the other
 	inline int32 Distance(Hexagon* other)
 	{
@@ -184,13 +188,19 @@ public:
 
 protected:
 	std::unordered_map<const AxialCoordinates, Hexagon*, AxialCoordinatesHasher> _hexagonalMap;
-	float _hexagonSize;
+	float32 _hexagonSize;
+	uint32 _width;
+	uint32 _height;
 
 public:
 	HexagonalGrid(GameObject* owner);
 	HexagonalGrid(const HexagonalGrid& other);
 	virtual ~HexagonalGrid();
 
+protected:
+	virtual HexagonalGrid* Copy(GameObject* newOwner) const override;
+
+public:
 	// Returns neighboor of given hexagon along given direction (or nullptr if there is no neighboor)
 	Hexagon* GetNeighboor(const Hexagon* hexagon, HexagonDirection direction) const;
 	// Returns hexagon at given coordinates (or nullptr if there isn't a hexagon with given coordinates)
