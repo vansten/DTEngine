@@ -1,11 +1,5 @@
 #include "ResourceManager.h"
 
-#include "Rendering/Material.h"
-#include "Rendering/Meshes/HexagonMesh.h"
-#include "Rendering/Meshes/TriangleMesh.h"
-
-ResourceManager* gResourceManager = nullptr;
-
 #define CREATE_NEW_MATERIAL(pointer, path, shader, color)	\
 pointer = Load<Material>(path);								\
 pointer->SetShader(shader);									\
@@ -17,11 +11,6 @@ ResourceManager::ResourceManager()
 
 bool ResourceManager::Initialize()
 {
-	if (!gResourceManager)
-	{
-		gResourceManager = this;
-	}
-
 	Load<HexagonMesh>(HEXAGON_MESH);
 	Load<TriangleMesh>(TRIANGLE_MESH);
 	Load<QuadMesh>(QUAD_MESH);
@@ -32,8 +21,8 @@ bool ResourceManager::Initialize()
 	Load<ConeMesh>(CONE_MESH);
 	Load<CapsuleMesh>(CAPSULE_MESH);
 
-	Shader* colorShader = Load<Shader>(COLOR_SHADER);
-	Material* material = nullptr;
+	SharedPtr<Shader> colorShader = Load<Shader>(COLOR_SHADER);
+	SharedPtr<Material> material;
 	XMFLOAT4 color;
 	color.x = color.y = color.z = color.w = 1.0f;
 	CREATE_NEW_MATERIAL(material, WHITE_MATERIAL, colorShader, color);
@@ -57,15 +46,11 @@ bool ResourceManager::Initialize()
 
 void ResourceManager::Shutdown()
 {
-	std::map<string, Asset*>::iterator it = _assetsMap.begin();
-	std::map<string, Asset*>::iterator end = _assetsMap.end();
-	for (it; it != end; ++it)
+	for (auto pair : _assetsMap)
 	{
-		if ((*it).second)
+		if (pair.second)
 		{
-			(*it).second->Shutdown();
-			delete (*it).second;
-			(*it).second = nullptr;
+			pair.second->Shutdown();
 		}
 	}
 	_assetsMap.clear();

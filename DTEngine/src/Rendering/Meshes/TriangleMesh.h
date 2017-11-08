@@ -9,5 +9,5 @@ public:
 	TriangleMesh(const TriangleMesh& other);
 	virtual ~TriangleMesh();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

@@ -16,19 +16,19 @@ Shader::~Shader()
 
 }
 
-bool Shader::Initialize(const string& path)
+bool Shader::Initialize(const String& path)
 {
 	Asset::Initialize(path);
 
-	const string vsFileName = path + DT_TEXT("VS.hlsl");
-	const string psFileName = path + DT_TEXT("PS.hlsl");
+	const String vsFileName = path + DT_TEXT("VS.hlsl");
+	const String psFileName = path + DT_TEXT("PS.hlsl");
 
-	assert(gGraphics);
+	Graphics& graphics = GetGraphics();
 	ID3D10Blob* vertexShaderBuffer;
 	HRESULT result = D3DCompileFromFile(vsFileName.c_str(), nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, nullptr);
 	HR(result);
 
-	if(!gGraphics->CreateVertexShader(vertexShaderBuffer, &_vertexShader))
+	if(!graphics.CreateVertexShader(vertexShaderBuffer, &_vertexShader))
 	{
 		return false;
 	}
@@ -37,7 +37,7 @@ bool Shader::Initialize(const string& path)
 	result = D3DCompileFromFile(psFileName.c_str(), nullptr, nullptr, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, nullptr);
 	HR(result);
 
-	if(!gGraphics->CreatePixelShader(pixelShaderBuffer, &_pixelShader))
+	if(!graphics.CreatePixelShader(pixelShaderBuffer, &_pixelShader))
 	{
 		return false;
 	}
@@ -61,7 +61,7 @@ bool Shader::Initialize(const string& path)
 	inputLayoutDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	if(!gGraphics->CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), vertexShaderBuffer->GetBufferPointer(), (uint64)vertexShaderBuffer->GetBufferSize(), &_inputLayout))
+	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), vertexShaderBuffer->GetBufferPointer(), (uint64)vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{
 		return false;
 	}
@@ -80,7 +80,7 @@ bool Shader::Initialize(const string& path)
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	if(!gGraphics->CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
+	if(!graphics.CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
 	{
 		return false;
 	}
@@ -90,7 +90,7 @@ bool Shader::Initialize(const string& path)
 	pob.world = XMMatrixIdentity();
 	bufferData.pSysMem = &pob;
 
-	if(!gGraphics->CreateBuffer(bufferDesc, bufferData, &_perObjectBuffer))
+	if(!graphics.CreateBuffer(bufferDesc, bufferData, &_perObjectBuffer))
 	{
 		return false;
 	}
@@ -107,47 +107,31 @@ void Shader::Shutdown()
 	RELEASE_COM(_vertexShader);
 }
 
-void Shader::SetPerFrameParameters(ID3D11DeviceContext* deviceContext)
+void Shader::SetPerFrameParameters(Graphics& graphics)
 {
-	assert(gGraphics);
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = deviceContext->Map(_perFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return;
-	}
-
-	PerFrameBuffer* data = (PerFrameBuffer*)mappedResource.pData;
+	PerFrameBuffer* data = (PerFrameBuffer*)graphics.Map(_perFrameBuffer);
 	if (!data)
 	{
-		deviceContext->Unmap(_perFrameBuffer, 0);
+		graphics.Unmap(_perFrameBuffer);
 		return;
 	}
 	data->view = XMMatrixTranspose(Camera::GetMainCamera()->GetViewMatrix());
 	data->projection = XMMatrixTranspose(Camera::GetMainCamera()->GetProjectionMatrix());
 	
-	deviceContext->Unmap(_perFrameBuffer, 0);
-	deviceContext->VSSetConstantBuffers(0, 1, &_perFrameBuffer);
+	graphics.Unmap(_perFrameBuffer);
+	graphics.SetVSConstantBuffers(0, 1, &_perFrameBuffer);
 }
 
-void Shader::SetPerObjectParameters(ID3D11DeviceContext* deviceContext, GameObject* gameObject)
+void Shader::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject)
 {
-	assert(gGraphics);
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = deviceContext->Map(_perObjectBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return;
-	}
-
-	PerObjectBuffer* data = (PerObjectBuffer*)mappedResource.pData;
+	PerObjectBuffer* data = (PerObjectBuffer*)graphics.Map(_perObjectBuffer);
 	if (!data)
 	{
-		deviceContext->Unmap(_perObjectBuffer, 0);
+		graphics.Unmap(_perObjectBuffer);
 		return;
 	}
-	data->world = XMMatrixTranspose(gameObject->GetTransform().GetModelMatrix());
+	data->world = XMMatrixTranspose(gameObject->GetTransform()->GetModelMatrix());
 
-	deviceContext->Unmap(_perObjectBuffer, 0);
-	deviceContext->VSSetConstantBuffers(1, 1, &_perObjectBuffer);
+	graphics.Unmap(_perObjectBuffer);
+	graphics.SetVSConstantBuffers(1, 1, &_perObjectBuffer);
 }

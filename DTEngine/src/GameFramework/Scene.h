@@ -2,19 +2,20 @@
 
 #include "Core/Platform.h"
 #include "GameObject.h"
+#include "Rendering/Graphics.h"
 
 class Camera;
 
 class Scene
 {
 protected:
-	string _scenePath;
+	String _scenePath;
 
-	std::vector<GameObject*> _gameObjects;
-	std::vector<GameObject*> _newGameObjects;
+	DynamicArray<SharedPtr<GameObject>> _gameObjects;
+	DynamicArray<SharedPtr<GameObject>> _newGameObjects;
 
 public:
-	Scene(const string& scenePath);
+	Scene(const String& scenePath);
 	~Scene();
 
 	void Load();
@@ -22,9 +23,9 @@ public:
 	void Unload();
 
 	void Update(float32 deltaTime);
-	void Render();
+	void Render(Graphics& graphics);
 
-	GameObject* SpawnObject(const string& name);
-	GameObject* SpawnObject(const GameObject& original);
-	GameObject* SpawnObject(const GameObject& original, const string& name);
+	std::shared_ptr<GameObject> SpawnObject(const String& name);
+	std::shared_ptr<GameObject> SpawnObject(SharedPtr<GameObject> original);
+	std::shared_ptr<GameObject> SpawnObject(SharedPtr<GameObject> original, const String& name);
 };

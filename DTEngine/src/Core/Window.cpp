@@ -7,9 +7,7 @@
 #else
 #endif
 
-Window* gWindow = nullptr;
-
-Window* Window::Create(const string& title, uint16 width, uint16 height)
+UniquePtr<Window> Window::Create(const String& title, uint16 width, uint16 height)
 {
 	Window* newWindow = nullptr;
 #if DT_WINDOWS
@@ -22,16 +20,5 @@ Window* Window::Create(const string& title, uint16 width, uint16 height)
 
 #endif
 
-	if (!gWindow)
-	{
-		// Register first window as global
-		gWindow = newWindow;
-	}
-
-	return newWindow;
-}
-
-void Window::Shutdown()
-{
-	gWindow = nullptr;
+	return UniquePtr<Window>(newWindow);
 }

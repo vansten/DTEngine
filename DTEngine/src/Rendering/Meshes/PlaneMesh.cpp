@@ -15,7 +15,7 @@ PlaneMesh::~PlaneMesh()
 
 }
 
-bool PlaneMesh::Initialize(const string& path)
+bool PlaneMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

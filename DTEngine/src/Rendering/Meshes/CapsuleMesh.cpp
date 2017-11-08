@@ -15,7 +15,7 @@ CapsuleMesh::~CapsuleMesh()
 
 }
 
-bool CapsuleMesh::Initialize(const string& path)
+bool CapsuleMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 	

@@ -85,7 +85,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			POINT point;
 			GetCursorPos(&point);
-			Input::SetMousePosition(XMINT2(point.x, point.y));
+			if(App::GetInstance()->IsRunning())
+			{
+				GetInput().SetMousePosition(XMINT2(point.x, point.y));
+			}
 			break;
 		}
 	case WM_QUIT:
@@ -97,52 +100,64 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_KEYDOWN:
 		{
-			// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
-			// So in Down event I need to check if previous state of key was 'up' (not 'down')
-			const bool wasUp = !(lParam & (1 << 30));
-			if(wasUp)
+			if(App::GetInstance()->IsRunning())
 			{
-				Input::OnKeyDown((int32)wParam);
+				// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
+				// So in Down event I need to check if previous state of key was 'up' (not 'down')
+				const bool wasUp = !(lParam & (1 << 30));
+				if(wasUp)
+				{
+					GetInput().OnKeyDown((int32)wParam);
+				}
 			}
 			break;
 		}
 	case WM_KEYUP:
 		{
-			// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
-			// So in Up event I need to check if previous state of key was 'down'
-			const bool wasDown = lParam & (1 << 30);
-			if(wasDown)
+			if(App::GetInstance()->IsRunning())
 			{
-				Input::OnKeyUp((int32)wParam);
+				// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
+				// So in Up event I need to check if previous state of key was 'down'
+				const bool wasDown = lParam & (1 << 30);
+				if(wasDown)
+				{
+					GetInput().OnKeyUp((int32)wParam);
+				}
 			}
 			break;
 		}
 	case WM_MOUSEMOVE:
 	case WM_NCMOUSEMOVE:
 		{
-			int xPos = GET_X_LPARAM(lParam);
-			int yPos = GET_Y_LPARAM(lParam);
+			if(App::GetInstance()->IsRunning())
+			{
+				int xPos = GET_X_LPARAM(lParam);
+				int yPos = GET_Y_LPARAM(lParam);
 
-			Input::SetMousePosition(XMINT2(xPos, yPos));
+				GetInput().SetMousePosition(XMINT2(xPos, yPos));
+			}
 			break;
 		}
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	case WM_MBUTTONDOWN:
 		{
-			// Down events can be handled in one case statement
-			// Bitwise AND cause wParam can be something like MK_LBUTTON | MK_MBUTTON | ...
-			if((wParam & MK_LBUTTON) != 0)
+			if(App::GetInstance()->IsRunning())
 			{
-				Input::OnMouseDown(VK_LBUTTON);
-			}
-			if((wParam & MK_RBUTTON) != 0)
-			{
-				Input::OnMouseDown(VK_RBUTTON);
-			}
-			if((wParam & MK_MBUTTON) != 0)
-			{
-				Input::OnMouseDown(VK_MBUTTON);
+				// Down events can be handled in one case statement
+				// Bitwise AND cause wParam can be something like MK_LBUTTON | MK_MBUTTON | ...
+				if((wParam & MK_LBUTTON) != 0)
+				{
+					GetInput().OnMouseDown(VK_LBUTTON);
+				}
+				if((wParam & MK_RBUTTON) != 0)
+				{
+					GetInput().OnMouseDown(VK_RBUTTON);
+				}
+				if((wParam & MK_MBUTTON) != 0)
+				{
+					GetInput().OnMouseDown(VK_MBUTTON);
+				}
 			}
 
 			break;
@@ -150,17 +165,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// Up events cannot be (unfortunately) handled in one case statement as Down events...
 	case WM_LBUTTONUP:
 		{
-			Input::OnMouseUp(VK_LBUTTON);
+			if(App::GetInstance()->IsRunning())
+			{
+				GetInput().OnMouseUp(VK_LBUTTON);
+			}
 			break;
 		}
 	case WM_RBUTTONUP:
 		{
-			Input::OnMouseUp(VK_RBUTTON);
+			if(App::GetInstance()->IsRunning())
+			{
+				GetInput().OnMouseUp(VK_RBUTTON);
+			}
 			break;
 		}
 	case WM_MBUTTONUP:
 		{
-			Input::OnMouseUp(VK_MBUTTON);
+			if(App::GetInstance()->IsRunning())
+			{
+				GetInput().OnMouseUp(VK_MBUTTON);
+			}
 			break;
 		}
 	}

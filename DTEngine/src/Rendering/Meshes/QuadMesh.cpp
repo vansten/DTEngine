@@ -15,7 +15,7 @@ QuadMesh::~QuadMesh()
 	
 }
 
-bool QuadMesh::Initialize(const string& path)
+bool QuadMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

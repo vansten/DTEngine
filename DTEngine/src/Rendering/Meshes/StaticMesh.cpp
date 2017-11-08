@@ -42,11 +42,11 @@ struct FaceHasher
 	}
 };
 
-void ProcessFace(Face& face, const string& faceDefinition)
+void ProcessFace(Face& face, const String& faceDefinition)
 {
-	string positionIndex;
-	string uvIndex;
-	string normalIndex;
+	String positionIndex;
+	String uvIndex;
+	String normalIndex;
 
 	uint32 i = 0;
 	while(faceDefinition[i] != '/')
@@ -74,7 +74,7 @@ void ProcessFace(Face& face, const string& faceDefinition)
 	face.normalIndex = std::stoul(normalIndex) - 1;
 }
 
-bool StaticMesh::InitializeFromOBJ(const string& path)
+bool StaticMesh::InitializeFromOBJ(const String& path)
 {
 	std::wifstream file;
 	file.open(path, std::ios::in);
@@ -89,7 +89,7 @@ bool StaticMesh::InitializeFromOBJ(const string& path)
 	std::vector<XMFLOAT2> uvs;
 	std::vector<Face> faces;
 
-	string line;
+	String line;
 	while(std::getline(file, line))
 	{
 		if(line.length() == 0)
@@ -127,7 +127,7 @@ bool StaticMesh::InitializeFromOBJ(const string& path)
 		else if(line[0] == 'f')
 		{
 			std::wistringstream s(line.substr(2));
-			string faceDef1, faceDef2, faceDef3;
+			String faceDef1, faceDef2, faceDef3;
 			s >> faceDef1;
 			s >> faceDef2;
 			s >> faceDef3;
@@ -179,17 +179,17 @@ bool StaticMesh::InitializeFromOBJ(const string& path)
 	return CreateBuffers(vertices.data(), indices.data());
 }
 
-bool StaticMesh::InitializeFromFBX(const string& path)
+bool StaticMesh::InitializeFromFBX(const String& path)
 {
 	OutputDebugString(DT_TEXT("FBX importing is not supported yet!\n"));
 	return false;
 }
 
-bool StaticMesh::Initialize(const string& path)
+bool StaticMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 
-	string extension = GetExtension(path);
+	String extension = GetExtension(path);
 	if(extension == DT_TEXT("obj"))
 	{
 		return InitializeFromOBJ(path);

@@ -3,7 +3,7 @@
 #include "Graphics.h"
 #include "ResourceManagement/ResourceManager.h"
 
-Material::Material()
+Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr)
 {
 }
 
@@ -11,18 +11,16 @@ Material::~Material()
 {
 }
 
-bool Material::Initialize(const string& path)
+bool Material::Initialize(const String& path)
 {
 	Asset::Initialize(path);
 
-	assert(gResourceManager);
+	ResourceManager& resourceManager = GetResourceManager();
 
 	// Basic shader
-	_shader = gResourceManager->Load<Shader>(COLOR_SHADER);
+	_shader = resourceManager.Load<Shader>(COLOR_SHADER);
 	_color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	assert(gGraphics);
-
+	
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
 	bufferData.pSysMem = &_color;
 
@@ -32,7 +30,8 @@ bool Material::Initialize(const string& path)
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	if (!gGraphics->CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
+	Graphics& graphics = GetGraphics();
+	if (!graphics.CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
 	{
 		return false;
 	}
@@ -45,36 +44,29 @@ void Material::Shutdown()
 	RELEASE_COM(_perFrameBuffer);
 }
 
-void Material::SetPerFrameParameters(ID3D11DeviceContext* deviceContext)
+void Material::SetPerFrameParameters(Graphics& graphics)
 {
 	if (_shader)
 	{
-		_shader->SetPerFrameParameters(deviceContext);
+		_shader->SetPerFrameParameters(graphics);
 	}
 
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = deviceContext->Map(_perFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return;
-	}
-
-	XMFLOAT4* data = (XMFLOAT4*)mappedResource.pData;
+	XMFLOAT4* data = (XMFLOAT4*)graphics.Map(_perFrameBuffer);
 	if (!data)
 	{
-		deviceContext->Unmap(_perFrameBuffer, 0);
+		graphics.Unmap(_perFrameBuffer);
 		return;
 	}
 
 	*data = _color;
-	deviceContext->Unmap(_perFrameBuffer, 0);
-	deviceContext->VSSetConstantBuffers(2, 1, &_perFrameBuffer);
+	graphics.Unmap(_perFrameBuffer);
+	graphics.SetVSConstantBuffers(2, 1, &_perFrameBuffer);
 }
 
-void Material::SetPerObjectParameters(ID3D11DeviceContext* deviceContext, GameObject* gameObject)
+void Material::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject)
 {
 	if (_shader)
 	{
-		_shader->SetPerObjectParameters(deviceContext, gameObject);
+		_shader->SetPerObjectParameters(graphics, gameObject);
 	}
 }

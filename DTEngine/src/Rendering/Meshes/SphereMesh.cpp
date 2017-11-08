@@ -1,11 +1,11 @@
 #include "SphereMesh.h"
 
-SphereMesh::SphereMesh()
+SphereMesh::SphereMesh() : MeshBase()
 {
 
 }
 
-SphereMesh::SphereMesh(const SphereMesh& other)
+SphereMesh::SphereMesh(const SphereMesh& other) : MeshBase(other)
 {
 
 }
@@ -15,7 +15,7 @@ SphereMesh::~SphereMesh()
 
 }
 
-bool SphereMesh::Initialize(const string& path)
+bool SphereMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 	

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "App.h"
 #include "Platform.h"
+#include "Utility/UniqueSingleton.h"
 
 class Time
 {
@@ -41,7 +43,5 @@ public:
 	}
 
 public:
-	static Time* Create();
+	static UniquePtr<Time> Create();
 };
-
-extern Time* gTime;

@@ -5,12 +5,12 @@
 class Asset
 {
 protected:
-	string _path;
+	String _path;
 
 public:
 	Asset();
 	virtual ~Asset();
 
-	virtual bool Initialize(const string& path);
+	virtual bool Initialize(const String& path);
 	virtual void Shutdown() = 0;
 };

@@ -15,7 +15,7 @@ TriangleMesh::~TriangleMesh()
 
 }
 
-bool TriangleMesh::Initialize(const string& path)
+bool TriangleMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

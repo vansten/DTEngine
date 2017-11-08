@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Platform.h"
+
 class Window;
 
 class MessageSystem
@@ -8,7 +10,7 @@ protected:
 	static bool _pendingQuit;
 
 public:
-	static void GatherMessages(Window* window);
+	static void GatherMessages(const UniquePtr<Window>& window);
 
 	static inline void PostQuit()
 	{

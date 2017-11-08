@@ -7,7 +7,7 @@
 const float32 CameraControl::_xRotationMax = 89.99f;
 const float32 CameraControl::_xRotationMin = -89.99f;
 
-CameraControl::CameraControl(GameObject* owner) : Component(owner)
+CameraControl::CameraControl(SharedPtr<GameObject> owner) : Component(owner)
 {
 
 }
@@ -22,11 +22,11 @@ CameraControl::~CameraControl()
 
 }
 
-CameraControl* CameraControl::Copy(GameObject* newOwner) const
+SharedPtr<Component> CameraControl::Copy(SharedPtr<GameObject> newOwner) const
 {
-	CameraControl* copy = new CameraControl(*this);
+	SharedPtr<CameraControl> copy = SharedPtr<CameraControl>(new CameraControl(*this));
 	copy->_owner = newOwner;
-	return copy;
+	return StaticPointerCast<Component>(copy);
 }
 
 bool CameraControl::OnWPressed()
@@ -92,7 +92,7 @@ bool CameraControl::OnShiftReleased()
 bool CameraControl::OnRMBPressed()
 {
 	_isRMBPressed = true;
-	_previousMousePosition = Input::GetMousePosition();
+	_previousMousePosition = GetInput().GetMousePosition();
 	return false;
 }
 
@@ -104,10 +104,10 @@ bool CameraControl::ONRMBReleased()
 
 bool CameraControl::OnLMBReleased()
 {
-	XMINT2 mousePosition = Input::GetMousePosition();
+	XMINT2 mousePosition = GetInput().GetMousePosition();
 	XMFLOAT3 worldPosition = Camera::GetMainCamera()->ConvertScreenToWorldPoint(mousePosition);
 	XMINT2 backToScreen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(worldPosition);
-	string s = DT_TEXT("");
+	String s = DT_TEXT("");
 	s += std::to_wstring(mousePosition.x);
 	s += DT_TEXT(" ");
 	s += std::to_wstring(mousePosition.y);
@@ -129,19 +129,20 @@ bool CameraControl::OnLMBReleased()
 
 void CameraControl::Initialize()
 {
-	Input::BindKeyDownEvent('W', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnWPressed));
-	Input::BindKeyUpEvent('W', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnWReleased));
-	Input::BindKeyDownEvent('S', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnSPressed));
-	Input::BindKeyUpEvent('S', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnSReleased));
-	Input::BindKeyDownEvent('A', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnAPressed));
-	Input::BindKeyUpEvent('A', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnAReleased));
-	Input::BindKeyDownEvent('D', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnDPressed));
-	Input::BindKeyUpEvent('D', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnDReleased));
-	Input::BindKeyDownEvent(VK_SHIFT, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnShiftPressed));
-	Input::BindKeyUpEvent(VK_SHIFT, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnShiftReleased));
-	Input::BindMouseDownEvent(VK_RBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnRMBPressed));
-	Input::BindMouseUpEvent(VK_RBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::ONRMBReleased));
-	Input::BindMouseUpEvent(VK_LBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnLMBReleased));
+	Input& input = GetInput();
+	input.BindKeyDownEvent('W', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnWPressed));
+	input.BindKeyUpEvent('W', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnWReleased));
+	input.BindKeyDownEvent('S', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnSPressed));
+	input.BindKeyUpEvent('S', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnSReleased));
+	input.BindKeyDownEvent('A', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnAPressed));
+	input.BindKeyUpEvent('A', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnAReleased));
+	input.BindKeyDownEvent('D', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnDPressed));
+	input.BindKeyUpEvent('D', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnDReleased));
+	input.BindKeyDownEvent(VK_SHIFT, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnShiftPressed));
+	input.BindKeyUpEvent(VK_SHIFT, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnShiftReleased));
+	input.BindMouseDownEvent(VK_RBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnRMBPressed));
+	input.BindMouseUpEvent(VK_RBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::ONRMBReleased));
+	input.BindMouseUpEvent(VK_LBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnLMBReleased));
 
 	_movementSpeed = 4.0f;
 	_shiftMultiplier = 1.0f;
@@ -154,24 +155,24 @@ void CameraControl::Update(float32 deltaTime)
 {
 	if (_isRMBPressed)
 	{
-		XMFLOAT3 direction = _owner->GetTransform().TransformDirection(_movementVector);
-		XMFLOAT3 currentPosition = _owner->GetTransform().GetPosition();
+		XMFLOAT3 direction = _owner->GetTransform()->TransformDirection(_movementVector);
+		XMFLOAT3 currentPosition = _owner->GetTransform()->GetPosition();
 		float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 		currentPosition.x += direction.x * speedMulDeltaTime;
 		currentPosition.y += direction.y * speedMulDeltaTime;
 		currentPosition.z += direction.z * speedMulDeltaTime;
-		_owner->GetTransform().SetPosition(currentPosition);
+		_owner->GetTransform()->SetPosition(currentPosition);
 
-		XMINT2 mousePosition = Input::GetMousePosition();
+		XMINT2 mousePosition = GetInput().GetMousePosition();
 		XMINT2 mouseDeltaPosition = mousePosition;
 		mouseDeltaPosition.x -= _previousMousePosition.x;
 		mouseDeltaPosition.y -= _previousMousePosition.y;
 
-		XMFLOAT3 currentRotation = _owner->GetTransform().GetRotation();
+		XMFLOAT3 currentRotation = _owner->GetTransform()->GetRotation();
 		currentRotation.x += (mouseDeltaPosition.y * deltaTime * _mouseSensitivity);
 		currentRotation.x = Clamp(currentRotation.x, _xRotationMin, _xRotationMax);
 		currentRotation.y = currentRotation.y + (mouseDeltaPosition.x * deltaTime * _mouseSensitivity);
-		_owner->GetTransform().SetRotation(currentRotation);
+		_owner->GetTransform()->SetRotation(currentRotation);
 
 		_previousMousePosition = mousePosition;
 	}

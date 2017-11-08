@@ -15,7 +15,7 @@ ConeMesh::~ConeMesh()
 
 }
 
-bool ConeMesh::Initialize(const string& path)
+bool ConeMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

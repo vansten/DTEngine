@@ -9,5 +9,5 @@ public:
 	QuadMesh(const QuadMesh& other);
 	virtual ~QuadMesh();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

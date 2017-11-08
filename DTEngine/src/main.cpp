@@ -11,13 +11,11 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	{
-		App* app = {0};
-		app = new App();
+		const std::unique_ptr<App>& app = App::GetInstance();
 		if(app)
 		{
 			int exitCode = app->Run();
-			delete app;
-			app = nullptr;
+			App::FreeInstance();
 
 #if DT_DEBUG
 			if(_CrtDumpMemoryLeaks())

@@ -10,6 +10,7 @@ struct ID3D11Buffer;
 struct ID3D11DeviceContext;
 
 class GameObject;
+class Graphics;
 
 class Shader : public Asset
 {
@@ -36,11 +37,11 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 	virtual void Shutdown() override;
 
-	void SetPerFrameParameters(ID3D11DeviceContext* deviceContext);
-	void SetPerObjectParameters(ID3D11DeviceContext* deviceContext, GameObject* gameObject);
+	void SetPerFrameParameters(Graphics& graphics);
+	void SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject);
 
 	inline ID3D11Buffer* const* GetPerFrameBuffer() const { return &_perFrameBuffer; }
 	inline ID3D11Buffer* const* GetPerObjectBuffer() const { return &_perObjectBuffer; }

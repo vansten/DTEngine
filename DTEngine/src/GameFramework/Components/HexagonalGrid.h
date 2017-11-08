@@ -1,9 +1,7 @@
 #pragma once
 
-#include "GameFramework/GameObject.h"
 #include "GameFramework/Component.h"
 #include "Utility/Math.h"
-#include <unordered_map>
 
 struct CubeCoordinates;
 
@@ -100,19 +98,19 @@ class Hexagon : public Component
 {
 protected:
 	AxialCoordinates _coordinates;
-	GameObject* _objectOnHexagon;
+	SharedPtr<GameObject> _objectOnHexagon;
 
 public:
-	Hexagon(GameObject* owner);
+	Hexagon(SharedPtr<GameObject> owner);
 	Hexagon(const Hexagon& other);
 	virtual ~Hexagon();
 
 protected:
-	virtual Hexagon* Copy(GameObject* newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
 public:
 	// Returns distance from this hexagon to the other
-	inline int32 Distance(Hexagon* other)
+	inline int32 Distance(SharedPtr<Hexagon> other)
 	{
 		if(!other)
 		{
@@ -123,14 +121,14 @@ public:
 	}
 
 	inline AxialCoordinates GetCoordinates() const { return _coordinates; }
-	inline GameObject* GetObjectOn() const { return _objectOnHexagon; }
+	inline SharedPtr<GameObject> GetObjectOn() const { return _objectOnHexagon; }
 	
 	inline void SetCoordinates(const AxialCoordinates& coordinates)
 	{
 		_coordinates = coordinates;
 	}
 
-	inline void SetObjectOn(GameObject* object)
+	inline void SetObjectOn(SharedPtr<GameObject> object)
 	{
 		_objectOnHexagon = object;
 	}
@@ -143,8 +141,8 @@ struct HexagonalGridPath
 	friend class HexagonalGrid;
 
 protected:
-	std::vector<Hexagon*> _path;
-	std::vector<XMFLOAT3> _worldPath;
+	DynamicArray<SharedPtr<Hexagon>> _path;
+	DynamicArray<XMFLOAT3> _worldPath;
 
 public:
 	inline HexagonalGridPath()
@@ -153,7 +151,7 @@ public:
 	}
 
 protected:
-	inline void AddHexagonToPath(Hexagon* hex)
+	inline void AddHexagonToPath(SharedPtr<Hexagon> hex)
 	{
 		_path.push_back(hex);
 	}
@@ -163,10 +161,10 @@ protected:
 
 public:
 	// Returns a path constructed from hexagons (i.e. for displaying something fancy on them)
-	inline const std::vector<Hexagon*>& GetPath() const { return _path; }
+	inline const DynamicArray<SharedPtr<Hexagon>>& GetPath() const { return _path; }
 
 	// Returns a path constructed from real world positions (i.e. for usage in navigation)
-	inline const std::vector<XMFLOAT3>& GetWorldPath() const { return _worldPath; }
+	inline const DynamicArray<XMFLOAT3>& GetWorldPath() const { return _worldPath; }
 
 	// Clears path
 	inline void ClearPath()
@@ -184,32 +182,34 @@ class HexagonalGrid : public Component
 	friend class HexagonalGridUtility;
 
 public:
-	using CanWalkPredicate = bool(*)(Hexagon*);
+	using CanWalkPredicate = bool(*)(SharedPtr<Hexagon>);
 
 protected:
-	std::unordered_map<const AxialCoordinates, Hexagon*, AxialCoordinatesHasher> _hexagonalMap;
+	Dictionary<const AxialCoordinates, WeakPtr<Hexagon>, AxialCoordinatesHasher> _hexagonalMap;
 	float32 _hexagonSize;
 	uint32 _width;
 	uint32 _height;
 
 public:
-	HexagonalGrid(GameObject* owner);
+	HexagonalGrid(SharedPtr<GameObject> owner);
 	HexagonalGrid(const HexagonalGrid& other);
 	virtual ~HexagonalGrid();
 
 protected:
-	virtual HexagonalGrid* Copy(GameObject* newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
 public:
+	virtual void Shutdown() override;
+
 	// Returns neighboor of given hexagon along given direction (or nullptr if there is no neighboor)
-	Hexagon* GetNeighboor(const Hexagon* hexagon, HexagonDirection direction) const;
+	SharedPtr<Hexagon> GetNeighboor(SharedPtr<Hexagon> hexagon, HexagonDirection direction) const;
 	// Returns hexagon at given coordinates (or nullptr if there isn't a hexagon with given coordinates)
-	Hexagon* GetHexagonAt(const AxialCoordinates& axialCoordinates) const;
+	SharedPtr<Hexagon> GetHexagonAt(const AxialCoordinates& axialCoordinates) const;
 	// Returns hexagon at given world position (or nullptr if there isn't a hexagon at given position)
-	Hexagon* GetHexagonAt(const XMFLOAT3& worldPosition) const;
+	SharedPtr<Hexagon> GetHexagonAt(const XMFLOAT3& worldPosition) const;
 
 	// Returns whether there exists a path between start and target hexagons
-	bool CalculatePath(Hexagon* start, Hexagon* target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate = nullptr) const;
+	bool CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate = nullptr) const;
 };
 
 class HexagonalGridUtility
@@ -222,5 +222,5 @@ public:
 	// Attaches created grid to gridOwner object
 	// Returns created grid (there is no need to attach this grid to an object after these functions returns)
 	// Return nullptr if grid creation wasn't successful (i.e. gridOwner was nullptr, width, height or hexagonSize was less or equal to 0)
-	static HexagonalGrid* CreateGrid(uint32 width, uint32 height, float32 hexagonSize, GameObject* gridOwner);
+	static SharedPtr<HexagonalGrid> CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<GameObject> gridOwner);
 };

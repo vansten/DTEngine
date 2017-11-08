@@ -224,6 +224,9 @@
     <ClInclude Include="src\Utility\String.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utility\UniqueSingleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Resources\Shaders\ColorVS.hlsl" />

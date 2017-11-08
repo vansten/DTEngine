@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/App.h"
 
 #include "Rendering/Material.h"
 #include "Rendering/Shader.h"
@@ -46,7 +47,7 @@ class Material;
 class ResourceManager
 {
 protected:
-	std::map<string, Asset*> _assetsMap;
+	std::map<String, SharedPtr<Asset>> _assetsMap;
 
 public:
 	ResourceManager();
@@ -55,29 +56,26 @@ public:
 	void Shutdown();
 
 	template<typename T>
-	T* Load(const string& path);
+	SharedPtr<T> Load(const String& path);
 };
 
-extern ResourceManager* gResourceManager;
-
 template<typename T>
-T* ResourceManager::Load(const string& path)
+SharedPtr<T> ResourceManager::Load(const String& path)
 {
 	if(_assetsMap.find(path) != _assetsMap.end())
 	{
-		return (T*)_assetsMap[path];
+		return StaticPointerCast<T>(_assetsMap[path]);
 	}
 
-	T* nAsset = new T();
+	SharedPtr<T> nAsset(new T());
 	bool result = nAsset->Initialize(path);
 	if(!result)
 	{
 		nAsset->Shutdown();
-		delete nAsset;
-		return nullptr;
+		return SharedPtr<T>(nullptr);
 	}
 
-	_assetsMap.insert(std::pair<string, Asset*>(path, nAsset));
+	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
 
-	return (T*)nAsset;
+	return StaticPointerCast<T>(_assetsMap[path]);
 }

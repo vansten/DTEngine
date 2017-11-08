@@ -7,9 +7,7 @@
 #include "MeshBase.h"
 #include "Material.h"
 
-Graphics* gGraphics = nullptr;
-
-Graphics::Graphics() : _swapChain(0), _device(0), _deviceContext(0), _renderTargetView(0), _depthStencilBuffer(0), _depthStencilState(0), _depthStencilView(0), _rasterizerState(0)
+Graphics::Graphics() : _swapChain(nullptr), _device(nullptr), _deviceContext(nullptr), _renderTargetView(nullptr), _depthStencilBuffer(nullptr), _depthStencilState(nullptr), _depthStencilView(nullptr), _rasterizerState(nullptr)
 {
 
 }
@@ -67,22 +65,14 @@ bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& de
 	return true;
 }
 
-bool Graphics::Initialize(Window* window, bool vsync)
+bool Graphics::Initialize(bool vsync)
 {
-	if (!gGraphics)
-	{
-		gGraphics = this;
-	}
-
-	if(!window)
-	{
-		return false;
-	}
-
 	uint32 numerator;
 	uint32 denominator;
 
-	if(!GetRefreshRate((uint32)window->GetHeight(), numerator, denominator))
+	Window& window = GetMainWindow();
+
+	if(!GetRefreshRate((uint32)window.GetHeight(), numerator, denominator))
 	{
 		return false;
 	}
@@ -90,8 +80,8 @@ bool Graphics::Initialize(Window* window, bool vsync)
 	// Create swap chain, device and device context
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};
 	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = (uint32)window->GetWidth();
-	swapChainDesc.BufferDesc.Height = (uint32)window->GetHeight();
+	swapChainDesc.BufferDesc.Width = (uint32)window.GetWidth();
+	swapChainDesc.BufferDesc.Height = (uint32)window.GetHeight();
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	_vsync = vsync;
@@ -100,8 +90,8 @@ bool Graphics::Initialize(Window* window, bool vsync)
 
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	WindowWin32* windowWin32 = (WindowWin32*)window;
-	swapChainDesc.OutputWindow = windowWin32->GetHWND();
+	WindowWin32 windowWin32 = (WindowWin32&)window;
+	swapChainDesc.OutputWindow = windowWin32.GetHWND();
 
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
@@ -135,8 +125,8 @@ bool Graphics::Initialize(Window* window, bool vsync)
 
 	// Create depth buffer
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {0};
-	depthBufferDesc.Width = (uint32)window->GetWidth();
-	depthBufferDesc.Height = (uint32)window->GetHeight();
+	depthBufferDesc.Width = (uint32)window.GetWidth();
+	depthBufferDesc.Height = (uint32)window.GetHeight();
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -204,8 +194,8 @@ bool Graphics::Initialize(Window* window, bool vsync)
 
 	// Create viewport
 	D3D11_VIEWPORT viewport = {0};
-	viewport.Width = (float32)window->GetWidth();
-	viewport.Height = (float32)window->GetHeight();
+	viewport.Width = (float32)window.GetWidth();
+	viewport.Height = (float32)window.GetHeight();
 	viewport.MaxDepth = 1.0f;
 
 	_deviceContext->RSSetViewports(1, &viewport);
@@ -215,11 +205,6 @@ bool Graphics::Initialize(Window* window, bool vsync)
 
 void Graphics::Shutdown()
 {
-	if (gGraphics && gGraphics == this)
-	{
-		gGraphics = nullptr;
-	}
-
 	if(_swapChain)
 	{
 		// Set to windowed before shutdown
@@ -308,20 +293,43 @@ bool Graphics::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc
 	return true;
 }
 
-void Graphics::SetObject(GameObject* gameObject)
+void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT result = _deviceContext->Map(resource, 0, mapFlag, 0, &mappedResource);
+	if(FAILED(result))
+	{
+		Unmap(resource);
+		return nullptr;
+	}
+
+	return mappedResource.pData;
+}
+
+void Graphics::Unmap(ID3D11Resource* resource)
+{
+	_deviceContext->Unmap(resource, 0);
+}
+
+void Graphics::SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D11Buffer** buffers)
+{
+	_deviceContext->VSSetConstantBuffers(bufferSlot, bufferCount, buffers);
+}
+
+void Graphics::SetObject(SharedPtr<GameObject> gameObject)
 {
 	_currentlyRenderedObject = gameObject;
 }
 
-void Graphics::SetMaterial(Material* material)
+void Graphics::SetMaterial(SharedPtr<Material> material)
 {
 	if (_lastUsedMaterial != material)
 	{
 		_lastUsedMaterial = material;
 		if (_lastUsedMaterial)
 		{
-			_lastUsedMaterial->SetPerFrameParameters(_deviceContext);
-			const Shader* shader = material->GetShader();
+			_lastUsedMaterial->SetPerFrameParameters(*this);
+			std::shared_ptr<Shader> shader = material->GetShader();
 			_deviceContext->IASetInputLayout(shader->GetInputLayout());
 			_deviceContext->VSSetShader(shader->GetVertexShader(), nullptr, 0);
 			_deviceContext->PSSetShader(shader->GetPixelShader(), nullptr, 0);
@@ -330,7 +338,7 @@ void Graphics::SetMaterial(Material* material)
 	
 	if (_lastUsedMaterial && _currentlyRenderedObject)
 	{
-		_lastUsedMaterial->SetPerObjectParameters(_deviceContext, _currentlyRenderedObject);
+		_lastUsedMaterial->SetPerObjectParameters(*this, _currentlyRenderedObject);
 	}
 }
 

@@ -2,7 +2,7 @@
 
 #include "Core/Platform.h"
 
-string GetExtension(const string& path)
+String GetExtension(const String& path)
 {
 	size_t lastDotIndex = path.find_last_of('.');
 	if(lastDotIndex == -1)
@@ -10,7 +10,7 @@ string GetExtension(const string& path)
 		return false;
 	}
 
-	string extension = path.substr(lastDotIndex + 1);
+	String extension = path.substr(lastDotIndex + 1);
 	size_t length = extension.length();
 	for(uint64 i = 0; i < length; ++i)
 	{

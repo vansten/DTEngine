@@ -15,7 +15,7 @@ CylinderMesh::~CylinderMesh()
 	
 }
 
-bool CylinderMesh::Initialize(const string& path)
+bool CylinderMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

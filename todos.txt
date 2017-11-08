@@ -1,33 +1,34 @@
 TODOs:
--- GameObject				|> ALL DONE
--- Component				|> ALL DONE
--- Scene					|> ALL DONE
--- Camera 					|> ALL DONE
--- Shader 					|> ALL DONE
--- MeshBase 				|> ALL DONE
--- MeshRenderer				|> ALL DONE
--- HexagonMesh 				|> ALL DONE
--- TriangleMesh				|> ALL DONE
--- CameraControl			|> IN PROGRESS (TODO: Raycasting, Camera::GetMainCamera()->ConvertScreenPointToRay()?)
--- Asset					|> ALL DONE
--- ResourceManager			|> ALL DONE
--- Transform hierarchy 		|> ALL DONE
--- Material 				|> ALL DONE
--- HexagonalGrid 			|> ALL DONE
--- QuadMesh					|> ALL DONE
--- PlaneMesh 				|> ALL DONE
--- SphereMesh				|> ALL DONE
--- CubeMesh					|> ALL DONE
--- CylinderMesh 			|> ALL DONE
--- ConeMesh					|> ALL DONE
--- CapsuleMesh				|> ALL DONE
--- StaticMesh				|> IN PROGRESS (TODO: fbx loading)
--- Cloning GameObjects		|> ALL DONE
--- Smart pointers, std::unique_ptr, std::shared_ptr, std::weak_ptr, std::move, std::forward
--- Rework architecture a little bit (no more gGraphics, gWindow and other things like that... maybe Singleton as some Utility class with static GetInstance creating instance and FreeInstance destroying instance?)
+-- GameObject								|> ALL DONE
+-- Component								|> ALL DONE
+-- Scene									|> ALL DONE
+-- Camera 									|> ALL DONE
+-- Shader 									|> ALL DONE
+-- MeshBase 								|> ALL DONE
+-- MeshRenderer								|> ALL DONE
+-- HexagonMesh 								|> ALL DONE
+-- TriangleMesh								|> ALL DONE
+-- CameraControl							|> IN PROGRESS (TODO: Raycasting, Camera::GetMainCamera()->ConvertScreenPointToRay()?)
+-- Asset									|> ALL DONE
+-- ResourceManager							|> ALL DONE
+-- Transform hierarchy 						|> ALL DONE
+-- Material 								|> ALL DONE
+-- HexagonalGrid 							|> ALL DONE
+-- QuadMesh									|> ALL DONE
+-- PlaneMesh 								|> ALL DONE
+-- SphereMesh								|> ALL DONE
+-- CubeMesh									|> ALL DONE
+-- CylinderMesh 							|> ALL DONE
+-- ConeMesh									|> ALL DONE
+-- CapsuleMesh								|> ALL DONE
+-- StaticMesh								|> IN PROGRESS (TODO: fbx loading)
+-- Cloning GameObjects						|> ALL DONE
+-- Smart pointers + architecture reworked	|> IN PROGRESS (TODO: ComPtr from Microsoft::WRL namespace?)
+-- Message passing 							|> ALL DONE
+-- Think about rendering UI (different renderer states - Opaque, Transparent, UI, render order, gathering and sorting renderers? Get rid of MeshRenderer::Render function and instead implement Camera::Render which will be responsible for rendering objects? Add callbacks OnWillRender() and OnPostRender() to Component class (i.e. for MeshRenderer and UIRenderer classes)? graphics.SetState(RendererState rs)?)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
--- GUI (delegates on click for buttons using std::function, elements created once and rendered, GUIText and GUIImage classes responsible for rendering, components, rendering order (first scene then gui?), texts, shaders for texts and images, font loading)
--- Debug console rendered by texts on GUI, toggled by ~ (maybe commands?)
+-- GUI (delegates on click for buttons using std::function (Functions), elements created once and rendered, GUIText and GUIImage classes responsible for rendering, components, texts, shaders for texts and images, font loading)
+-- Debug console rendered by texts on GUI, toggled by ~ (VK_OEM_3) (maybe commands?)
 -- Physics (simple raycasting with PhysX? simple colliders box, sphere, capsule, cone, quad (also for plane), cylinder, hexagon)
 -- MemoryManagers/Allocators (new and delete overrides, with lines and files parameters)
 -- RTTI (simple, T::GetType(), T::_type, Type::Get(typeName).CreateInstance(line, file))
@@ -36,6 +37,8 @@ TODOs:
 -- Basic lighting (PhongBlinn? Lambert?)
 
 ENGINE architecture/function order/lifetime cycle:
+One unique singleton - the App! Graphics, Window, ResourceManager, Time, Game, Input and (probably) Physics will be get by Get*() global function which in fact is App::GetInstance()->Get*() inlined call!
+
 App::Initialize()
 	Game::Initialize()	//Editor::Initialize()
 		Scene::Load(basicScene)

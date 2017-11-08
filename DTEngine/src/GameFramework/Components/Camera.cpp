@@ -3,14 +3,11 @@
 #include "GameFramework/GameObject.h"
 #include "Core/Window.h"
 
-Camera* Camera::_main = nullptr;
+SharedPtr<Camera> Camera::_main = nullptr;
 
-Camera::Camera(GameObject* owner) : Component(owner)
+Camera::Camera(SharedPtr<GameObject> owner) : Component(owner)
 {
-	if (!_main)
-	{
-		_main = this;
-	}
+
 }
 
 Camera::Camera(const Camera& other) : Component(other), _fov(other._fov), _near(other._near), _far(other._far)
@@ -23,15 +20,22 @@ Camera::~Camera()
 
 }
 
-Camera* Camera::Copy(GameObject* newOwner) const
+SharedPtr<Component> Camera::Copy(SharedPtr<GameObject> newOwner) const
 {
-	Camera* copy = new Camera(*this);
+	SharedPtr<Camera> copy = SharedPtr<Camera>(new Camera(*this));
 	copy->_owner = newOwner;
-	return copy;
+	return StaticPointerCast<Component>(copy);
 }
 
 void Camera::Initialize()
 {
+	Component::Initialize();
+
+	if(!_main)
+	{
+		_main = DynamicPointerCast<Camera>(shared_from_this());
+	}
+
 	_fov = 60.0f;
 	_near = 0.01f;
 	_far = 100.0f;
@@ -39,23 +43,30 @@ void Camera::Initialize()
 	PostLoad();
 }
 
+void Camera::Shutdown()
+{
+	if(_main == shared_from_this())
+	{
+		_main = nullptr;
+	}
+
+	Component::Shutdown();
+}
+
 void Camera::PostLoad()
 {
-	float32 aspectRatio = 16.0f / 9.0f;
-	if (gWindow)
-	{
-		aspectRatio = gWindow->GetAspectRatio();
-	}
+	Window& window = GetMainWindow();
+	float32 aspectRatio = window.GetAspectRatio();
 	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
 
-	const Transform& ownerTransform = _owner->GetTransform();
+	SharedPtr<Transform> ownerTransform = _owner->GetTransform();
 	OnOwnerTransformUpdated(ownerTransform);
 }
 
-void Camera::OnOwnerTransformUpdated(const Transform& transform)
+void Camera::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
 {
-	XMFLOAT3 forward = transform.GetForward();
-	XMFLOAT3 position = transform.GetPosition();
+	XMFLOAT3 forward = transform->GetForward();
+	XMFLOAT3 position = transform->GetPosition();
 	_viewMatrix = XMMatrixLookToLH(XMLoadFloat3(&position), XMLoadFloat3(&forward), XMLoadFloat3(&VectorHelpers::Up));
 }
 
@@ -64,11 +75,12 @@ void Camera::OnOwnerTransformUpdated(const Transform& transform)
 // Pass XMINT2 in range [(0, screenWidth), (0, screenHeight)]
 XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 {
+	Window& window = GetMainWindow();
 	// Cause screenPoint is in [(0, screenWidth), (0, screenHeight)] ranges
 	// Offset must be applied to make sure that middle of screen is (0,0) point
 	XMINT2 screenPointWithOffset(
-								 (uint32)(screenPoint.x - gWindow->GetWidth() * 0.5f),
-								 (uint32)(gWindow->GetHeight() * 0.5f - screenPoint.y)
+								 (uint32)(screenPoint.x - window.GetWidth() * 0.5f),
+								 (uint32)(window.GetHeight() * 0.5f - screenPoint.y)
 								);
 
 	XMVECTOR screenVector = XMLoadSInt2(&screenPointWithOffset);
@@ -107,15 +119,16 @@ XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
 
 	XMINT2 screenPoint;
 	XMStoreSInt2(&screenPoint, screenVector);
+	Window& window = GetMainWindow();
 	// Applying offset just to make sure that returned screen point is in
 	// [(0, screenWidth), (0, screenHeight)] range
-	screenPoint.x = (uint32)(screenPoint.x + gWindow->GetWidth() * 0.5f);
-	screenPoint.y = (uint32)(gWindow->GetHeight() * 0.5f - screenPoint.y);
+	screenPoint.x = (uint32)(screenPoint.x + window.GetWidth() * 0.5f);
+	screenPoint.y = (uint32)(window.GetHeight() * 0.5f - screenPoint.y);
 
 	return screenPoint;
 }
 
-Camera const* Camera::GetMainCamera()
+SharedPtr<Camera> Camera::GetMainCamera()
 {
 	return _main;
 }

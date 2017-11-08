@@ -2,29 +2,97 @@
 
 // Platform independent includes
 #include <string>
+#include <sstream>
 #include <functional>
+#include <memory>
+#include <vector>
+#include <unordered_map>
+#include <list>
+#include <map>
+#include <queue>
+
+#include <functional>
+
+#include <assert.h>
+
+template<typename T>
+using SharedPtr = std::shared_ptr<T>;
+template<typename T>
+using UniquePtr = std::unique_ptr<T, std::default_delete<T>>;
+template<typename T>
+using WeakPtr = std::weak_ptr<T>;
+template<typename T>
+using EnableSharedFromThis = std::enable_shared_from_this<T>;
+
+template<typename T>
+using Less = std::less<T>;
+template<typename T>
+using Greater = std::greater<T>;
+template<typename T>
+using Hash = std::hash<T>;
+template<typename T>
+using Queue = std::queue<T>;
+template<typename T, typename UnderlyingType = DynamicArray<T>, typename LessType = Less<T>>
+using PriorityQueue = std::priority_queue<T, UnderlyingType, LessType>;
+template<typename T1, typename T2>
+using Pair = std::pair<T1, T2>;
+
+template<typename T>
+using Function = std::function<T>;
+
+template<typename To, typename From>
+inline SharedPtr<To> StaticPointerCast(SharedPtr<From>& pointer)
+{
+	return std::static_pointer_cast<To>(pointer);
+}
+
+template<typename To, typename From>
+inline SharedPtr<To> DynamicPointerCast(SharedPtr<From>& pointer)
+{
+	return std::dynamic_pointer_cast<To>(pointer);
+}
+
+template<typename To, typename From>
+inline SharedPtr<To> ConstPointerCast(SharedPtr<From>& pointer)
+{
+	return std::const_pointer_cast<To>(pointer);
+}
+
+template<typename FunctionT, typename ClassT>
+inline decltype(auto) Bind(FunctionT&& function, ClassT&& object)
+{
+	return std::bind(function, object);
+}
+
+template<typename T>
+bool operator==(const WeakPtr<T>& weakPtr, const SharedPtr<T>& sharedPtr)
+{
+	return !weakPtr.owner_before(sharedPtr) && !sharedPtr.owner_before(weakPtr);
+}
+
+template<typename T>
+using DynamicArray = std::vector<T>;
+template<typename Key, typename Value, typename Hasher = Hash<Key>>
+using Dictionary = std::unordered_map<Key, Value, Hasher>;
+template<typename T>
+using LinkedList = std::list<T>;
+template<typename Key, typename Value>
+using Map = std::map<Key, Value>;
 
 #if defined(_WIN32) || defined(_WIN64)
 
 	#define DT_WINDOWS 1
 	#define DT_UNDEFINEDPLATFORM 0
-	
-using uint8 = unsigned char;
-using uint16 = unsigned short;
-using uint32 = unsigned int;
-using uint64 = unsigned long;
-using int8 = char;
-using int16 = short;
-using int32 = int;
-using int64 = long;
-using float32 = float;
-using double64 = double;
 
 #else
 
 	#define DT_WINDOWS 0
 	#define DT_UNDEFINEDPLATFORM 1
 
+#endif
+
+#if DT_WINDOWS
+
 using uint8 = unsigned char;
 using uint16 = unsigned short;
 using uint32 = unsigned int;
@@ -36,22 +104,20 @@ using int64 = long;
 using float32 = float;
 using double64 = double;
 
-#endif
-
-#if DT_WINDOWS
-
 	#if defined(_WIN64)
 
 		// Defining unicode to get wide characters in Win32 API strings
 		#define UNICODE
 
-using string = std::wstring;
+using String = std::wstring;
+using StringStream = std::wstringstream;
 
 		#define DT_TEXT(string) L##string
 
 	#else
 
-using string = std::string;
+using String = std::string;
+using StringStream = std::stringstream;
 
 		#define DT_TEXT(string) string
 
@@ -61,35 +127,39 @@ using string = std::string;
 	#include <Windows.h>
 	#include <windowsx.h>
 
-	// Windows aliases (DLL and FUNCTION are used in LoadDLL and GetFunction functions)
-using DLL = HMODULE;
-using FUNCTION = FARPROC;
 
 #else
 
-	typedef std::string string;
+using uint8 = unsigned char;
+using uint16 = unsigned short;
+using uint32 = unsigned int;
+using uint64 = unsigned long;
+using int8 = char;
+using int16 = short;
+using int32 = int;
+using int64 = long;
+using float32 = float;
+using double64 = double;
+
+using String = std::string;
 
 	#define DT_TEXT(string) string
 
-using DLL = void*;
-using FUNCTION = void*;
-
 #endif
-
-// Loads DLL with given name and returns it (0/NULL if DLL was not found)
-DLL LoadDLL(const string& dllName);
-// Looks for address of functon with given name in given DLL and returns that function (0/NULL if function was not found or not marked as extern "C" __declspec(dllexport))
-FUNCTION GetFunction(DLL* dll, const string& functionName);
 
 #if defined(DEBUG) || defined(_DEBUG)
 
 	#define DT_DEBUG 1
 	#define DT_RELEASE 0
 
+	#define DT_ASSERT(cond) assert((cond));
+
 #else
 
 	#define DT_DEBUG 0
 	#define DT_RELEASE 1
+
+	#define DT_ASSERT(cond) assert((cond));
 
 #endif
 

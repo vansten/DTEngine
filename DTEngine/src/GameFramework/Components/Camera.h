@@ -6,7 +6,7 @@
 class Camera : public Component
 {
 protected:
-	static Camera* _main;
+	static SharedPtr<Camera> _main;
 
 	XMMATRIX _viewMatrix;
 	XMMATRIX _projectionMatrix;
@@ -16,18 +16,19 @@ protected:
 	float32 _far;
 
 public:
-	Camera(GameObject* owner);
+	Camera(SharedPtr<GameObject> owner);
 	Camera(const Camera& other);
 	virtual ~Camera();
 
 protected:
-	virtual Camera* Copy(GameObject* newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
 public:
 	virtual void Initialize() override;
+	virtual void Shutdown() override;
 	virtual void PostLoad() override;
 
-	virtual void OnOwnerTransformUpdated(const Transform& transform) override;
+	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform) override;
 
 	XMFLOAT3 ConvertScreenToWorldPoint(const XMINT2& screenPoint) const;
 	XMINT2 ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const;
@@ -42,5 +43,5 @@ public:
 		return _projectionMatrix;
 	}
 
-	static Camera const* GetMainCamera();
+	static SharedPtr<Camera> GetMainCamera();
 };

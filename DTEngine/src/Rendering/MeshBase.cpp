@@ -17,10 +17,7 @@ MeshBase::~MeshBase()
 
 bool MeshBase::CreateBuffers(VertexType* vertices, uint64* indices)
 {
-	if(!gGraphics)
-	{
-		return false;
-	}
+	Graphics& graphics = GetGraphics();
 
 	D3D11_BUFFER_DESC bufferDesc = { 0 };
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
@@ -34,7 +31,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, uint64* indices)
 	// Filling data
 	bufferData.pSysMem = vertices;
 
-	bool result = gGraphics->CreateBuffer(bufferDesc, bufferData, &_vertexBuffer);
+	bool result = graphics.CreateBuffer(bufferDesc, bufferData, &_vertexBuffer);
 	if (!result)
 	{
 		return false;
@@ -49,7 +46,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, uint64* indices)
 	// Filling data
 	bufferData.pSysMem = indices;
 
-	result = gGraphics->CreateBuffer(bufferDesc, bufferData, &_indexBuffer);
+	result = graphics.CreateBuffer(bufferDesc, bufferData, &_indexBuffer);
 
 	return result;
 }

@@ -9,5 +9,5 @@ public:
 	HexagonMesh(const HexagonMesh& other);
 	virtual ~HexagonMesh();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

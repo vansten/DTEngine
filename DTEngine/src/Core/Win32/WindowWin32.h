@@ -8,7 +8,7 @@ protected:
 	HWND _hWnd;
 
 public:
-	inline WindowWin32(const string& title, uint16 width, uint16 height) : Window(title, width, height)
+	inline WindowWin32(const String& title, uint16 width, uint16 height) : Window(title, width, height)
 	{
 
 	}

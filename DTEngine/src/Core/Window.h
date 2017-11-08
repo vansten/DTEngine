@@ -1,5 +1,6 @@
 #pragma once
 
+#include "App.h"
 #include "Platform.h"
 
 class Window
@@ -8,10 +9,10 @@ protected:
 	uint16 _width;
 	uint16  _height;
 	float32 _aspectRatio;
-	string _title;
+	String _title;
 
 public:	
-	inline Window(const string& title, uint16 width, uint16 height) : _width(width), _height(height), _title(title), _aspectRatio((float32)_width / (float32)_height)
+	inline Window(const String& title, uint16 width, uint16 height) : _width(width), _height(height), _title(title), _aspectRatio((float32)_width / (float32)_height)
 	{
 
 	}
@@ -37,8 +38,5 @@ public:
 	virtual bool Close() = 0;
 
 public:
-	static Window* Create(const string& title, uint16 width, uint16 height);
-	static void Shutdown();
+	static UniquePtr<Window> Create(const String& title, uint16 width, uint16 height);
 };
-
-extern Window* gWindow;

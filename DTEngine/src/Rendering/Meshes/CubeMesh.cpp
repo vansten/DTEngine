@@ -15,7 +15,7 @@ CubeMesh::~CubeMesh()
 
 }
 
-bool CubeMesh::Initialize(const string& path)
+bool CubeMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

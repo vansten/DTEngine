@@ -2,95 +2,66 @@
 
 #include <algorithm>
 
-Input* Input::_instance = nullptr;
-
-void Input::SortFunctions(std::vector<InputFunction>& functions)
+void Input::SortFunctions(DynamicArray<InputFunction>& functions)
 {
 	std::sort(functions.begin(), functions.end(), &InputFunction::Compare);
 }
 
-void Input::BindKeyDownEvent(int32 keyCode, std::function<bool()> function, int32 priority)
+void Input::BindKeyDownEvent(int32 keyCode, Function<bool()> function, int32 priority)
 {
-	if (!_instance)
-	{
-		return;
-	}
+	DynamicArray<InputFunction>& functions = _keyDownFunctions[keyCode];
+	functions.push_back(InputFunction(function, priority));
 
-	std::vector<InputFunction>& functionsVector = _instance->_keyDownsFunctions[keyCode];
-	functionsVector.push_back(InputFunction(function, priority));
-	
-	if(functionsVector.size() > 1)
+	if(functions.size() > 1)
 	{
-		SortFunctions(functionsVector);
+		SortFunctions(functions);
 	}
 }
 
-void Input::BindKeyUpEvent(int32 keyCode, std::function<bool()> function, int32 priority)
+void Input::BindKeyUpEvent(int32 keyCode, Function<bool()> function, int32 priority)
 {
-	if (!_instance)
-	{
-		return;
-	}
+	DynamicArray<InputFunction>& functions = _keyUpFunctions[keyCode];
+	functions.push_back(InputFunction(function, priority));
 
-	std::vector<InputFunction>& functionsVector = _instance->_keyUpFunctions[keyCode];
-	functionsVector.push_back(InputFunction(function, priority));
-	
-	if(functionsVector.size() > 1)
+	if(functions.size() > 1)
 	{
-		SortFunctions(functionsVector);
+		SortFunctions(functions);
 	}
 }
 
-void Input::BindMouseDownEvent(int32 mouseCode, std::function<bool()> function, int32 priority)
+void Input::BindMouseDownEvent(int32 mouseCode, Function<bool()> function, int32 priority)
 {
-	if (!_instance)
-	{
-		return;
-	}
+	DynamicArray<InputFunction>& functions = _mouseDownFunctions[mouseCode];
+	functions.push_back(InputFunction(function, priority));
 
-	std::vector<InputFunction>& functionsVector = _instance->_mouseDownFunctions[mouseCode];
-	functionsVector.push_back(InputFunction(function, priority));
-	
-	if(functionsVector.size() > 1)
+	if(functions.size() > 1)
 	{
-		SortFunctions(functionsVector);
+		SortFunctions(functions);
 	}
 }
 
-void Input::BindMouseUpEvent(int32 mouseCode, std::function<bool()> function, int32 priority)
+void Input::BindMouseUpEvent(int32 mouseCode, Function<bool()> function, int32 priority)
 {
-	if (!_instance)
-	{
-		return;
-	}
+	DynamicArray<InputFunction>& functions = _mouseUpFunctions[mouseCode];
+	functions.push_back(InputFunction(function, priority));
 
-	std::vector<InputFunction>& functionsVector = _instance->_mouseUpFunctions[mouseCode];
-	functionsVector.push_back(InputFunction(function, priority));
-	
-	if(functionsVector.size() > 1)
+	if(functions.size() > 1)
 	{
-		SortFunctions(functionsVector);
+		SortFunctions(functions);
 	}
 }
 
 void Input::OnKeyDown(int32 keyCode)
 {
-	if (!_instance)
+	if(_keyDownFunctions.find(keyCode) == _keyDownFunctions.end())
 	{
 		return;
 	}
 
-	if(_instance->_keyDownsFunctions.find(keyCode) == _instance->_keyDownsFunctions.end())
+	DynamicArray<InputFunction>& functions = _keyDownFunctions[keyCode];
+	for(auto function : functions)
 	{
-		return;
-	}
-	
-	std::vector<InputFunction>& functions = _instance->_keyDownsFunctions[keyCode];
-	std::vector<InputFunction>::iterator& it = functions.begin();
-	std::vector<InputFunction>::iterator& end = functions.end();
-	for(it; it != end; ++it)
-	{
-		if((*it).Function())
+		if(function.Callback())
 		{
 			break;
 		}
@@ -99,22 +70,15 @@ void Input::OnKeyDown(int32 keyCode)
 
 void Input::OnKeyUp(int32 keyCode)
 {
-	if (!_instance)
+	if(_keyUpFunctions.find(keyCode) == _keyUpFunctions.end())
 	{
 		return;
 	}
 
-	if(_instance->_keyUpFunctions.find(keyCode) == _instance->_keyUpFunctions.end())
+	DynamicArray<InputFunction>& functions = _keyUpFunctions[keyCode];
+	for(auto function : functions)
 	{
-		return;
-	}
-	
-	std::vector<InputFunction>& functions = _instance->_keyUpFunctions[keyCode];
-	std::vector<InputFunction>::iterator& it = functions.begin();
-	std::vector<InputFunction>::iterator& end = functions.end();
-	for(it; it != end; ++it)
-	{
-		if((*it).Function())
+		if(function.Callback())
 		{
 			break;
 		}
@@ -123,22 +87,15 @@ void Input::OnKeyUp(int32 keyCode)
 
 void Input::OnMouseDown(int32 mouseCode)
 {
-	if (!_instance)
+	if(_mouseDownFunctions.find(mouseCode) == _mouseDownFunctions.end())
 	{
 		return;
 	}
 
-	if(_instance->_mouseDownFunctions.find(mouseCode) == _instance->_mouseDownFunctions.end())
+	DynamicArray<InputFunction>& functions = _mouseDownFunctions[mouseCode];
+	for(auto function : functions)
 	{
-		return;
-	}
-	
-	std::vector<InputFunction>& functions = _instance->_mouseDownFunctions[mouseCode];
-	std::vector<InputFunction>::iterator& it = functions.begin();
-	std::vector<InputFunction>::iterator& end = functions.end();
-	for(it; it != end; ++it)
-	{
-		if((*it).Function())
+		if(function.Callback())
 		{
 			break;
 		}
@@ -147,22 +104,15 @@ void Input::OnMouseDown(int32 mouseCode)
 
 void Input::OnMouseUp(int32 mouseCode)
 {
-	if (!_instance)
+	if(_mouseUpFunctions.find(mouseCode) == _mouseUpFunctions.end())
 	{
 		return;
 	}
 
-	if(_instance->_mouseUpFunctions.find(mouseCode) == _instance->_mouseUpFunctions.end())
+	DynamicArray<InputFunction>& functions = _mouseUpFunctions[mouseCode];
+	for(auto function : functions)
 	{
-		return;
-	}
-	
-	std::vector<InputFunction>& functions = _instance->_mouseUpFunctions[mouseCode];
-	std::vector<InputFunction>::iterator& it = functions.begin();
-	std::vector<InputFunction>::iterator& end = functions.end();
-	for(it; it != end; ++it)
-	{
-		if((*it).Function())
+		if(function.Callback())
 		{
 			break;
 		}
@@ -171,40 +121,37 @@ void Input::OnMouseUp(int32 mouseCode)
 
 void Input::SetMousePosition(const XMINT2& newMousePosition)
 {
-	if (!_instance)
-	{
-		return;
-	}
-
-	_instance->_mousePosition = newMousePosition;
+	_mousePosition = newMousePosition;
 }
 
 XMINT2 Input::GetMousePosition()
 {
-	if (!_instance)
-	{
-		return XMINT2();
-	}
-
-	return _instance->_mousePosition;
-}
-
-void Input::Initialize()
-{
-	if (_instance)
-	{
-		// Prevent double initialization
-		return;
-	}
-
-	_instance = new Input();
+	return _mousePosition;
 }
 
 void Input::Shutdown()
 {
-	if (_instance)
+	for(auto pair : _keyDownFunctions)
 	{
-		delete _instance;
-		_instance = nullptr;
+		pair.second.clear();
 	}
+	_keyDownFunctions.clear();
+
+	for(auto pair : _keyUpFunctions)
+	{
+		pair.second.clear();
+	}
+	_keyUpFunctions.clear();
+
+	for(auto pair : _mouseDownFunctions)
+	{
+		pair.second.clear();
+	}
+	_mouseDownFunctions.clear();
+
+	for(auto pair : _mouseUpFunctions)
+	{
+		pair.second.clear();
+	}
+	_mouseUpFunctions.clear();
 }

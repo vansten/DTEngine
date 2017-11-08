@@ -2,12 +2,12 @@
 
 #include "GameObject.h"
 
-Component::Component(GameObject* owner) : _owner(owner), _enabled(true)
+Component::Component(SharedPtr<GameObject> owner) : EnableSharedFromThis<Component>(), _owner(owner), _enabled(true)
 {
 
 }
 
-Component::Component(const Component& other) : _owner(other._owner), _enabled(other._enabled)
+Component::Component(const Component& other) : EnableSharedFromThis<Component>(), _owner(other._owner), _enabled(other._enabled)
 {
 
 }
@@ -17,9 +17,9 @@ Component::~Component()
 
 }
 
-Component* Component::Copy(GameObject* newOwner) const
+SharedPtr<Component>Component::Copy(SharedPtr<GameObject> newOwner) const
 {
-	Component* copy = new Component(*this);
+	SharedPtr<Component> copy = SharedPtr<Component>(new Component(*this));
 	copy->_owner = newOwner;
 	return copy;
 }
@@ -34,12 +34,18 @@ void Component::Shutdown()
 
 }
 
-void Component::Load(Archive* archive)
+void Component::OnOwnerEnabled()
+{}
+
+void Component::OnOwnerDisabled()
+{}
+
+void Component::Load(Archive& archive)
 {
 
 }
 
-void Component::Save(Archive* archive)
+void Component::Save(Archive& archive)
 {
 
 }
@@ -54,7 +60,7 @@ void Component::PreSave()
 
 }
 
-void Component::OnOwnerTransformUpdated(const Transform& transform)
+void Component::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
 {
 
 }
@@ -64,12 +70,12 @@ void Component::Update(float32 deltaTime)
 
 }
 
-void Component::Render()
+void Component::Render(Graphics& graphics)
 {
 
 }
 
-GameObject* Component::GetOwner() const
+SharedPtr<GameObject> Component::GetOwner() const
 {
 	return _owner;
 }

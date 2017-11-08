@@ -1,7 +1,6 @@
 #include "HexagonalGrid.h"
 
-#include <queue>
-
+#include "GameFramework/GameObject.h"
 #include "GameFramework/Game.h"
 #include "ResourceManagement/ResourceManager.h"
 #include "MeshRenderer.h"
@@ -58,7 +57,7 @@ int32 CubeCoordinates::Distance(CubeCoordinates& other) const
 	return (abs(X - other.X) + abs(Y - other.Y) + abs(Z - other.Z)) / 2;
 }
 
-Hexagon::Hexagon(GameObject* owner) : Component(owner), _objectOnHexagon(nullptr), _coordinates(0, 0)
+Hexagon::Hexagon(SharedPtr<GameObject> owner) : Component(owner), _objectOnHexagon(nullptr), _coordinates(0, 0)
 {
 
 }
@@ -73,17 +72,17 @@ Hexagon::~Hexagon()
 
 }
 
-Hexagon* Hexagon::Copy(GameObject* newOwner) const
+SharedPtr<Component> Hexagon::Copy(SharedPtr<GameObject> newOwner) const
 {
-	Hexagon* copy = new Hexagon(*this);
+	SharedPtr<Hexagon> copy = SharedPtr<Hexagon>(new Hexagon(*this));
 	copy->_owner = newOwner;
-	return copy;
+	return StaticPointerCast<Component>(copy);
 }
 
 void HexagonalGridPath::ReversePath()
 {
 	// Path reversal
-	std::vector<Hexagon*> helperPath;
+	DynamicArray<SharedPtr<Hexagon>> helperPath;
 	// Push all values from original path in reversed order to helperPath
 	auto it = _path.rbegin();
 	auto end = _path.rend();
@@ -94,24 +93,22 @@ void HexagonalGridPath::ReversePath()
 	// Clear original path
 	_path.clear();
 	// Push back all values from helperPath to path
-	auto helperIt = helperPath.begin();
-	auto helperEnd = helperPath.end();
-	for(helperIt; helperIt != helperEnd; ++helperIt)
+	for(auto hexagon : helperPath)
 	{
-		_path.push_back((*helperIt));
+		_path.push_back(hexagon);
 	}
 	helperPath.clear();
 }
 
 void HexagonalGridPath::ConstructWorldPath()
 {
-	for(auto it : _path)
+	for(auto hexagon : _path)
 	{
-		_worldPath.push_back(it->GetOwner()->GetTransform().GetPosition());
+		_worldPath.push_back(hexagon->GetOwner()->GetTransform()->GetPosition());
 	}
 }
 
-HexagonalGrid::HexagonalGrid(GameObject* owner) : Component(owner)
+HexagonalGrid::HexagonalGrid(SharedPtr<GameObject> owner) : Component(owner)
 {
 
 }
@@ -126,14 +123,19 @@ HexagonalGrid::~HexagonalGrid()
 
 }
 
-HexagonalGrid* HexagonalGrid::Copy(GameObject* newOwner) const
+SharedPtr<Component> HexagonalGrid::Copy(SharedPtr<GameObject> newOwner) const
 {
-	HexagonalGrid* copy = new HexagonalGrid(*this);
+	SharedPtr<HexagonalGrid> copy = SharedPtr<HexagonalGrid>(new HexagonalGrid(*this));
 	copy->_owner = newOwner;
-	return copy;
+	return StaticPointerCast<Component>(copy);
 }
 
-Hexagon* HexagonalGrid::GetNeighboor(const Hexagon* hexagon, HexagonDirection direction) const
+void HexagonalGrid::Shutdown()
+{
+	_hexagonalMap.clear();
+}
+
+SharedPtr<Hexagon> HexagonalGrid::GetNeighboor(SharedPtr<Hexagon> hexagon, HexagonDirection direction) const
 {
 	if (direction == HexagonDirection::COUNT || hexagon == nullptr)
 	{
@@ -145,20 +147,20 @@ Hexagon* HexagonalGrid::GetNeighboor(const Hexagon* hexagon, HexagonDirection di
 	return GetHexagonAt(neighboorCoordinates);
 }
 
-Hexagon* HexagonalGrid::GetHexagonAt(const AxialCoordinates& axialCoordinates) const
+SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const AxialCoordinates& axialCoordinates) const
 {
 	// Try to find hexagon at given coordinates (since coordinates are keys in _hexagonalMap find method can be used)
 	// NOTE: No need for [] operator -> it would create an entrance in map if the key wasn't found and this is undesired behaviour in this case
 	auto foundIt = _hexagonalMap.find(axialCoordinates);
 	if (foundIt != _hexagonalMap.end())
 	{
-		return (*foundIt).second;
+		return (*foundIt).second.lock();
 	}
 
 	return nullptr;
 }
 
-Hexagon* HexagonalGrid::GetHexagonAt(const XMFLOAT3& worldPosition) const
+SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const XMFLOAT3& worldPosition) const
 {
 	const float32 hexagonWidth = 2.0f * _hexagonSize;
 	const float32 hexagonHeight = sqrt(3.0f) * _hexagonSize;
@@ -178,13 +180,13 @@ Hexagon* HexagonalGrid::GetHexagonAt(const XMFLOAT3& worldPosition) const
 struct HexagonalPathNode
 {
 protected:
-	Hexagon* _hexagon;
+	std::shared_ptr<Hexagon> _hexagon;
 	int32 _cost;
 
 public:
-	HexagonalPathNode(Hexagon* hex, int32 cost) : _hexagon(hex), _cost(cost) { }
+	HexagonalPathNode(std::shared_ptr<Hexagon> hex, int32 cost) : _hexagon(hex), _cost(cost) { }
 
-	inline Hexagon* GetHexagon() const { return _hexagon; }
+	inline std::shared_ptr<Hexagon> GetHexagon() const { return _hexagon; }
 	inline int32 GetCost() const { return _cost; }
 
 	inline bool operator>(const HexagonalPathNode& other) const
@@ -193,7 +195,7 @@ public:
 	}
 };
 
-bool HexagonalGrid::CalculatePath(Hexagon* start, Hexagon* target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate) const
+bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate) const
 {
 	// If start or target are nullptr then return false (can't find path when at least one of the path ends doesn't exist)
 	if(start == nullptr || target == nullptr)
@@ -210,23 +212,23 @@ bool HexagonalGrid::CalculatePath(Hexagon* start, Hexagon* target, HexagonalGrid
 	}
 
 	// Priority queue is used for A* algorithm
-	std::priority_queue<HexagonalPathNode, std::vector<HexagonalPathNode>, std::greater<HexagonalPathNode>> toVisit;
+	PriorityQueue<HexagonalPathNode, DynamicArray<HexagonalPathNode>, Greater<HexagonalPathNode>> toVisit;
 	// Start from start
 	toVisit.push(HexagonalPathNode(start, start->Distance(target)));
 	// Came from unordered map is used to determine path when target is found by A*
-	std::unordered_map<Hexagon*, Hexagon*> cameFrom;
+	Dictionary<SharedPtr<Hexagon>, SharedPtr<Hexagon>> cameFrom;
 	cameFrom.insert({start, nullptr});
 
 	bool foundTarget = false;
 	while(!toVisit.empty() && !foundTarget)
 	{
 		HexagonalPathNode hexPathNode = toVisit.top();
-		Hexagon* hex = hexPathNode.GetHexagon();
+		SharedPtr<Hexagon> hex = hexPathNode.GetHexagon();
 		toVisit.pop();
 		for(int i = 0; i < (int)HexagonDirection::COUNT; ++i)
 		{
 			HexagonDirection direction = (HexagonDirection)i;
-			Hexagon* neighboor = GetNeighboor(hex, direction);
+			SharedPtr<Hexagon> neighboor = GetNeighboor(hex, direction);
 			if(neighboor != nullptr && cameFrom.find(neighboor) == cameFrom.end())
 			{
 				// If there is no predicate telling whether hexagon is "walkable" or the predicate returns true which means that hexagon is "walkable"
@@ -253,7 +255,7 @@ bool HexagonalGrid::CalculatePath(Hexagon* start, Hexagon* target, HexagonalGrid
 	}
 
 	// Reconstruct path from cameFrom map
-	Hexagon* current = target;
+	SharedPtr<Hexagon> current = target;
 	while(current != nullptr)
 	{
 		outPath.AddHexagonToPath(current);
@@ -267,7 +269,7 @@ bool HexagonalGrid::CalculatePath(Hexagon* start, Hexagon* target, HexagonalGrid
 	return true;
 }
 
-HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, float32 hexagonSize, GameObject* gridOwner)
+SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<GameObject> gridOwner)
 {
 	// If grid owner doesn't exist or width, height or hexagonSize are less or equal than 0
 	if (!gridOwner || width <= 0 || height <= 0 || hexagonSize <= 0.0f)
@@ -275,16 +277,18 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 		return nullptr;
 	}
 
-	HexagonalGrid* gridComponent = gridOwner->AddComponent<HexagonalGrid>();
-	Transform& gridTransform = gridOwner->GetTransform();
+	SharedPtr<HexagonalGrid> gridComponent = gridOwner->AddComponent<HexagonalGrid>();
+	SharedPtr<Transform> gridTransform = gridOwner->GetTransform();
 
 	// Calculate half width and half height to properly position hexagons
 	const int32 halfW = (int32)(width * 0.5f);
 	const int32 halfH = (int32)(height * 0.5f);
 
+	ResourceManager& resourceManager = GetResourceManager();
+	
 	// Load hexagon mesh and default material
-	HexagonMesh* hexagonMesh = gResourceManager->Load<HexagonMesh>(HEXAGON_MESH);
-	Material* material = gResourceManager->Load<Material>(RED_MATERIAL);
+	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Load<HexagonMesh>(HEXAGON_MESH);
+	SharedPtr<Material> material = resourceManager.Load<Material>(RED_MATERIAL);
 
 	const float32 hexagonWidth = 2.0f * hexagonSize * 0.5f;
 	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
@@ -297,6 +301,8 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 	gridComponent->_width = width;
 	gridComponent->_height = height;
 
+	Game& game = GetGame();
+
 	for(int32 w = 0; w < (int32)width; ++w)
 	{
 		for(int32 h = 0; h < (int32)height; ++h)
@@ -304,25 +310,25 @@ HexagonalGrid* HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, flo
 			AxialCoordinates coordinates(w - halfW, h - halfH);
 
 			// Create new game object and mesh renderer for hexagon
-			GameObject* newHexagonObject = gGame->GetActiveScene()->SpawnObject(DT_TEXT("Hexagon"));
-			MeshRenderer* hexagonRenderer = newHexagonObject->AddComponent<MeshRenderer>();
+			SharedPtr<GameObject> newHexagonObject = game.GetActiveScene()->SpawnObject(DT_TEXT("Hexagon"));
+			SharedPtr<MeshRenderer> hexagonRenderer = newHexagonObject->AddComponent<MeshRenderer>();
 			// Set visuals
 			hexagonRenderer->SetMesh(hexagonMesh);
 			hexagonRenderer->SetMaterial(material);
 
 			// Create new hexagon with coordinates
-			Hexagon* hexagon = newHexagonObject->AddComponent<Hexagon>();
+			SharedPtr<Hexagon> hexagon = newHexagonObject->AddComponent<Hexagon>();
 			hexagon->SetCoordinates(coordinates);
 			// Sets scale and parent
-			newHexagonObject->GetTransform().SetParent(&gridTransform);
-			newHexagonObject->GetTransform().SetScale(XMFLOAT3(hexagonSize, 1.0f, hexagonSize));
+			newHexagonObject->GetTransform()->SetParent(gridTransform);
+			newHexagonObject->GetTransform()->SetScale(XMFLOAT3(hexagonSize, 1.0f, hexagonSize));
 
 			// Calculate hexagon's position
 			XMFLOAT3 position;
 			position.x = xDirection.x * coordinates.X;
 			position.y = 0.0f;
 			position.z = xDirection.z * coordinates.X + yDirection.z * coordinates.Y;
-			newHexagonObject->GetTransform().SetPosition(position);
+			newHexagonObject->GetTransform()->SetPosition(position);
 
 			// Add hexagon to map
 			gridComponent->_hexagonalMap.insert({coordinates, hexagon});

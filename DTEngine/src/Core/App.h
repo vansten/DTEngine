@@ -5,24 +5,34 @@
 #define APP_MEMORY_LEAKS 0x002
 
 #include "Core/Platform.h"
+#include "Utility/UniqueSingleton.h"
 
 class Window;
 class Time;
 class Game;
 class Graphics;
 class ResourceManager;
+class Input;
 
-class App
+class App : public UniqueSingleton<App>
 {
-protected:
-	Window* _mainWindow;
-	Time* _globalTime;
-	Game* _game;
-	Graphics* _graphics;
-	ResourceManager* _resourceManager;
+	friend class UniqueSingleton<App>;
 
-public:
+protected:
+	UniquePtr<Window> _mainWindow;
+	UniquePtr<Time> _globalTime;
+	UniquePtr<Game> _game;
+	UniquePtr<Graphics> _graphics;
+	UniquePtr<ResourceManager> _resourceManager;
+	UniquePtr<Input> _input;
+
+	bool _isRunning;
+
+protected:
 	App();
+	
+public:
+	~App();
 
 protected:
 	bool Initialize();
@@ -31,4 +41,75 @@ protected:
 
 public:
 	int Run();
+
+	inline bool IsRunning() const
+	{
+		return _isRunning;
+	}
+
+	inline Window& GetWindow()
+	{
+		DT_ASSERT(_mainWindow);
+		return *_mainWindow;
+	}
+
+	inline Time& GetGlobalTime()
+	{
+		DT_ASSERT(_globalTime);
+		return *_globalTime;
+	}
+
+	inline Game& GetGame()
+	{
+		DT_ASSERT(_game);
+		return *_game;
+	}
+
+	inline Graphics& GetGraphics()
+	{
+		DT_ASSERT(_graphics);
+		return *_graphics;
+	}
+
+	inline ResourceManager& GetResourceManager() 
+	{
+		DT_ASSERT(_resourceManager);
+		return *_resourceManager; 
+	}
+
+	inline Input& GetInput()
+	{
+		DT_ASSERT(_input);
+		return *_input;
+	}
 };
+
+inline Window& GetMainWindow()
+{
+	return App::GetInstance()->GetWindow();
+}
+
+inline Time& GetGlobalTime()
+{
+	return App::GetInstance()->GetGlobalTime();
+}
+
+inline Game& GetGame()
+{
+	return App::GetInstance()->GetGame();
+}
+
+inline Graphics& GetGraphics()
+{
+	return App::GetInstance()->GetGraphics();
+}
+
+inline ResourceManager& GetResourceManager()
+{
+	return App::GetInstance()->GetResourceManager();
+}
+
+inline Input& GetInput()
+{
+	return App::GetInstance()->GetInput();
+}

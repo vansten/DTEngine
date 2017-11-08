@@ -6,6 +6,7 @@
 
 #include <d3d11.h>
 
+#include "Core/App.h"
 #include "Core/Platform.h"
 #include "Utility/Math.h"
 
@@ -27,8 +28,8 @@ private:
 	ID3D11DepthStencilView* _depthStencilView;
 	ID3D11RasterizerState* _rasterizerState;
 
-	Material* _lastUsedMaterial;
-	GameObject* _currentlyRenderedObject;
+	SharedPtr<Material> _lastUsedMaterial;
+	SharedPtr<GameObject> _currentlyRenderedObject;
 	bool _vsync;
 
 public:
@@ -38,7 +39,7 @@ private:
 	bool GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& denominator);
 
 public:
-	bool Initialize(Window* window, bool vsync);
+	bool Initialize(bool vsync);
 	void Shutdown();
 
 	void BeginScene(D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -49,12 +50,14 @@ public:
 	bool CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** pixelShader);
 	bool CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, uint8 inputLayoutDescSize, void* shaderBufferPointer, uint64 shaderBufferSize, ID3D11InputLayout** inputLayout);
 
-	void SetObject(GameObject* gameObject);
-	void SetMaterial(Material* material);
+	void* Map(ID3D11Resource* resource, D3D11_MAP mapFlag = D3D11_MAP_WRITE_DISCARD);
+	void Unmap(ID3D11Resource* resource);
+	void SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D11Buffer** buffers);
+
+	void SetObject(SharedPtr<GameObject> gameObject);
+	void SetMaterial(SharedPtr<Material> material);
 	void DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, uint32 indicesCount, uint32 stride, uint32 offset);
 };
-
-extern Graphics* gGraphics;
 
 #define RELEASE_COM(comObject) \
 if(comObject) \

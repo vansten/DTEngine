@@ -1,15 +1,13 @@
 #include "Game.h"
 
-Game* gGame = nullptr;
-
-Game::Game() : _activeScene(0)
+Game::Game() : _activeScene(nullptr)
 {
-	gGame = this;
+
 }
 
 bool Game::Initialize()
 {
-	_activeScene = new Scene(DT_TEXT(""));
+	_activeScene = UniquePtr<Scene>(new Scene(DT_TEXT("Untitled")));
 	if (!_activeScene)
 	{
 		return false;
@@ -25,8 +23,7 @@ void Game::Shutdown()
 	if (_activeScene)
 	{
 		_activeScene->Unload();
-		delete _activeScene;
-		_activeScene = 0;
+		_activeScene = nullptr;
 	}
 }
 
@@ -35,16 +32,11 @@ void Game::Update(float32 deltaTime)
 	_activeScene->Update(deltaTime);
 }
 
-void Game::Render(Graphics* graphics)
+void Game::Render(Graphics& graphics)
 {
-	graphics->BeginScene();
+	graphics.BeginScene();
 
-	_activeScene->Render();
+	_activeScene->Render(graphics);
 
-	graphics->EndScene();
-}
-
-Scene* Game::GetActiveScene() const
-{
-	return _activeScene;
+	graphics.EndScene();
 }

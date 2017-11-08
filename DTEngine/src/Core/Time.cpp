@@ -10,24 +10,16 @@
 
 #endif
 
-Time* gTime = nullptr;
-
-Time::Time() : _deltaTime(0), _timeSinceStartup(0), _timeScale(1)
+Time::Time() : _deltaTime(0.0f), _timeSinceStartup(0.0f), _timeScale(1.0f)
 {
 
 }
 
-Time* Time::Create()
+UniquePtr<Time> Time::Create()
 {
 #if DT_WINDOWS
 
-	if (!gTime)
-	{
-		gTime = new TimeWin32();
-		return gTime;
-	}
-
-	return new TimeWin32();
+	return UniquePtr<Time>(new TimeWin32());
 
 #else
 

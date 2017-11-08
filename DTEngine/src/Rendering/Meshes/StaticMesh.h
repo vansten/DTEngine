@@ -10,9 +10,9 @@ public:
 	virtual ~StaticMesh();
 
 protected:
-	bool InitializeFromOBJ(const string& path);
-	bool InitializeFromFBX(const string& path);
+	bool InitializeFromOBJ(const String& path);
+	bool InitializeFromFBX(const String& path);
 
 public:
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

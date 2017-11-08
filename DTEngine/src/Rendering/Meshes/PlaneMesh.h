@@ -9,5 +9,5 @@ public:
 	PlaneMesh(const PlaneMesh& other);
 	virtual ~PlaneMesh();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

@@ -10,239 +10,274 @@ void Transform::CalculateModelMatrix()
 					XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&radianRotation)) *
 					XMMatrixTranslationFromVector(XMLoadFloat3(&_position));
 	XMMATRIX parentMatrix = XMMatrixIdentity();
-	if (_parent != nullptr)
+
+	SharedPtr<Transform> parentShared = _parent.lock();
+	
+	if (parentShared != nullptr)
 	{
-		parentMatrix = _parent->GetModelMatrix();
+		parentMatrix = parentShared->GetModelMatrix();
 	}
 	_modelMatrix = XMMatrixMultiply(_modelMatrix, parentMatrix);
-	std::vector<Transform*>::iterator it = _children.begin();
-	std::vector<Transform*>::iterator end = _children.end();
-	for (it; it != end; ++it)
+
+	SharedPtr<GameObject> ownerShared = _owner.lock();
+	if(ownerShared)
 	{
-		(*it)->CalculateModelMatrix();
+		ownerShared->OnTransformUpdated();
+	}
+
+	for (auto child : _children)
+	{
+		SharedPtr<Transform> childShared = child.lock();
+		if(childShared)
+		{
+			childShared->CalculateModelMatrix();
+		}
 	}
 
 	_shouldCalculateMatrix = false;
 }
 
-void Transform::SetParent(Transform* newParent)
+void Transform::SetParent(SharedPtr<Transform> newParent)
 {
-	if (_parent)
+	SharedPtr<Transform> sharedFromThis = shared_from_this();
+	SharedPtr<Transform> parentShared = _parent.lock();
+	if (parentShared)
 	{
-		Transform* p = _parent;
+		SharedPtr<Transform> p = parentShared;
 		while (p)
 		{
 			_position.x += p->_position.x; _position.y += p->_position.y; _position.z += p->_position.z;
 			_rotation.x += p->_rotation.x; _rotation.y += p->_rotation.y; _rotation.z += p->_rotation.z;
 			_scale.x *= p->_scale.x; _scale.y *= p->_scale.y; _scale.z *= p->_scale.z;
-			p = p->_parent;
+			p = p->_parent.lock();
 		}
-		std::vector<Transform*>::iterator it = std::find(_parent->_children.begin(), _parent->_children.end(), this);
-		if (it != _parent->_children.end())
+
+		auto it = std::find(parentShared->_children.begin(), parentShared->_children.end(), sharedFromThis);
+		if (it != parentShared->_children.end())
 		{
-			_parent->_children.erase(it);
-			_parent = nullptr;
+			parentShared->_children.erase(it);
+			parentShared = nullptr;
 		}
 	}
 	_parent = newParent;
-	if (_parent)
+	parentShared = _parent.lock();
+	if (parentShared)
 	{
-		_parent->_children.push_back(this);
-		Transform* p = _parent;
+		// Add to new parent
+		parentShared->_children.push_back(sharedFromThis);
+		SharedPtr<Transform> p = parentShared;
 		while (p)
 		{
 			_position.x -= p->_position.x; _position.y -= p->_position.y; _position.z -= p->_position.z;
 			_rotation.x -= p->_rotation.x; _rotation.y -= p->_rotation.y; _rotation.z -= p->_rotation.z;
 			_scale.x /= p->_scale.x; _scale.y /= p->_scale.y; _scale.z /= p->_scale.z;
-			p = p->_parent;
+			p = p->_parent.lock();
 		}
 	}
-	CalculateModelMatrix();
+
+	_shouldCalculateMatrix = true;
 }
 
-GameObject::GameObject() : _transform(this), _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
+GameObject::GameObject() : std::enable_shared_from_this<GameObject>(), _transform(nullptr), _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
 {
 
 }
 
-GameObject::GameObject(const string& name) : _transform(this), _name(name), _enabled(true), _isInUpdate(false)
+GameObject::GameObject(const String& name) : std::enable_shared_from_this<GameObject>(), _transform(nullptr), _name(name), _enabled(true), _isInUpdate(false)
 {
 
 }
 
-GameObject::GameObject(const GameObject& other) : _transform(other._transform), _name(other._name), _enabled(other._enabled), _isInUpdate(false)
+GameObject::GameObject(const GameObject& other) : std::enable_shared_from_this<GameObject>(), _transform(new Transform(*(other._transform))), _name(other._name), _enabled(other._enabled), _isInUpdate(false)
 {
-	_name += DT_TEXT(" (copy)");
-	_transform._owner = this;
-	auto it = other._components.begin();
-	auto end = other._components.end();
+}
+
+std::shared_ptr<GameObject> GameObject::Copy() const
+{
+	SharedPtr<GameObject> copy = SharedPtr<GameObject>(new GameObject(GetName() + DT_TEXT(" (copy)")));
+	copy->_transform = SharedPtr<Transform>(new Transform(*_transform));
+
+	copy->_transform->_owner = copy;
+	auto it = _components.begin();
+	auto end = _components.end();
 	for(it; it != end; ++it)
 	{
-		_components.push_back((*it)->Copy(this));
+		copy->_components.push_back((*it)->Copy(copy));
 	}
 
-	auto childIt = other._transform._children.begin();
-	auto childEnd = other._transform._children.end();
-
-	for(childIt; childIt != childEnd; ++childIt)
+	Game& game = GetGame();
+	for(auto child : _transform->_children)
 	{
-		GameObject* childGO = (*childIt)->_owner;
-		GameObject* newChildGO = gGame->GetActiveScene()->SpawnObject(*childGO);
-		newChildGO->GetTransform().SetParent(&_transform);
+		SharedPtr<Transform> childShared = child.lock();
+		if(childShared)
+		{
+			SharedPtr<GameObject> childGO = childShared->_owner.lock();
+			SharedPtr<GameObject> newChildGO = game.GetActiveScene()->SpawnObject(childGO);
+			newChildGO->GetTransform()->SetParent(copy->_transform);
+		}
 	}
+
+	return copy;
 }
 
 void GameObject::Initialize()
 {
-	_transform.CalculateModelMatrix();
-
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	if(!_transform)
 	{
-		(*it)->Initialize();
+		_transform = SharedPtr<Transform>(new Transform(shared_from_this()));
+	}
+
+	_transform->CalculateModelMatrix();
+
+	for (auto component : _components)
+	{
+		component->Initialize();
 	}
 }
 
 void GameObject::Shutdown()
 {
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	for (auto component : _components)
 	{
-		(*it)->Shutdown();
-		delete (*it);
-		(*it) = nullptr;
+		component->Shutdown();
 	}
 	_components.clear();
+
+	_transform = nullptr;
 }
 
-void GameObject::Load(Archive* archive)
+void GameObject::Load(Archive& archive)
 {
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	for (auto component : _components)
 	{
-		(*it)->Load(archive);
+		component->Load(archive);
 	}
 }
 
-void GameObject::Save(Archive* archive)
+void GameObject::Save(Archive& archive)
 {
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	for (auto component : _components)
 	{
-		(*it)->Save(archive);
+		component->Save(archive);
 	}
 }
 
 void GameObject::PostLoad()
 {
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	for (auto component : _components)
 	{
-		(*it)->PostLoad();
+		component->PostLoad();
 	}
 }
 
 void GameObject::PreSave()
 {
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	for (auto component : _components)
 	{
-		(*it)->PreSave();
+		component->PreSave();
 	}
 }
 
 void GameObject::Update(float32 deltaTime)
 {
-	std::vector<Component*>::iterator& it = _componentsToRemove.begin();
-	std::vector<Component*>::iterator& end = _componentsToRemove.end();
-	for (it; it != end; ++it)
+	if(!_transform)
 	{
-		RemoveComponent((*it));
+		return;
+	}
+
+	for (auto component : _componentsToRemove)
+	{
+		RemoveComponent(component);
 	}
 	_componentsToRemove.clear();
 
-	_isInUpdate = true;
-
-	it = _newComponents.begin();
-	end = _newComponents.end();
-	
-	for (it; it != end; ++it)
+	for (auto component : _newComponents)
 	{
-		_components.push_back((*it));
+		_components.push_back(component);
 	}
 	_newComponents.clear();
 
-	if (_transform._shouldCalculateMatrix)
+	_isInUpdate = true;
+
+	if (_transform->_shouldCalculateMatrix)
 	{
-		_transform.CalculateModelMatrix();
-		it = _components.begin();
-		end = _components.end();
-		for (it; it != end; ++it)
-		{
-			(*it)->OnOwnerTransformUpdated(_transform);
-		}
+		_transform->CalculateModelMatrix();
 	}
 	
-	it = _components.begin();
-	end = _components.end();
-	for (it; it != end; ++it)
+	for (auto component : _components)
 	{
-		if ((*it)->IsEnabled())
+		if (component->IsEnabled())
 		{
-			(*it)->Update(deltaTime);
+			component->Update(deltaTime);
 		}
 	}
 
 	_isInUpdate = false;
 }
 
-void GameObject::Render()
+void GameObject::Render(Graphics& graphics)
 {
-	assert(gGraphics);
-	gGraphics->SetObject(this);
-	std::vector<Component*>::iterator& it = _components.begin();
-	const std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	graphics.SetObject(shared_from_this());
+	for (auto component : _components)
 	{
-		if ((*it)->IsEnabled())
+		if (component->IsEnabled())
 		{
-			(*it)->Render();
+			component->Render(graphics);
 		}
 	}
 }
 
-const string& GameObject::GetName() const
+void GameObject::OnTransformUpdated()
 {
-	return _name;
-}
-
-void GameObject::SetName(const string& name)
-{
-	_name = name;
-}
-
-bool GameObject::IsEnabled() const
-{
-	return _enabled;
+	for(auto component : _components)
+	{
+		component->OnOwnerTransformUpdated(_transform);
+	}
 }
 
 void GameObject::SetEnabled(bool enabled)
 {
 	_enabled = enabled;
+
+	if(_enabled)
+	{
+		// Owner enabled in this call, notify components
+		for(auto component : _components)
+		{
+			component->OnOwnerEnabled();
+		}
+	}
+	else
+	{
+		// Owner disabled in this call, notify components
+		for(auto component : _components)
+		{
+			component->OnOwnerDisabled();
+		}
+	}
 }
 
-Transform& GameObject::GetTransform()
+bool GameObject::IsEnabledInHierarchy() const
+{
+	SharedPtr<Transform> parent = _transform->GetParent();
+	while(parent)
+	{
+		if(!parent->GetOwner()->IsEnabled())
+		{
+			return false;
+		}
+		parent = parent->GetParent();
+	}
+
+	return IsEnabled();
+}
+
+SharedPtr<Transform> GameObject::GetTransform()
 {
 	return _transform;
 }
 
-void GameObject::RemoveComponent(Component* component)
+void GameObject::RemoveComponent(SharedPtr<Component> component)
 {
 	if (_isInUpdate)
 	{
@@ -250,15 +285,14 @@ void GameObject::RemoveComponent(Component* component)
 	}
 	else
 	{
-		std::vector<Component*>::iterator& it = _components.begin();
-		std::vector<Component*>::iterator& end = _components.end();
+		DynamicArray<SharedPtr<Component>>::iterator& it = _components.begin();
+		DynamicArray<SharedPtr<Component>>::iterator& end = _components.end();
 		for (it; it != end; ++it)
 		{
 			if ((*it) == component)
 			{
 				component->Shutdown();
 				_components.erase(it);
-				delete component;
 				break;
 			}
 		}

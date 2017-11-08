@@ -16,8 +16,17 @@ App::App() : _mainWindow(nullptr), _resourceManager(nullptr), _graphics(nullptr)
 
 }
 
+App::~App()
+{
+
+}
+
 bool App::Initialize()
 {
+	_isRunning = false;
+
+	_input = UniquePtr<Input>(new Input());
+
 	_mainWindow = Window::Create(DT_TEXT("DT Engine"), 1024, 768);
 
 	if(!_mainWindow)
@@ -35,18 +44,18 @@ bool App::Initialize()
 		return false;
 	}
 
-	_graphics = new Graphics();
+	_graphics = UniquePtr<Graphics>(new Graphics());
 	if(!_graphics)
 	{
 		return false;
 	}
 
-	if(!_graphics->Initialize(_mainWindow, true))
+	if(!_graphics->Initialize(true))
 	{
 		return false;
 	}
 
-	_resourceManager = new ResourceManager();
+	_resourceManager = UniquePtr<ResourceManager>(new ResourceManager());
 	if (!_resourceManager)
 	{
 		return false;
@@ -65,9 +74,7 @@ bool App::Initialize()
 
 	_globalTime->Initialize();
 
-	Input::Initialize();
-
-	_game = new Game();
+	_game = UniquePtr<Game>(new Game());
 	if(!_game)
 	{
 		return false;
@@ -83,6 +90,7 @@ bool App::Initialize()
 
 void App::Loop()
 {
+	_isRunning = true;
 	float32 deltaTime = 1.0f / 60.0f;
 
 	while(!MessageSystem::IsPendingQuit())
@@ -93,11 +101,13 @@ void App::Loop()
 
 		_game->Update(deltaTime);
 
-		_game->Render(_graphics);
+		_game->Render(*_graphics);
 
 		_globalTime->Tick();
 		deltaTime = _globalTime->GetDeltaTime();
 	}
+
+	_isRunning = false;
 }
 
 void App::Shutdown()
@@ -105,41 +115,28 @@ void App::Shutdown()
 	if (_game)
 	{
 		_game->Shutdown();
-		delete _game;
-		_game = nullptr;
 	}
 
-	Input::Shutdown();
-
-	if (_globalTime)
+	if(_input)
 	{
-		delete _globalTime;
-		_globalTime = nullptr;
+		_input->Shutdown();
 	}
 
 	if (_resourceManager)
 	{
 		_resourceManager->Shutdown();
-		delete _resourceManager;
-		_resourceManager = nullptr;
 	}
 
 	if(_graphics)
 	{
 		_graphics->Shutdown();
-		delete _graphics;
-		_graphics = nullptr;
 	}
 
 	if(_mainWindow)
 	{
 		_mainWindow->Hide();
 		_mainWindow->Close();
-		delete _mainWindow;
-		_mainWindow = nullptr;
 	}
-
-	Window::Shutdown();
 }
 
 int App::Run()

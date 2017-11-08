@@ -9,5 +9,5 @@ public:
 	ConeMesh(const ConeMesh& other);
 	virtual ~ConeMesh();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

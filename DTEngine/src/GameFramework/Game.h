@@ -8,7 +8,7 @@
 class Game
 {
 protected:
-	Scene* _activeScene;
+	UniquePtr<Scene> _activeScene;
 
 public:
 	Game();
@@ -18,9 +18,7 @@ public:
 	virtual void Shutdown();
 
 	virtual void Update(float32 deltaTime);
-	virtual void Render(Graphics* graphics);
+	virtual void Render(Graphics& graphics);
 
-	Scene* GetActiveScene() const;
+	const UniquePtr<Scene>& GetActiveScene() const { return _activeScene; }
 };
-
-extern Game* gGame;

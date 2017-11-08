@@ -9,5 +9,5 @@ public:
 	CubeMesh(const CubeMesh& other);
 	virtual ~CubeMesh();
 
-	virtual bool Initialize(const string& path) override;
+	virtual bool Initialize(const String& path) override;
 };

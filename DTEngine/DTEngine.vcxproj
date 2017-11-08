@@ -203,6 +203,7 @@
     <ClInclude Include="src\GameFramework\Components\HexagonalGrid.h" />
     <ClInclude Include="src\Utility\Math.h" />
     <ClInclude Include="src\Utility\String.h" />
+    <ClInclude Include="src\Utility\UniqueSingleton.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Resources\Shaders\ColorPS.hlsl">

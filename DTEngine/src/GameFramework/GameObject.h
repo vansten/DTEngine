@@ -7,16 +7,17 @@
 #include "Utility/Math.h"
 
 #include "Component.h"
+#include "Rendering/Graphics.h"
 
-struct Transform
+struct Transform : public EnableSharedFromThis<Transform>
 {
 	friend class GameObject;
 
 protected:
-	std::vector<Transform*> _children;
-	Transform* _parent;
+	DynamicArray<WeakPtr<Transform>> _children;
+	WeakPtr<Transform> _parent;
 	XMMATRIX _modelMatrix;
-	GameObject* _owner;
+	WeakPtr<GameObject> _owner;
 
 	XMFLOAT3 _position;
 	XMFLOAT3 _rotation;
@@ -25,12 +26,12 @@ protected:
 	bool _shouldCalculateMatrix;
 
 public:
-	inline Transform(GameObject* owner) : _owner(owner), _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f), _parent(nullptr), _shouldCalculateMatrix(false)
+	inline Transform(SharedPtr<GameObject> owner) : EnableSharedFromThis<Transform>(), _owner(owner), _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f), _parent(), _shouldCalculateMatrix(false)
 	{
 
 	}
 
-	inline Transform(const Transform& other) : _owner(other._owner), _position(other._position), _rotation(other._rotation), _scale(other._scale), _parent(other._parent), _shouldCalculateMatrix(false)
+	inline Transform(const Transform& other) : EnableSharedFromThis<Transform>(), _owner(other._owner), _position(other._position), _rotation(other._rotation), _scale(other._scale), _parent(other._parent), _shouldCalculateMatrix(false)
 	{
 
 	}
@@ -39,8 +40,8 @@ protected:
 	void CalculateModelMatrix();
 
 public:
-	void SetParent(Transform* newParent);
-
+	void SetParent(SharedPtr<Transform> newParent);
+	
 	inline void SetPosition(const XMFLOAT3& newPosition)
 	{
 		_position = newPosition;
@@ -57,6 +58,21 @@ public:
 	{
 		_scale = newScale;
 		_shouldCalculateMatrix = true;
+	}
+
+	inline SharedPtr<GameObject> GetOwner() const
+	{
+		return _owner.lock();
+	}
+
+	inline SharedPtr<Transform> GetParent() const
+	{
+		return _parent.lock();
+	}
+
+	inline const DynamicArray<WeakPtr<Transform>>& GetChildren() const
+	{
+		return _children;
 	}
 
 	inline const XMFLOAT3& GetPosition() const
@@ -105,54 +121,60 @@ public:
 	}
 };
 
-class GameObject
+class GameObject : public EnableSharedFromThis<GameObject>
 {
 protected:
-	string _name;
+	String _name;
 	bool _enabled;
 
-	std::vector<Component*> _components;
-	std::vector<Component*> _newComponents;
-	std::vector<Component*> _componentsToRemove;
+	DynamicArray<SharedPtr<Component>> _components;
+	DynamicArray<SharedPtr<Component>> _newComponents;
+	DynamicArray<SharedPtr<Component>> _componentsToRemove;
 
-	Transform _transform;
+	SharedPtr<Transform> _transform;
 
 	bool _isInUpdate;
 
 public:
 	GameObject();
-	GameObject(const string& name);
+	GameObject(const String& name);
 	GameObject(const GameObject& other);
+
+	std::shared_ptr<GameObject> Copy() const;
 
 	void Initialize();
 	void Shutdown();
-	void Load(Archive* archive);
-	void Save(Archive* archive);
+	void Load(Archive& archive);
+	void Save(Archive& archive);
 	void PostLoad();
 	void PreSave();
 
 	void Update(float32 deltaTime);
-	void Render();
+	void Render(Graphics& graphics);
 
-	const string& GetName() const;
-	void SetName(const string& name);
-
-	bool IsEnabled() const;
+	void OnTransformUpdated();
 	void SetEnabled(bool enabled);
 
-	Transform& GetTransform();
+	bool IsEnabledInHierarchy() const;
+
+	inline const String& GetName() const { return _name; }
+	inline bool IsEnabled() const { return _enabled; }
+
+	inline void SetName(const String& name) { _name = name; }
+
+	SharedPtr<Transform> GetTransform();
 
 	template<typename T>
-	inline T* AddComponent();
+	inline SharedPtr<T> AddComponent();
 	template<typename T>
-	inline T* GetComponent();
-	void RemoveComponent(Component* component);
+	inline SharedPtr<T> GetComponent();
+	void RemoveComponent(SharedPtr<Component> component);
 };
 
 template<typename T>
-inline T* GameObject::AddComponent()
+inline SharedPtr<T> GameObject::AddComponent()
 {
-	T* newComponent = new T(this);
+	SharedPtr<T> newComponent = SharedPtr<T>(new T(shared_from_this()));
 	if (_isInUpdate)
 	{
 		_newComponents.push_back(newComponent);
@@ -169,15 +191,13 @@ inline T* GameObject::AddComponent()
 }
 
 template<typename T>
-inline T* GameObject::GetComponent()
+inline SharedPtr<T> GameObject::GetComponent()
 {
-	T* component = nullptr;
+	SharedPtr<T> component = nullptr;
 	
-	std::vector<Component*>::iterator& it = _components.begin();
-	std::vector<Component*>::iterator& end = _components.end();
-	for (it; it != end; ++it)
+	for (auto comp : _components)
 	{
-		component = dynamic_cast<T*>(*it);
+		component = std::dynamic_pointer_cast<T>(comp);
 		if (component)
 		{
 			return component;

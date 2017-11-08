@@ -1,10 +1,10 @@
 #include "HexagonMesh.h"
 
-HexagonMesh::HexagonMesh()
+HexagonMesh::HexagonMesh() : MeshBase()
 {
 }
 
-HexagonMesh::HexagonMesh(const HexagonMesh& other)
+HexagonMesh::HexagonMesh(const HexagonMesh& other) : MeshBase(other)
 {
 }
 
@@ -12,7 +12,7 @@ HexagonMesh::~HexagonMesh()
 {
 }
 
-bool HexagonMesh::Initialize(const string& path)
+bool HexagonMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 

@@ -20,12 +20,12 @@ private:
 	bool _isRMBPressed;
 
 public:
-	CameraControl(GameObject* owner);
+	CameraControl(SharedPtr<GameObject> owner);
 	CameraControl(const CameraControl& other);
 	virtual ~CameraControl();
 
 protected:
-	virtual CameraControl* Copy(GameObject* newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
 	bool OnWPressed();
 	bool OnWReleased();
