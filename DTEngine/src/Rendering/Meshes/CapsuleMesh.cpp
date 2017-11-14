@@ -19,9 +19,9 @@ bool CapsuleMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 	
-	uint32 numRings = 8;
-	uint32 numSegments = 24;
-	uint32 numSegmentsHeight = 1;
+	const uint32 numRings = 8;
+	const uint32 numSegments = 24;
+	const uint32 numSegmentsHeight = 1;
 
 	const float32 radius = 0.25f;
 	const float32 height = 0.5f;
@@ -30,7 +30,7 @@ bool CapsuleMesh::Initialize(const String& path)
 	_indicesCount = (2 * numRings + 1) * (numSegments + 1) * 6 + (numSegmentsHeight - 1) * (numSegments + 1) * 6;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint64* indices = new uint64[_indicesCount];
+	uint32* indices = new uint32[_indicesCount];
 
 	const float32 deltaRingAngle = XM_PIDIV2 / numRings;
 	const float32 deltaSegAngle = XM_2PI / numSegments;
@@ -44,8 +44,8 @@ bool CapsuleMesh::Initialize(const String& path)
 	// Top sphere part
 	for(uint32 ring = 0; ring <= numRings; ++ring)
 	{
-		float32 r0 = radius * sin(ring * deltaRingAngle);
-		float32 y0 = radius * cos(ring * deltaRingAngle);
+		const float32 r0 = radius * sin(ring * deltaRingAngle);
+		const float32 y0 = radius * cos(ring * deltaRingAngle);
 
 		for(uint32 seg = 0; seg <= numSegments; ++seg)
 		{
@@ -70,15 +70,15 @@ bool CapsuleMesh::Initialize(const String& path)
 	}
 
 	// Cylinder part
-	float32 deltaAngle = XM_2PI / numSegments;
-	float32 deltaHeight = height / numSegmentsHeight;
+	const float32 deltaAngle = XM_2PI / numSegments;
+	const float32 deltaHeight = height / numSegmentsHeight;
 
 	for(uint32 i = 1; i < numSegmentsHeight; ++i)
 	{
 		for(uint32 j = 0; j <= numSegments; ++j)
 		{
-			float32 x0 = radius * cos(j * deltaAngle);
-			float32 z0 = radius * sin(j * deltaAngle);
+			const float32 x0 = radius * cos(j * deltaAngle);
+			const float32 z0 = radius * sin(j * deltaAngle);
 
 			vertices[index].Position = XMFLOAT3(x0, 0.5f * height - i * deltaHeight, z0);
 			vertices[index].Normal = XMFLOAT3(x0, 0.0f, z0);
@@ -100,8 +100,8 @@ bool CapsuleMesh::Initialize(const String& path)
 	// Bottom sphere part
 	for(uint32 ring = 0; ring <= numRings; ++ring)
 	{
-		float32 r0 = radius * sin(XM_PIDIV2 + ring * deltaRingAngle);
-		float32 y0 = radius * cos(XM_PIDIV2 + ring * deltaRingAngle);
+		const float32 r0 = radius * sin(XM_PIDIV2 + ring * deltaRingAngle);
+		const float32 y0 = radius * cos(XM_PIDIV2 + ring * deltaRingAngle);
 
 		for(uint32 seg = 0; seg <= numSegments; ++seg)
 		{

@@ -23,7 +23,7 @@ bool CubeMesh::Initialize(const String& path)
 	_indicesCount = 36;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint64* indices = new uint64[_indicesCount];
+	uint32* indices = new uint32[_indicesCount];
 
 	vertices[0].Position = XMFLOAT3(-0.5f, -0.5f, -0.5f);
 	vertices[0].Normal = XMFLOAT3(-1.0f, -1.0f, -1.0f);
@@ -110,7 +110,7 @@ bool CubeMesh::Initialize(const String& path)
 	indices[34] = 0;
 	indices[35] = 2;
 
-	bool result = CreateBuffers(vertices, indices);
+	const bool result = CreateBuffers(vertices, indices);
 
 	delete[] vertices;
 	delete[] indices;

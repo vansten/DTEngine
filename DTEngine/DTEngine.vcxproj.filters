@@ -227,6 +227,9 @@
     <ClInclude Include="src\Utility\UniqueSingleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\Event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Resources\Shaders\ColorVS.hlsl" />

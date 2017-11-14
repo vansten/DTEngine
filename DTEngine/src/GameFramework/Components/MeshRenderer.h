@@ -16,6 +16,8 @@ public:
 	MeshRenderer(const MeshRenderer& other);
 	virtual ~MeshRenderer();
 
+	DECLARE_SHARED_FROM_THIS(MeshRenderer)
+
 protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 

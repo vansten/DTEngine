@@ -28,7 +28,7 @@ public:
 	virtual ~MeshBase();
 
 protected:
-	bool CreateBuffers(VertexType* vertices, uint64* indices);
+	bool CreateBuffers(VertexType* vertices, uint32* indices);
 
 public:
 	virtual void Shutdown() override;

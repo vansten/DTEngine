@@ -24,6 +24,8 @@ public:
 	CameraControl(const CameraControl& other);
 	virtual ~CameraControl();
 
+	DECLARE_SHARED_FROM_THIS(CameraControl)
+
 protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 

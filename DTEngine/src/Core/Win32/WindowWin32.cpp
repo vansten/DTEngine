@@ -131,8 +131,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			if(App::GetInstance()->IsRunning())
 			{
-				int xPos = GET_X_LPARAM(lParam);
-				int yPos = GET_Y_LPARAM(lParam);
+				const int xPos = GET_X_LPARAM(lParam);
+				const int yPos = GET_Y_LPARAM(lParam);
 
 				GetInput().SetMousePosition(XMINT2(xPos, yPos));
 			}

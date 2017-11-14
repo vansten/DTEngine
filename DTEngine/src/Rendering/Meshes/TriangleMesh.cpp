@@ -23,7 +23,7 @@ bool TriangleMesh::Initialize(const String& path)
 	_indicesCount = 3;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint64* indices = new uint64[_indicesCount];
+	uint32* indices = new uint32[_indicesCount];
 
 	vertices[0].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	vertices[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
@@ -41,7 +41,7 @@ bool TriangleMesh::Initialize(const String& path)
 	indices[1] = 1;
 	indices[2] = 2;
 
-	bool result = CreateBuffers(vertices, indices);
+	const bool result = CreateBuffers(vertices, indices);
 	
 	delete[] vertices;
 	delete[] indices;

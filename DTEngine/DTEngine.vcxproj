@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />
     <ClInclude Include="src\Core\Archive.h" />
+    <ClInclude Include="src\Core\Event.h" />
     <ClInclude Include="src\Core\Input.h" />
     <ClInclude Include="src\Core\MessageSystem.h" />
     <ClInclude Include="src\Core\Platform.h" />

@@ -15,7 +15,7 @@ MeshBase::~MeshBase()
 {
 }
 
-bool MeshBase::CreateBuffers(VertexType* vertices, uint64* indices)
+bool MeshBase::CreateBuffers(VertexType* vertices, uint32* indices)
 {
 	Graphics& graphics = GetGraphics();
 
@@ -40,7 +40,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, uint64* indices)
 	// Index buffer creation
 	// Filling desc
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(uint64) * _indicesCount;
+	bufferDesc.ByteWidth = sizeof(uint32) * _indicesCount;
 	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	// Filling data

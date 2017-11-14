@@ -103,7 +103,7 @@ bool Graphics::Initialize(bool vsync)
 
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
+	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 #if DT_DEBUG
 	HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
@@ -186,7 +186,7 @@ bool Graphics::Initialize(bool vsync)
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	rasterizerDesc.DepthClipEnable = true;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-
+	
 	result = _device->CreateRasterizerState(&rasterizerDesc, &_rasterizerState);
 	HR(result);
 
@@ -223,7 +223,7 @@ void Graphics::Shutdown()
 
 void Graphics::BeginScene(D3D11_PRIMITIVE_TOPOLOGY topology)
 {
-	static float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	static const float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 	_deviceContext->ClearRenderTargetView(_renderTargetView, color);
 
 	_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -329,7 +329,7 @@ void Graphics::SetMaterial(SharedPtr<Material> material)
 		if (_lastUsedMaterial)
 		{
 			_lastUsedMaterial->SetPerFrameParameters(*this);
-			std::shared_ptr<Shader> shader = material->GetShader();
+			SharedPtr<Shader> shader = material->GetShader();
 			_deviceContext->IASetInputLayout(shader->GetInputLayout());
 			_deviceContext->VSSetShader(shader->GetVertexShader(), nullptr, 0);
 			_deviceContext->PSSetShader(shader->GetPixelShader(), nullptr, 0);

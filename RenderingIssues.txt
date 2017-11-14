@@ -1,0 +1,131 @@
+// Think about rendering UI (different renderer states - Opaque, Transparent, UI, render order, gathering and sorting renderers? Get rid of MeshRenderer::Render function and instead implement Camera::Render which will be responsible for rendering objects? Add callbacks OnWillRender() and OnPostRender() to Component class (i.e. for MeshRenderer and UIRenderer classes)? graphics.SetState(RendererState rs)? Registering MeshRenderers and UIRenderers in some arrays?)
+
+// Requirements:
+// - being able to draw opaque, transparent and ui objects
+// - once written (uirenderer, material, meshrenderer, skinnedmeshrenderer) should require no work in future
+// - scenes/cameras automatically know in which order draw the elements (opaque->transparent->ui, front->back, back->front), which state of render device to use
+
+Scene::RegisterCamera(newCamera)
+	registeredCameras.add(newCamera)
+	registeredCameras.sort(cameraPriority)	// Descending order (highest priority first then lower ones)
+
+Scene::GetMainCamera()
+	return registeredCameras[0]
+
+Camera::GetMainCamera()
+	return Scene::GetMainCamera()
+
+Scene::Render()
+	foreach camera in registeredCameras
+		camera.Render(gameObjects.getAllByPredicate(go => go.IsEnabledInHierarchy && go.IsVisibleBy(camera)))
+
+Camera::Render(gameObjects)
+	opaqueRenderers = gameObjects.GetPotentialyVisibleOpaqueRenderers()
+	opaqueRenderers.sort(materialQueue && frontToBack)
+	opaqueRenderers.groupBy(material)
+	foreach(renderer in opaqueRenderers)
+		renderer.GetOwner().OnWillRender()
+		renderer.Render()	// Here materials will set render states
+
+	transparentRenderers = gameObjects.GetPotentialyVisibleTransparentRenderers()
+	transparentRenderers.sort(materialQueue && backToFront)
+	transparentRenerers.groupBy(material)
+	foreach(renderer in transparentRenderers)
+		renderer.GetOwner().OnWillRender()
+		renderer.Render()	// Here materials will set render states
+
+	skybox.Render()	// Here material will set render state
+
+	uiRenderers = gameObjects.GetUIRenderers()
+	uiRenderers.sort(sortingOrder)
+	foreach(renderer in uiRenderers)
+		renderer.GetOwner().OnWillRender()
+		renderer.Render()	// Here materials will set render states
+
+
+So the material asset (for example xyz.dtmat) must be constructed as follows:
+#Material
+name: xyzabc
+shader: path
+queue: [1-1000] (Opaques), [1001-2000] (Transparent), [2001-3000] (UI)
+cull: front/back/none
+zwrite: on/off
+ztest: less/lequal/greater/gequal/always
+blend: srcalpha oneminussrcalpha
+color: (1.0, 1.0, 1.0, 1.0)
+parameters: [
+	MainTex: path
+	NormalMap: path
+	RandomValue: 1.0
+]
+
+// Maybe JSON to store material? (And later textures?)
+
+// And material should have methods to set parameters from its own description (parameters: [...]). Something like this:
+Material::SetFloatParameter(string name, float value);
+Material::SetIntParameter(string name, int value);
+Material::SetFloat2Parameter(string name, XMFLOAT2 value);
+Material::SetFloat3Parameter(string name, XMFLOAT3 value);
+Material::SetFloat4Parameter(string name, XMFLOAT4 value);
+Material::SetTextureParameter(string name, SharedPtr<Texture> texture);
+
+// The question is: Can we use shader reflection (d3d10shader.h) to write those methods? And have shader "global" variables that can be treated as parameters?
+
+struct RenderStatesHelper
+{
+	// Defaults in materials (if not specified):
+	// CullMode::Back
+	// ZWriteMode::On
+	// ZTestMode::Less
+	// BlendState::Disabled
+	// SourceBlendMode::SrcAlpha
+	// DestinationBlendMode::OneMinusSrcAlpha
+	struct RenderStateSettings
+	{
+		CullMode cull;
+		ZWriteMode zWrite;
+		ZTestMode zTest;
+		BlendState blendState;
+		SourceBlendMode sourceBlend;
+		DestinationBlendMode destinationBlend;
+	}
+
+	Dictionary<RenderStateSettings, RenderState*> states;
+
+	RenderState* GetRSBySettings(const RenderStateSettings& settings)
+	{
+		if(states.find(settings) != states.end())
+		{
+			return states[settings];
+		}
+		return nullptr;
+	}
+
+	void RegisterRasterizerState(const RenderStateSettings& settings, RenderState* rs)
+	{
+		states[settings] = rs;
+	}
+}
+
+Graphics::SetRenderState(RasterizerState* rs)
+{
+	if(IsWireframeOn())
+	{
+		return;
+	}
+
+	if(rs == nullptr)
+	{
+		OutputDebugString("Nullptr passed to SetRenderState!\n");
+	}
+	SetRS(rs);
+}
+
+Graphics::SetFillMode(FillMode fill)
+{
+	currentFillMode = fill;
+	if(currentFillMode == FillMode::Wireframe)
+	{
+		SetRenderState(wireframeRenderState);
+	}
+}

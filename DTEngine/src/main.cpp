@@ -5,6 +5,7 @@
 #include "GameFramework/Components/Camera.h"
 
 #include "Core/Window.h"
+#include "Core/Event.h"
 
 #if DT_WINDOWS
 

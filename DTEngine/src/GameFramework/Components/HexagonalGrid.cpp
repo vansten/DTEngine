@@ -90,8 +90,10 @@ void HexagonalGridPath::ReversePath()
 	{
 		helperPath.push_back((*it));
 	}
+
 	// Clear original path
 	_path.clear();
+
 	// Push back all values from helperPath to path
 	for(auto hexagon : helperPath)
 	{
@@ -169,8 +171,8 @@ SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const XMFLOAT3& worldPosition) co
 	const XMFLOAT3 yDirection(0.0f, 0.0f, hexagonHeight);
 	
 	// Calculate axial coordinates using axial x and y direction and world position of a hexagon
-	int32 w = (int32)round(worldPosition.x / xDirection.x);
-	int32 h = (int32)round((worldPosition.z - xDirection.z * worldPosition.x / xDirection.x) / yDirection.z);
+	const int32 w = (int32)round(worldPosition.x / xDirection.x);
+	const int32 h = (int32)round((worldPosition.z - xDirection.z * worldPosition.x / xDirection.x) / yDirection.z);
 
 	// Return hexagon at calculated axial coordinates
 	return GetHexagonAt(AxialCoordinates(w, h));
@@ -227,7 +229,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 		toVisit.pop();
 		for(int i = 0; i < (int)HexagonDirection::COUNT; ++i)
 		{
-			HexagonDirection direction = (HexagonDirection)i;
+			const HexagonDirection direction = (HexagonDirection)i;
 			SharedPtr<Hexagon> neighboor = GetNeighboor(hex, direction);
 			if(neighboor != nullptr && cameFrom.find(neighboor) == cameFrom.end())
 			{
@@ -307,7 +309,7 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	{
 		for(int32 h = 0; h < (int32)height; ++h)
 		{
-			AxialCoordinates coordinates(w - halfW, h - halfH);
+			const AxialCoordinates coordinates(w - halfW, h - halfH);
 
 			// Create new game object and mesh renderer for hexagon
 			SharedPtr<GameObject> newHexagonObject = game.GetActiveScene()->SpawnObject(DT_TEXT("Hexagon"));

@@ -25,7 +25,7 @@ public:
 	void Update(float32 deltaTime);
 	void Render(Graphics& graphics);
 
-	std::shared_ptr<GameObject> SpawnObject(const String& name);
-	std::shared_ptr<GameObject> SpawnObject(SharedPtr<GameObject> original);
-	std::shared_ptr<GameObject> SpawnObject(SharedPtr<GameObject> original, const String& name);
+	SharedPtr<GameObject> SpawnObject(const String& name);
+	SharedPtr<GameObject> SpawnObject(SharedPtr<GameObject> original);
+	SharedPtr<GameObject> SpawnObject(SharedPtr<GameObject> original, const String& name);
 };

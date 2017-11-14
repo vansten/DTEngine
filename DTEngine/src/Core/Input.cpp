@@ -1,122 +1,95 @@
 #include "Input.h"
 
-#include <algorithm>
-
-void Input::SortFunctions(DynamicArray<InputFunction>& functions)
+void Input::BindKeyDown(int32 keyCode, Event<bool>::Delegate::FunctionType function, int32 priority)
 {
-	std::sort(functions.begin(), functions.end(), &InputFunction::Compare);
+	_keyDownEvents[keyCode].Bind(function, priority);
 }
 
-void Input::BindKeyDownEvent(int32 keyCode, Function<bool()> function, int32 priority)
+void Input::UnbindKeyDown(int32 keyCode, Event<bool>::Delegate::FunctionType function)
 {
-	DynamicArray<InputFunction>& functions = _keyDownFunctions[keyCode];
-	functions.push_back(InputFunction(function, priority));
-
-	if(functions.size() > 1)
+	if(_keyDownEvents.find(keyCode) != _keyDownEvents.end())
 	{
-		SortFunctions(functions);
+		_keyDownEvents[keyCode].Unbind(function);
 	}
 }
 
-void Input::BindKeyUpEvent(int32 keyCode, Function<bool()> function, int32 priority)
+void Input::BindKeyUp(int32 keyCode, Event<bool>::Delegate::FunctionType function, int32 priority)
 {
-	DynamicArray<InputFunction>& functions = _keyUpFunctions[keyCode];
-	functions.push_back(InputFunction(function, priority));
+	_keyUpEvents[keyCode].Bind(function, priority);
+}
 
-	if(functions.size() > 1)
+void Input::UnbindKeyUp(int32 keyCode, Event<bool>::Delegate::FunctionType function)
+{
+	if(_keyUpEvents.find(keyCode) != _keyUpEvents.end())
 	{
-		SortFunctions(functions);
+		_keyUpEvents[keyCode].Unbind(function);
 	}
 }
 
-void Input::BindMouseDownEvent(int32 mouseCode, Function<bool()> function, int32 priority)
+void Input::BindMouseDown(int32 mouseCode, Event<bool>::Delegate::FunctionType function, int32 priority)
 {
-	DynamicArray<InputFunction>& functions = _mouseDownFunctions[mouseCode];
-	functions.push_back(InputFunction(function, priority));
+	_mouseDownEvents[mouseCode].Bind(function, priority);
+}
 
-	if(functions.size() > 1)
+void Input::UnbindMouseDown(int32 mouseCode, Event<bool>::Delegate::FunctionType function)
+{
+	if(_mouseDownEvents.find(mouseCode) != _mouseDownEvents.end())
 	{
-		SortFunctions(functions);
+		_mouseDownEvents[mouseCode].Unbind(function);
 	}
 }
 
-void Input::BindMouseUpEvent(int32 mouseCode, Function<bool()> function, int32 priority)
+void Input::BindMouseUp(int32 mouseCode, Event<bool>::Delegate::FunctionType function, int32 priority)
 {
-	DynamicArray<InputFunction>& functions = _mouseUpFunctions[mouseCode];
-	functions.push_back(InputFunction(function, priority));
+	_mouseUpEvents[mouseCode].Bind(function, priority);
+}
 
-	if(functions.size() > 1)
+void Input::UnbindMouseUp(int32 mouseCode, Event<bool>::Delegate::FunctionType function)
+{
+	if(_mouseUpEvents.find(mouseCode) != _mouseUpEvents.end())
 	{
-		SortFunctions(functions);
+		_mouseUpEvents[mouseCode].Unbind(function);
 	}
 }
 
 void Input::OnKeyDown(int32 keyCode)
 {
-	if(_keyDownFunctions.find(keyCode) == _keyDownFunctions.end())
+	if(_keyDownEvents.find(keyCode) == _keyDownEvents.end())
 	{
 		return;
 	}
 
-	DynamicArray<InputFunction>& functions = _keyDownFunctions[keyCode];
-	for(auto function : functions)
-	{
-		if(function.Callback())
-		{
-			break;
-		}
-	}
+	_keyDownEvents[keyCode].ExecuteUntil([](const bool& value) { return value; });
 }
 
 void Input::OnKeyUp(int32 keyCode)
 {
-	if(_keyUpFunctions.find(keyCode) == _keyUpFunctions.end())
+	if(_keyUpEvents.find(keyCode) == _keyUpEvents.end())
 	{
 		return;
 	}
 
-	DynamicArray<InputFunction>& functions = _keyUpFunctions[keyCode];
-	for(auto function : functions)
-	{
-		if(function.Callback())
-		{
-			break;
-		}
-	}
+	_keyUpEvents[keyCode].ExecuteUntil([](const bool& value) { return value; });
 }
 
 void Input::OnMouseDown(int32 mouseCode)
 {
-	if(_mouseDownFunctions.find(mouseCode) == _mouseDownFunctions.end())
+	if(_mouseDownEvents.find(mouseCode) == _mouseDownEvents.end())
 	{
 		return;
 	}
 
-	DynamicArray<InputFunction>& functions = _mouseDownFunctions[mouseCode];
-	for(auto function : functions)
-	{
-		if(function.Callback())
-		{
-			break;
-		}
-	}
+	_mouseDownEvents[mouseCode].ExecuteUntil([](const bool& value) { return value; });
 }
 
 void Input::OnMouseUp(int32 mouseCode)
 {
-	if(_mouseUpFunctions.find(mouseCode) == _mouseUpFunctions.end())
+	if(_mouseUpEvents.find(mouseCode) == _mouseUpEvents.end())
 	{
 		return;
 	}
 
-	DynamicArray<InputFunction>& functions = _mouseUpFunctions[mouseCode];
-	for(auto function : functions)
-	{
-		if(function.Callback())
-		{
-			break;
-		}
-	}
+	_mouseUpEvents[mouseCode].ExecuteUntil([](const bool& value) { return value; });
 }
 
 void Input::SetMousePosition(const XMINT2& newMousePosition)
@@ -131,27 +104,8 @@ XMINT2 Input::GetMousePosition()
 
 void Input::Shutdown()
 {
-	for(auto pair : _keyDownFunctions)
-	{
-		pair.second.clear();
-	}
-	_keyDownFunctions.clear();
-
-	for(auto pair : _keyUpFunctions)
-	{
-		pair.second.clear();
-	}
-	_keyUpFunctions.clear();
-
-	for(auto pair : _mouseDownFunctions)
-	{
-		pair.second.clear();
-	}
-	_mouseDownFunctions.clear();
-
-	for(auto pair : _mouseUpFunctions)
-	{
-		pair.second.clear();
-	}
-	_mouseUpFunctions.clear();
+	_keyDownEvents.clear();
+	_keyUpEvents.clear();
+	_mouseDownEvents.clear();
+	_mouseUpEvents.clear();
 }

@@ -7,6 +7,18 @@ class Archive;
 class GameObject;
 struct Transform;
 
+#define DECLARE_SHARED_FROM_THIS(Type) \
+private: \
+SharedPtr<Type> SharedFromThis() \
+{ \
+	return StaticPointerCast<Type>(shared_from_this()); \
+} \
+SharedPtr<const Type> SharedFromThis() const \
+{ \
+	return StaticPointerCast<const Type>(shared_from_this()); \
+} \
+private:
+
 class Component : public EnableSharedFromThis<Component>
 {
 	friend class GameObject;
@@ -19,6 +31,8 @@ public:
 	Component(SharedPtr<GameObject> owner);
 	Component(const Component& other);
 	virtual ~Component();
+
+	DECLARE_SHARED_FROM_THIS(Component)
 
 protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const;

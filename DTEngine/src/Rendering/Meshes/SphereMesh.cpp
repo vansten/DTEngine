@@ -19,28 +19,31 @@ bool SphereMesh::Initialize(const String& path)
 {
 	MeshBase::Initialize(path);
 	
-	const float radius = 0.5f;
+	const float32 radius = 0.5f;
 	const uint32 rings = 12;
 	const uint32 sectors = 12;
 
-	const float R = 1.0f / (float)(rings - 1);
-	const float S = 1.0f / (float)(sectors - 1);
+	const float32 R = 1.0f / (float32)(rings - 1);
+	const float32 S = 1.0f / (float32)(sectors - 1);
 
 	_verticesCount = rings * sectors;	
 	_indicesCount = rings * sectors * 6;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint64* indices = new uint64[_indicesCount];
+	uint32* indices = new uint32[_indicesCount];
 
 	uint32 i = 0;
 	uint32 j = 0;
 	for(uint32 r = 0; r < rings; ++r)
 	{
+		const float32 sinR = sin(XM_PI * r * R);
+		const float32 sinRMinusPiDiv2 = sin(-XM_PIDIV2 + XM_PI * r * R);
+
 		for(uint32 s = 0; s < sectors; ++s, ++i, j += 6)
 		{
-			float y = sin(-XM_PIDIV2 + XM_PI * r * R) * radius;
-			float x = cos(XM_2PI * s * S) * sin(XM_PI * r * R) * radius;
-			float z = sin(XM_2PI * s * S) * sin(XM_PI * r * R) * radius;
+			const float32 y = sinRMinusPiDiv2 * radius;
+			const float32 x = cos(XM_2PI * s * S) * sinR * radius;
+			const float32 z = sin(XM_2PI * s * S) * sinR * radius;
 
 			vertices[i].Position = XMFLOAT3(x, y, z);
 			vertices[i].Normal = XMFLOAT3(x, y, z);
@@ -60,7 +63,7 @@ bool SphereMesh::Initialize(const String& path)
 		}
 	}
 
-	bool result = CreateBuffers(vertices, indices);
+	const bool result = CreateBuffers(vertices, indices);
 
 	delete[] vertices;
 	delete[] indices;

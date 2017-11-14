@@ -5,7 +5,7 @@
 
 void Transform::CalculateModelMatrix()
 {
-	XMFLOAT3 radianRotation = XMFLOAT3(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
+	const XMFLOAT3 radianRotation = XMFLOAT3(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
 	_modelMatrix =	XMMatrixScalingFromVector(XMLoadFloat3(&_scale)) * 
 					XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&radianRotation)) *
 					XMMatrixTranslationFromVector(XMLoadFloat3(&_position));
@@ -39,7 +39,7 @@ void Transform::CalculateModelMatrix()
 
 void Transform::SetParent(SharedPtr<Transform> newParent)
 {
-	SharedPtr<Transform> sharedFromThis = shared_from_this();
+	SharedPtr<Transform> sharedFromThis = SharedFromThis();
 	SharedPtr<Transform> parentShared = _parent.lock();
 	if (parentShared)
 	{
@@ -78,21 +78,21 @@ void Transform::SetParent(SharedPtr<Transform> newParent)
 	_shouldCalculateMatrix = true;
 }
 
-GameObject::GameObject() : std::enable_shared_from_this<GameObject>(), _transform(nullptr), _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
+GameObject::GameObject() : EnableSharedFromThis<GameObject>(), _transform(nullptr), _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
 {
 
 }
 
-GameObject::GameObject(const String& name) : std::enable_shared_from_this<GameObject>(), _transform(nullptr), _name(name), _enabled(true), _isInUpdate(false)
+GameObject::GameObject(const String& name) : EnableSharedFromThis<GameObject>(), _transform(nullptr), _name(name), _enabled(true), _isInUpdate(false)
 {
 
 }
 
-GameObject::GameObject(const GameObject& other) : std::enable_shared_from_this<GameObject>(), _transform(new Transform(*(other._transform))), _name(other._name), _enabled(other._enabled), _isInUpdate(false)
+GameObject::GameObject(const GameObject& other) : EnableSharedFromThis<GameObject>(), _transform(new Transform(*(other._transform))), _name(other._name), _enabled(other._enabled), _isInUpdate(false)
 {
 }
 
-std::shared_ptr<GameObject> GameObject::Copy() const
+SharedPtr<GameObject> GameObject::Copy() const
 {
 	SharedPtr<GameObject> copy = SharedPtr<GameObject>(new GameObject(GetName() + DT_TEXT(" (copy)")));
 	copy->_transform = SharedPtr<Transform>(new Transform(*_transform));
@@ -124,7 +124,7 @@ void GameObject::Initialize()
 {
 	if(!_transform)
 	{
-		_transform = SharedPtr<Transform>(new Transform(shared_from_this()));
+		_transform = SharedPtr<Transform>(new Transform(SharedFromThis()));
 	}
 
 	_transform->CalculateModelMatrix();
@@ -217,7 +217,7 @@ void GameObject::Update(float32 deltaTime)
 
 void GameObject::Render(Graphics& graphics)
 {
-	graphics.SetObject(shared_from_this());
+	graphics.SetObject(SharedFromThis());
 	for (auto component : _components)
 	{
 		if (component->IsEnabled())
@@ -260,16 +260,14 @@ void GameObject::SetEnabled(bool enabled)
 bool GameObject::IsEnabledInHierarchy() const
 {
 	SharedPtr<Transform> parent = _transform->GetParent();
-	while(parent)
+	
+	bool isParentEnabledInHierarchy = true;
+	if(parent)
 	{
-		if(!parent->GetOwner()->IsEnabled())
-		{
-			return false;
-		}
-		parent = parent->GetParent();
+		isParentEnabledInHierarchy = parent->GetOwner()->IsEnabledInHierarchy();
 	}
 
-	return IsEnabled();
+	return IsEnabled() && isParentEnabledInHierarchy;
 }
 
 SharedPtr<Transform> GameObject::GetTransform()

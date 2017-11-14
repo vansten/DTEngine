@@ -35,10 +35,14 @@ void Component::Shutdown()
 }
 
 void Component::OnOwnerEnabled()
-{}
+{
+
+}
 
 void Component::OnOwnerDisabled()
-{}
+{
+
+}
 
 void Component::Load(Archive& archive)
 {

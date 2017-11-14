@@ -25,7 +25,7 @@ bool CylinderMesh::Initialize(const String& path)
 	_indicesCount = baseTriangles * 12;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint64* indices = new uint64[_indicesCount];
+	uint32* indices = new uint32[_indicesCount];
 
 	// Bottom center
 	vertices[baseTriangles].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -36,9 +36,9 @@ bool CylinderMesh::Initialize(const String& path)
 
 	for(uint32 i = 0; i < baseTriangles; ++i)
 	{
-		float32 angleRad = XMConvertToRadians(angleDelta * i);
-		float32 cosAngle = cos(angleRad) * 0.5f;
-		float32 sinAngle = sin(angleRad) * 0.5f;
+		const float32 angleRad = XMConvertToRadians(angleDelta * i);
+		const float32 cosAngle = cos(angleRad) * 0.5f;
+		const float32 sinAngle = sin(angleRad) * 0.5f;
 		vertices[i].Position = XMFLOAT3(cosAngle, 0.0f, sinAngle);
 		vertices[i].Normal = XMFLOAT3(0.0f, -1.0f, 0.0f);
 		vertices[i].UV = XMFLOAT2((cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
@@ -68,7 +68,7 @@ bool CylinderMesh::Initialize(const String& path)
 		indices[(baseTriangles + i) * 6 + 5] = baseTriangles + 1 + ((i + 1) % baseTriangles);
 	}
 
-	bool result = CreateBuffers(vertices, indices);
+	const bool result = CreateBuffers(vertices, indices);
 	
 	delete[] vertices;
 	delete[] indices;

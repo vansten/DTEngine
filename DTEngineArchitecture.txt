@@ -1,0 +1,52 @@
+ENGINE architecture/function order/lifetime cycle:
+One unique singleton - the App! Graphics, Window, ResourceManager, Time, Game, Input and (probably) Physics will be get by Get*() global function which in fact is App::GetInstance()->Get*() inlined call!
+
+App::Initialize()
+	Game::Initialize()	//Editor::Initialize()
+		Scene::Load(basicScene)
+			Scene::Unload()
+			new GameObject
+			GameObject::Initialize()	// No cross references allowed here
+			GameObject::Load(someArchive)
+				new Component
+				Component::Initialize()	// No cross references allowed here
+				Component::Load(someArchive)
+		Scene::PostLoad()
+			GameObject::PostLoad()		// Load references (since all objects are loaded)
+				Component::PostLoad() 	// Load references (since all objects are loaded)
+App::Loop()
+	Game::Update(dt)	//Editor::Update(dt) (maybe some flag in GameObject bUpdatesWithEditor)
+		Scene::Update(dt)
+			GameObject::Update(dt)
+				Component::Update(dt)	
+	Game::Render()		//Editor::Render()
+		Scene::Render()
+			GameObject::Render()
+				Component::Render()
+
+App::Shutdown()
+	Game::Shutdown()	//Editor::Shutdown()
+		Scene::Unload()
+			GameObject::Shutdown()
+				Component::Shutdown()
+			delete GameObject;
+				delete Component;
+
+Scene::Save()
+	GameObject::PreSave()
+		Component::PreSave()
+	GameObject::Save(someArchive)
+		Component::Save(someArchive)
+
+GameObject::SetEnabled(enabled)
+	if(enabled)	Component::OnOwnerEnabled()
+	else Component::OnOwnerDisabled()
+
+Transform::CalculateMatrix()
+	GameObject::OnTransformUpdated()
+		Component::OnOwnerTransformUpdated()
+	for each children of the Transform
+		Transform::CalculateMatrix()
+
+GameObject::IsEnabledInHierarchy()
+	return IsEnabled() && transform.parent.owner.IsEnabledInHierarchy();

@@ -105,6 +105,8 @@ public:
 	Hexagon(const Hexagon& other);
 	virtual ~Hexagon();
 
+	DECLARE_SHARED_FROM_THIS(Hexagon)
+
 protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
@@ -194,6 +196,8 @@ public:
 	HexagonalGrid(SharedPtr<GameObject> owner);
 	HexagonalGrid(const HexagonalGrid& other);
 	virtual ~HexagonalGrid();
+
+	DECLARE_SHARED_FROM_THIS(HexagonalGrid)
 
 protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;

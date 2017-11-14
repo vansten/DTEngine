@@ -130,19 +130,21 @@ bool CameraControl::OnLMBReleased()
 void CameraControl::Initialize()
 {
 	Input& input = GetInput();
-	input.BindKeyDownEvent('W', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnWPressed));
-	input.BindKeyUpEvent('W', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnWReleased));
-	input.BindKeyDownEvent('S', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnSPressed));
-	input.BindKeyUpEvent('S', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnSReleased));
-	input.BindKeyDownEvent('A', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnAPressed));
-	input.BindKeyUpEvent('A', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnAReleased));
-	input.BindKeyDownEvent('D', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnDPressed));
-	input.BindKeyUpEvent('D', MAKE_FUNCTION_OBJECT(this, &CameraControl::OnDReleased));
-	input.BindKeyDownEvent(VK_SHIFT, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnShiftPressed));
-	input.BindKeyUpEvent(VK_SHIFT, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnShiftReleased));
-	input.BindMouseDownEvent(VK_RBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnRMBPressed));
-	input.BindMouseUpEvent(VK_RBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::ONRMBReleased));
-	input.BindMouseUpEvent(VK_LBUTTON, MAKE_FUNCTION_OBJECT(this, &CameraControl::OnLMBReleased));
+
+	input.BindKeyDown('W', &CameraControl::OnWPressed, SharedFromThis());
+	input.BindKeyUp('W', &CameraControl::OnWReleased, SharedFromThis());
+	input.BindKeyDown('S', &CameraControl::OnSPressed, SharedFromThis());
+	input.BindKeyUp('S', &CameraControl::OnSReleased, SharedFromThis());
+	input.BindKeyDown('A', &CameraControl::OnAPressed, SharedFromThis());
+	input.BindKeyUp('A', &CameraControl::OnAReleased, SharedFromThis());
+	input.BindKeyDown('D', &CameraControl::OnDPressed, SharedFromThis());
+	input.BindKeyUp('D', &CameraControl::OnDReleased, SharedFromThis());
+	input.BindKeyDown(VK_SHIFT, &CameraControl::OnShiftPressed, SharedFromThis());
+	input.BindKeyUp(VK_SHIFT, &CameraControl::OnShiftReleased, SharedFromThis());
+
+	input.BindMouseDown(VK_RBUTTON, &CameraControl::OnRMBPressed, SharedFromThis());
+	input.BindMouseUp(VK_RBUTTON, &CameraControl::ONRMBReleased, SharedFromThis());
+	input.BindMouseUp(VK_LBUTTON, &CameraControl::OnLMBReleased, SharedFromThis());
 
 	_movementSpeed = 4.0f;
 	_shiftMultiplier = 1.0f;
@@ -155,15 +157,16 @@ void CameraControl::Update(float32 deltaTime)
 {
 	if (_isRMBPressed)
 	{
-		XMFLOAT3 direction = _owner->GetTransform()->TransformDirection(_movementVector);
+		const XMFLOAT3 direction = _owner->GetTransform()->TransformDirection(_movementVector);
+		const float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
+
 		XMFLOAT3 currentPosition = _owner->GetTransform()->GetPosition();
-		float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 		currentPosition.x += direction.x * speedMulDeltaTime;
 		currentPosition.y += direction.y * speedMulDeltaTime;
 		currentPosition.z += direction.z * speedMulDeltaTime;
 		_owner->GetTransform()->SetPosition(currentPosition);
 
-		XMINT2 mousePosition = GetInput().GetMousePosition();
+		const XMINT2 mousePosition = GetInput().GetMousePosition();
 		XMINT2 mouseDeltaPosition = mousePosition;
 		mouseDeltaPosition.x -= _previousMousePosition.x;
 		mouseDeltaPosition.y -= _previousMousePosition.y;

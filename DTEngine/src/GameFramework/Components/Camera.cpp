@@ -56,7 +56,7 @@ void Camera::Shutdown()
 void Camera::PostLoad()
 {
 	Window& window = GetMainWindow();
-	float32 aspectRatio = window.GetAspectRatio();
+	const float32 aspectRatio = window.GetAspectRatio();
 	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
 
 	SharedPtr<Transform> ownerTransform = _owner->GetTransform();
@@ -65,8 +65,8 @@ void Camera::PostLoad()
 
 void Camera::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
 {
-	XMFLOAT3 forward = transform->GetForward();
-	XMFLOAT3 position = transform->GetPosition();
+	const XMFLOAT3 forward = transform->GetForward();
+	const XMFLOAT3 position = transform->GetPosition();
 	_viewMatrix = XMMatrixLookToLH(XMLoadFloat3(&position), XMLoadFloat3(&forward), XMLoadFloat3(&VectorHelpers::Up));
 }
 
@@ -76,27 +76,19 @@ void Camera::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
 XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 {
 	Window& window = GetMainWindow();
-	// Cause screenPoint is in [(0, screenWidth), (0, screenHeight)] ranges
-	// Offset must be applied to make sure that middle of screen is (0,0) point
-	XMINT2 screenPointWithOffset(
-								 (uint32)(screenPoint.x - window.GetWidth() * 0.5f),
-								 (uint32)(window.GetHeight() * 0.5f - screenPoint.y)
-								);
 
-	XMVECTOR screenVector = XMLoadSInt2(&screenPointWithOffset);
-	XMMATRIX vp = XMMatrixMultiply(_viewMatrix, _projectionMatrix);
-	XMMATRIX pvInversed = XMMatrixInverse(nullptr, vp);
-	XMVECTOR worldVector = XMVector2Transform(screenVector, pvInversed);
-	float32 w = worldVector.m128_f32[3];
-	if (w != 0.0f)
-	{
-		XMFLOAT4 divide(w, w, w, w);
-		worldVector = XMVectorDivide(worldVector, XMLoadFloat4(&divide));
-	}
+	DT_ASSERT(window.GetHeight() * window.GetWidth() != 0);
 
-	XMFLOAT3 worldPoint;
-	XMStoreFloat3(&worldPoint, worldVector);
-	return worldPoint;
+	XMFLOAT3 viewPosition;
+	viewPosition.x = window.GetAspectRatio() * (float32)screenPoint.x / window.GetWidth();
+	viewPosition.y = (float32)screenPoint.y / window.GetHeight();
+	viewPosition.z = 0.0f;
+
+	const XMMATRIX viewInversed = XMMatrixInverse(&XMMatrixDeterminant(_viewMatrix), _viewMatrix);
+	const XMVECTOR worldVector = XMVector3TransformCoord(XMLoadFloat3(&viewPosition), viewInversed);
+	XMFLOAT3 worldPosition;
+	XMStoreFloat3(&worldPosition, worldVector);
+	return worldPosition;
 }
 
 // Converts from world coordinates to screen coordinates
@@ -106,26 +98,17 @@ XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 // It's caused by floating point precision and converting from float to int
 XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
 {
-	XMVECTOR worldVector = XMLoadFloat3(&worldPoint);
-	XMMATRIX vp = XMMatrixMultiply(_viewMatrix, _projectionMatrix);
-	XMVECTOR screenVector = XMVector3Transform(worldVector, vp);
-	float32 w = screenVector.m128_f32[3];	// NOTE: If w is 0 maybe function should return (0,0) and display a warning?
-	if (w != 0.0f)
-	{
-		XMFLOAT4 divide(w, w, w, w);
-		screenVector = XMVectorDivide(screenVector, XMLoadFloat4(&divide));
-	}
-
-
-	XMINT2 screenPoint;
-	XMStoreSInt2(&screenPoint, screenVector);
 	Window& window = GetMainWindow();
-	// Applying offset just to make sure that returned screen point is in
-	// [(0, screenWidth), (0, screenHeight)] range
-	screenPoint.x = (uint32)(screenPoint.x + window.GetWidth() * 0.5f);
-	screenPoint.y = (uint32)(window.GetHeight() * 0.5f - screenPoint.y);
+	DT_ASSERT(window.GetAspectRatio() != 0);
 
-	return screenPoint;
+	const XMVECTOR viewVector = XMVector3TransformCoord(XMLoadFloat3(&worldPoint), _viewMatrix);
+	XMFLOAT3 viewPosition;
+	XMStoreFloat3(&viewPosition, viewVector);
+	XMINT2 screenPosition;
+	screenPosition.x = (uint32)(viewPosition.x * window.GetWidth() / window.GetAspectRatio());
+	screenPosition.y = (uint32)(viewPosition.y * window.GetHeight());
+
+	return screenPosition;
 }
 
 SharedPtr<Camera> Camera::GetMainCamera()

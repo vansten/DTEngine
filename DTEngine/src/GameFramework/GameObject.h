@@ -35,6 +35,8 @@ public:
 	{
 
 	}
+
+	DECLARE_SHARED_FROM_THIS(Transform)
 	
 protected:
 	void CalculateModelMatrix();
@@ -97,9 +99,9 @@ public:
 
 	inline XMFLOAT3 TransformDirection(XMFLOAT3 direction) const
 	{
-		XMFLOAT4 direction4(direction.x, direction.y, direction.z, 0.0f);
-		XMVECTOR directionVector = XMLoadFloat4(&direction4);
-		XMVECTOR transformedDirectionVector = XMVector4Transform(directionVector, _modelMatrix);
+		const XMFLOAT4 direction4(direction.x, direction.y, direction.z, 0.0f);
+		const XMVECTOR directionVector = XMLoadFloat4(&direction4);
+		const XMVECTOR transformedDirectionVector = XMVector4Transform(directionVector, _modelMatrix);
 		XMFLOAT3 transformedDirection;
 		XMStoreFloat3(&transformedDirection, transformedDirectionVector);
 		return transformedDirection;
@@ -140,7 +142,10 @@ public:
 	GameObject(const String& name);
 	GameObject(const GameObject& other);
 
-	std::shared_ptr<GameObject> Copy() const;
+	DECLARE_SHARED_FROM_THIS(GameObject)
+
+public:
+	SharedPtr<GameObject> Copy() const;
 
 	void Initialize();
 	void Shutdown();
@@ -174,7 +179,7 @@ public:
 template<typename T>
 inline SharedPtr<T> GameObject::AddComponent()
 {
-	SharedPtr<T> newComponent = SharedPtr<T>(new T(shared_from_this()));
+	SharedPtr<T> newComponent = SharedPtr<T>(new T(SharedFromThis()));
 	if (_isInUpdate)
 	{
 		_newComponents.push_back(newComponent);
@@ -197,7 +202,7 @@ inline SharedPtr<T> GameObject::GetComponent()
 	
 	for (auto comp : _components)
 	{
-		component = std::dynamic_pointer_cast<T>(comp);
+		component = DynamicPointerCast<T>(comp);
 		if (component)
 		{
 			return component;
