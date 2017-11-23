@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/App.h"
+#include "Debug/Debug.h"
 
 #include "Rendering/Material.h"
 #include "Rendering/Shader.h"
@@ -71,6 +72,8 @@ SharedPtr<T> ResourceManager::Load(const String& path)
 	bool result = nAsset->Initialize(path);
 	if(!result)
 	{
+		String typeName = STRING(T);
+		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot load %s at path: %s"), typeName.c_str(), path.c_str());
 		nAsset->Shutdown();
 		return SharedPtr<T>(nullptr);
 	}

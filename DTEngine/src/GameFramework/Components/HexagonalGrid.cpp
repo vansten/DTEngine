@@ -141,6 +141,7 @@ SharedPtr<Hexagon> HexagonalGrid::GetNeighboor(SharedPtr<Hexagon> hexagon, Hexag
 {
 	if (direction == HexagonDirection::COUNT || hexagon == nullptr)
 	{
+		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GENERAL, DT_TEXT("Cannot get neighboor. Either direction is invalid or hexagon argument is nullptr"));
 		return nullptr;
 	}
 
@@ -202,6 +203,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 	// If start or target are nullptr then return false (can't find path when at least one of the path ends doesn't exist)
 	if(start == nullptr || target == nullptr)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("CalculatePath failed. Reason: either start or target doesn't exist"));
 		return false;
 	}
 
@@ -276,6 +278,7 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	// If grid owner doesn't exist or width, height or hexagonSize are less or equal than 0
 	if (!gridOwner || width <= 0 || height <= 0 || hexagonSize <= 0.0f)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("Cannot create grid. Reason: either gridOwner is nullptr or width is less than 0 or height is less than 0 or hexagonSize is less than 0"));
 		return nullptr;
 	}
 

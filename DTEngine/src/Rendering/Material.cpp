@@ -33,6 +33,7 @@ bool Material::Initialize(const String& path)
 	Graphics& graphics = GetGraphics();
 	if (!graphics.CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create constant buffer for PerFrame data"));
 		return false;
 	}
 

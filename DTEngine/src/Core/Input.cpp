@@ -59,7 +59,7 @@ void Input::OnKeyDown(int32 keyCode)
 		return;
 	}
 
-	_keyDownEvents[keyCode].ExecuteUntil([](const bool& value) { return value; });
+	_keyDownEvents[keyCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::OnKeyUp(int32 keyCode)
@@ -69,7 +69,7 @@ void Input::OnKeyUp(int32 keyCode)
 		return;
 	}
 
-	_keyUpEvents[keyCode].ExecuteUntil([](const bool& value) { return value; });
+	_keyUpEvents[keyCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::OnMouseDown(int32 mouseCode)
@@ -79,7 +79,7 @@ void Input::OnMouseDown(int32 mouseCode)
 		return;
 	}
 
-	_mouseDownEvents[mouseCode].ExecuteUntil([](const bool& value) { return value; });
+	_mouseDownEvents[mouseCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::OnMouseUp(int32 mouseCode)
@@ -89,7 +89,7 @@ void Input::OnMouseUp(int32 mouseCode)
 		return;
 	}
 
-	_mouseUpEvents[mouseCode].ExecuteUntil([](const bool& value) { return value; });
+	_mouseUpEvents[mouseCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::SetMousePosition(const XMINT2& newMousePosition)

@@ -1,5 +1,6 @@
 #include "MeshRenderer.h"
 
+#include "Debug/Debug.h"
 #include "GameFramework/GameObject.h"
 #include "Rendering/MeshBase.h"
 #include "Rendering/Material.h"
@@ -30,7 +31,7 @@ void MeshRenderer::Render(Graphics& graphics)
 {
 	if(!_mesh)
 	{
-		OutputDebugString(DT_TEXT("Mesh renderer has unset mesh!\n"));
+		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without mesh set. Aborting"));
 		return;
 	}
 

@@ -1,5 +1,6 @@
 #include "Graphics.h"
 
+#include "Debug/Debug.h"
 #include "Core/Win32/WindowWin32.h"
 #include "GameFramework/GameObject.h"
 #include "GameFramework/Components/Camera.h"
@@ -67,6 +68,8 @@ bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& de
 
 bool Graphics::Initialize(bool vsync)
 {
+	GetDebug().RegisterChannel(DT_TEXT("Rendering"));
+
 	uint32 numerator;
 	uint32 denominator;
 
@@ -74,6 +77,7 @@ bool Graphics::Initialize(bool vsync)
 
 	if(!GetRefreshRate((uint32)window.GetHeight(), numerator, denominator))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot retrieve refresh rate"));
 		return false;
 	}
 	
@@ -249,6 +253,7 @@ bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUB
 {
 	if (!bufferPtr || !_device)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
 		return false;
 	}
 
@@ -261,6 +266,7 @@ bool Graphics::CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader**
 {
 	if (!shaderBuffer || !vertexShader || !_device)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader. Either shaderBuffer, vertexShader or device is nullptr"));
 		return false;
 	}
 
@@ -273,6 +279,7 @@ bool Graphics::CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** p
 {
 	if (!shaderBuffer || !pixelShader || !_device)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader. Either shaderBuffer, pixelShader or device is nullptr"));
 		return false;
 	}
 
@@ -299,6 +306,7 @@ void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag)
 	HRESULT result = _deviceContext->Map(resource, 0, mapFlag, 0, &mappedResource);
 	if(FAILED(result))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to map resources"));
 		Unmap(resource);
 		return nullptr;
 	}

@@ -28,9 +28,9 @@ TODOs:
 -- RnederingIssues.txt 						|> IN PROGRESS (TODO: Read about shader reflection in directx without Effects framework usage!)
 -- Event classes							|> ALL DONE
 -- Input adjusted to Delegate class 		|> ALL DONE
--- Debug class + logging (DT_DEBUG check, OnLog Delegate with LogType enum and LogMessage string)
--- Transform::SetForward, Transform::SetUp, Transform::SetRight methods
+-- Debug class + logging					|> ALL DONE
 -- Find a way to reflect shader's parameters (color, textures, floats etc.)
+-- Resize window handling
 -- Reorganize rendering architecture in DTEngine
 -- Debug drawing lines, spheres, boxes etc. (visible only in DT_DEBUG builds, renderstates)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
@@ -44,3 +44,4 @@ TODOs:
 -- Basic lighting (PhongBlinn? Lambert?)
 -- Think about ComPtr from <wrl/client.h>
 -- Think about engine's DLL and connecting it to other projects where game will be written (maybe some sort of registering game derrived class? or registering game by passing it to the App constructor/initializer?)
+-- MATH library

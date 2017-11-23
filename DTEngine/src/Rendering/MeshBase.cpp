@@ -1,6 +1,7 @@
 #include "MeshBase.h"
 
 #include "Rendering/Graphics.h"
+#include "Debug/Debug.h"
 
 MeshBase::MeshBase() : _vertexBuffer(nullptr), _indexBuffer(nullptr), _verticesCount(0), _indicesCount(0)
 {
@@ -34,6 +35,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, uint32* indices)
 	bool result = graphics.CreateBuffer(bufferDesc, bufferData, &_vertexBuffer);
 	if (!result)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex buffer"));
 		return false;
 	}
 
@@ -47,6 +49,10 @@ bool MeshBase::CreateBuffers(VertexType* vertices, uint32* indices)
 	bufferData.pSysMem = indices;
 
 	result = graphics.CreateBuffer(bufferDesc, bufferData, &_indexBuffer);
+	if(!result)
+	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create index buffer"));
+	}
 
 	return result;
 }

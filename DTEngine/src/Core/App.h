@@ -13,6 +13,7 @@ class Game;
 class Graphics;
 class ResourceManager;
 class Input;
+class Debug;
 
 class App : public UniqueSingleton<App>
 {
@@ -25,6 +26,7 @@ protected:
 	UniquePtr<Graphics> _graphics;
 	UniquePtr<ResourceManager> _resourceManager;
 	UniquePtr<Input> _input;
+	UniquePtr<Debug> _debug;
 
 	bool _isRunning;
 
@@ -82,6 +84,12 @@ public:
 		DT_ASSERT(_input);
 		return *_input;
 	}
+
+	inline Debug& GetDebug()
+	{
+		DT_ASSERT(_debug);
+		return *_debug;
+	}
 };
 
 inline Window& GetMainWindow()
@@ -112,4 +120,9 @@ inline ResourceManager& GetResourceManager()
 inline Input& GetInput()
 {
 	return App::GetInstance()->GetInput();
+}
+
+inline Debug& GetDebug()
+{
+	return App::GetInstance()->GetDebug();
 }

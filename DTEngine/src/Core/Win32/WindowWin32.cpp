@@ -2,6 +2,7 @@
 
 #include "Core/MessageSystem.h"
 #include "Core/Input.h"
+#include "Debug/Debug.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -25,7 +26,7 @@ bool WindowWin32::Open()
 
 	if(!RegisterClassEx(&wndClassEx))
 	{
-		MessageBox(NULL, DT_TEXT("Failed to register window class"), DT_TEXT("Error!"), MB_OK | MB_ICONERROR);
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot register window class"));
 
 		return false;
 	}
@@ -47,7 +48,7 @@ bool WindowWin32::Open()
 
 	if(_hWnd == INVALID_HANDLE_VALUE)
 	{
-		MessageBox(NULL, DT_TEXT("Failed to create window"), DT_TEXT("Error!"), MB_OK | MB_ICONERROR);
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create HWND"));
 
 		return false;
 	}

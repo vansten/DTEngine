@@ -140,6 +140,7 @@
     <ClCompile Include="src\Core\Time.cpp" />
     <ClCompile Include="src\Core\Win32\TimeWin32.cpp" />
     <ClCompile Include="src\Core\Win32\WindowWin32.cpp" />
+    <ClCompile Include="src\Debug\Debug.cpp" />
     <ClCompile Include="src\GameFramework\Component.cpp" />
     <ClCompile Include="src\GameFramework\Components\Camera.cpp" />
     <ClCompile Include="src\GameFramework\Components\CameraControl.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="src\ResourceManagement\Asset.cpp" />
     <ClCompile Include="src\ResourceManagement\ResourceManager.cpp" />
     <ClCompile Include="src\GameFramework\Components\HexagonalGrid.cpp" />
+    <ClCompile Include="src\Utility\Math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />
@@ -178,6 +180,7 @@
     <ClInclude Include="src\Core\Win32\TimeWin32.h" />
     <ClInclude Include="src\Core\Win32\WindowWin32.h" />
     <ClInclude Include="src\Core\Window.h" />
+    <ClInclude Include="src\Debug\Debug.h" />
     <ClInclude Include="src\GameFramework\Component.h" />
     <ClInclude Include="src\GameFramework\Components\Camera.h" />
     <ClInclude Include="src\GameFramework\Components\CameraControl.h" />

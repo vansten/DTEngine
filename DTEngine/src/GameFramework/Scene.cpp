@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include "Core/Archive.h"
+#include "Debug/Debug.h"
 #include "Components/Camera.h"
 
 #include "Components/CameraControl.h"
@@ -65,7 +66,7 @@ void Scene::Load()
 
 	if (!Camera::GetMainCamera())
 	{
-		OutputDebugString(DT_TEXT("\n\nThere is no camera placed on the scene!\n\n"));
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
 	}
 
 	//TODO: Put this something like FileSystem::Close(archive);

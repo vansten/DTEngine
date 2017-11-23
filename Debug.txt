@@ -1,0 +1,86 @@
+Debug
+
+Features:
+-- Works only if DT_DEBUG is defined and set to non-zero value
+-- Loging
+	-- Verbosity: Error, Warning, Exception, Log
+	-- Channel: Engine, Physics, Rendering, Gameplay, Commands, own channels
+	-- Output window in VS
+	-- OnLog(Verbosity, string channel, string msg) event
+	-- OnChannelToggled(const Channel&) event
+	-- On screen console attached to OnLog event
+-- Commands
+	-- On screen console
+	-- Executing commands with parameters
+-- Drawing
+	-- Wireframe Render State (ZTest? ZWrite? CullMode.Back, BlendState.Disabled)
+	-- Rendered after transparent objects
+	-- Line (startPoint, endPoint, color, duration (?))
+	-- Sphere (center, radius, color, duration (?))
+	-- Cube (center, scale, color, duration (?))
+
+DebugPrimitive
+{
+	Transform t;
+	SharedPtr<Shader> colorShader;
+	XMFLOAT4 color;
+
+	void Initialize(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale, XMFLOAT4 color);
+	void Render(Graphics& graphics);
+}
+
+Debug
+{
+public:
+	enum class Verbosity
+	{
+		Log,
+		Warning,
+		Error,
+		Exception
+	}
+
+	struct Channel
+	{
+		string name;
+		bool visible;
+	}
+
+private:
+	DynamicArray<string, Channel> channels;
+	Dictionary<Channel, DynamicArray<string>> logsPerChannel;
+
+	Dictionary<string, Event<void, const DynamicArray<string>&>> commands;
+
+	DynamicArray<SharedPtr<DebugPrimitives>> debugPrimitives;
+
+public:
+	Event<void, Verbosity, string, string> OnLog;
+	Event<void, const Channel&> OnChannelToggled;
+
+public:
+	Initialize();
+	Shutdown();
+
+	Log(Verbosity, string channel, string msg);
+	Log(Verbosity, string channel, string format, parameters...);
+
+	SetChannelVisible(string channel, bool visible);
+
+	RegisterChannel(string channel);
+
+	const Dictionary<Channel, DynamicArray<string>> GetAllLogs();
+
+	RegisterCommand(string command, Event<void, const DynamicArray<string>&>::Delegate::FunctionType executeDelegate);
+	template<typename Class, typename FunctionType = Event<void, const DynamicArray<string>&::ClassDelegate<Class>::ClassFunctionType>
+	RegisterCommand(string command, FunctionType executeDelegate, SharedPtr<Class> object);
+
+	DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color, float width, float duration = -1.0f);
+	DrawSphere(XMFLOAT3 center, float radius, XMFLOAT4 color, float duration = -1.0f);
+	DrawCube(XMFLOAT3 center, XMFLOAT3 scale, XMFLOAT4 color, float duration = -1.0f);
+
+	DynamicArray<SharedPtr<DebugPrimitive>>& GetPotentialyVisiblePrimitives(Camera& c);
+
+	// TEMPORARY
+	DrawPrimitives(Graphics& g);
+}

@@ -6,7 +6,7 @@ template<typename ReturnType, typename ...Args>
 class Event
 {
 private:
-	typedef bool(*Predicate)(const ReturnType& value);
+	typedef bool(*Predicate)(ReturnType);
 
 	class DelegateBase
 	{

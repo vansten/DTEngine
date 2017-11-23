@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include "Debug/Debug.h"
+
 Game::Game() : _activeScene(nullptr)
 {
 
@@ -10,6 +12,7 @@ bool Game::Initialize()
 	_activeScene = UniquePtr<Scene>(new Scene(DT_TEXT("Untitled")));
 	if (!_activeScene)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to create default scene"));
 		return false;
 	}
 

@@ -1,5 +1,6 @@
 #include "StaticMesh.h"
 
+#include "Debug/Debug.h"
 #include "Utility/String.h"
 
 #include <fstream>
@@ -181,7 +182,7 @@ bool StaticMesh::InitializeFromOBJ(const String& path)
 
 bool StaticMesh::InitializeFromFBX(const String& path)
 {
-	OutputDebugString(DT_TEXT("FBX importing is not supported yet!\n"));
+	GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Importing FBX files is not supported yet"));
 	return false;
 }
 
@@ -199,6 +200,6 @@ bool StaticMesh::Initialize(const String& path)
 		return InitializeFromFBX(path);
 	}
 
-	OutputDebugString(DT_TEXT("Unknown extension of provided path\n"));
+	GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to load static mesh from path (%s). Reason: Unknown extension (%s)"), path.c_str(), extension.c_str());
 	return false;
 }

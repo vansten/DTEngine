@@ -109,15 +109,29 @@ using double64 = double;
 		// Defining unicode to get wide characters in Win32 API strings
 		#define UNICODE
 
-using String = std::wstring;
-using StringStream = std::wstringstream;
-
+		using Char = wchar_t;
+		using String = std::wstring;
+		using StringStream = std::wstringstream;
+		
+		template<int Size>
+		inline int Sprintf(Char (&buffer)[Size], const Char* const format, va_list argList)
+		{
+			return vswprintf_s(buffer, format, argList);
+		}
+		
 		#define DT_TEXT(string) L##string
 
 	#else
 
-using String = std::string;
-using StringStream = std::stringstream;
+		using Char = char;
+		using String = std::string;
+		using StringStream = std::stringstream;
+		
+		template<int Size>
+		inline int Sprintf(Char (&buffer)[Size], char Char* const format, va_list argList)
+		{
+			return sprintf_s(buffer, format, argList);
+		}
 
 		#define DT_TEXT(string) string
 
@@ -146,6 +160,8 @@ using String = std::string;
 	#define DT_TEXT(string) string
 
 #endif
+
+#define STRING(s) DT_TEXT(#s)
 
 #if defined(DEBUG) || defined(_DEBUG)
 

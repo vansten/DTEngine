@@ -4,12 +4,13 @@
 #include "GameFramework/GameObject.h"
 #include "GameFramework/Components/Camera.h"
 
+#include "Debug/Debug.h"
+
 const float32 CameraControl::_xRotationMax = 89.99f;
 const float32 CameraControl::_xRotationMin = -89.99f;
 
 CameraControl::CameraControl(SharedPtr<GameObject> owner) : Component(owner)
 {
-
 }
 
 CameraControl::CameraControl(const CameraControl& other) : Component(other), _movementSpeed(other._movementSpeed), _shiftMultiplier(other._shiftMultiplier), _mouseSensitivity(other._mouseSensitivity)
@@ -107,22 +108,9 @@ bool CameraControl::OnLMBReleased()
 	XMINT2 mousePosition = GetInput().GetMousePosition();
 	XMFLOAT3 worldPosition = Camera::GetMainCamera()->ConvertScreenToWorldPoint(mousePosition);
 	XMINT2 backToScreen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(worldPosition);
-	String s = DT_TEXT("");
-	s += std::to_wstring(mousePosition.x);
-	s += DT_TEXT(" ");
-	s += std::to_wstring(mousePosition.y);
-	s += DT_TEXT(" ");
-	s += std::to_wstring(worldPosition.x);
-	s += DT_TEXT(" ");
-	s += std::to_wstring(worldPosition.y);
-	s += DT_TEXT(" ");
-	s += std::to_wstring(worldPosition.z);
-	s += DT_TEXT(" ");
-	s += std::to_wstring(backToScreen.x);
-	s += DT_TEXT(" ");
-	s += std::to_wstring(backToScreen.y);
-	s += DT_TEXT("\n");
-	OutputDebugString(s.c_str());
+
+	GetDebug().Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("%i %i %.2f %.2f %.2f %i %i"), mousePosition.x, mousePosition.y, worldPosition.x, worldPosition.y, worldPosition.z, backToScreen.x, backToScreen.y);
+	
 	// TODO: Cast a ray through scene and pick hexagon if found
 	return false;
 }
@@ -161,15 +149,11 @@ void CameraControl::Update(float32 deltaTime)
 		const float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 
 		XMFLOAT3 currentPosition = _owner->GetTransform()->GetPosition();
-		currentPosition.x += direction.x * speedMulDeltaTime;
-		currentPosition.y += direction.y * speedMulDeltaTime;
-		currentPosition.z += direction.z * speedMulDeltaTime;
+		currentPosition += direction * speedMulDeltaTime;
 		_owner->GetTransform()->SetPosition(currentPosition);
 
 		const XMINT2 mousePosition = GetInput().GetMousePosition();
-		XMINT2 mouseDeltaPosition = mousePosition;
-		mouseDeltaPosition.x -= _previousMousePosition.x;
-		mouseDeltaPosition.y -= _previousMousePosition.y;
+		XMINT2 mouseDeltaPosition = mousePosition - _previousMousePosition;
 
 		XMFLOAT3 currentRotation = _owner->GetTransform()->GetRotation();
 		currentRotation.x += (mouseDeltaPosition.y * deltaTime * _mouseSensitivity);

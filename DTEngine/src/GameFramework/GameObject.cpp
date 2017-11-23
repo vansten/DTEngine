@@ -1,12 +1,13 @@
 #include "GameObject.h"
 
+#include "Debug/Debug.h"
 #include "Rendering/Graphics.h"
 #include "Game.h"
 
 void Transform::CalculateModelMatrix()
 {
 	const XMFLOAT3 radianRotation = XMFLOAT3(XMConvertToRadians(_rotation.x), XMConvertToRadians(_rotation.y), XMConvertToRadians(_rotation.z));
-	_modelMatrix =	XMMatrixScalingFromVector(XMLoadFloat3(&_scale)) * 
+	_modelMatrix = XMMatrixScalingFromVector(XMLoadFloat3(&_scale)) * 
 					XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&radianRotation)) *
 					XMMatrixTranslationFromVector(XMLoadFloat3(&_position));
 	XMMATRIX parentMatrix = XMMatrixIdentity();
@@ -182,6 +183,7 @@ void GameObject::Update(float32 deltaTime)
 {
 	if(!_transform)
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GAMEOBJECT, DT_TEXT("Cannot update game object with name (%s). Reason: transform is nullptr"));
 		return;
 	}
 

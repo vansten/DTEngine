@@ -20,19 +20,24 @@ Scene::Render()
 		camera.Render(gameObjects.getAllByPredicate(go => go.IsEnabledInHierarchy && go.IsVisibleBy(camera)))
 
 Camera::Render(gameObjects)
-	opaqueRenderers = gameObjects.GetPotentialyVisibleOpaqueRenderers()
+	opaqueRenderers = gameObjects.GetPotentialyVisibleOpaqueRenderers(*this)
 	opaqueRenderers.sort(materialQueue && frontToBack)
 	opaqueRenderers.groupBy(material)
 	foreach(renderer in opaqueRenderers)
 		renderer.GetOwner().OnWillRender()
 		renderer.Render()	// Here materials will set render states
 
-	transparentRenderers = gameObjects.GetPotentialyVisibleTransparentRenderers()
+	transparentRenderers = gameObjects.GetPotentialyVisibleTransparentRenderers(*this)
 	transparentRenderers.sort(materialQueue && backToFront)
 	transparentRenerers.groupBy(material)
 	foreach(renderer in transparentRenderers)
 		renderer.GetOwner().OnWillRender()
 		renderer.Render()	// Here materials will set render states
+
+	SetDebugRS()
+	debugRenders = Debug::GetPotentialyVisiblePrimitives(*this)
+	foreach(object in debugRenders)
+		object.Render()
 
 	skybox.Render()	// Here material will set render state
 

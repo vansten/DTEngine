@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "Debug/Debug.h"
+
 #include "Graphics.h"
 #include "GameFramework/GameObject.h"
 #include "GameFramework/Components/Camera.h"
@@ -30,6 +32,7 @@ bool Shader::Initialize(const String& path)
 
 	if(!graphics.CreateVertexShader(vertexShaderBuffer, &_vertexShader))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader"));
 		return false;
 	}
 
@@ -39,6 +42,7 @@ bool Shader::Initialize(const String& path)
 
 	if(!graphics.CreatePixelShader(pixelShaderBuffer, &_pixelShader))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create pixel shader"));
 		return false;
 	}
 
@@ -63,6 +67,7 @@ bool Shader::Initialize(const String& path)
 
 	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), vertexShaderBuffer->GetBufferPointer(), (uint64)vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create input layout"));
 		return false;
 	}
 
@@ -82,6 +87,7 @@ bool Shader::Initialize(const String& path)
 
 	if(!graphics.CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create constant buffer for PerFrame data"));
 		return false;
 	}
 
@@ -92,6 +98,7 @@ bool Shader::Initialize(const String& path)
 
 	if(!graphics.CreateBuffer(bufferDesc, bufferData, &_perObjectBuffer))
 	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create constant buffer for PerObject data"));
 		return false;
 	}
 
