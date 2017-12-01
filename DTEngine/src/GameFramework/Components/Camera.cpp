@@ -55,9 +55,7 @@ void Camera::Shutdown()
 
 void Camera::PostLoad()
 {
-	Window& window = GetMainWindow();
-	const float32 aspectRatio = window.GetAspectRatio();
-	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
+	OnResize();
 
 	SharedPtr<Transform> ownerTransform = _owner->GetTransform();
 	OnOwnerTransformUpdated(ownerTransform);
@@ -68,6 +66,13 @@ void Camera::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
 	const XMFLOAT3 forward = transform->GetForward();
 	const XMFLOAT3 position = transform->GetPosition();
 	_viewMatrix = XMMatrixLookToLH(XMLoadFloat3(&position), XMLoadFloat3(&forward), XMLoadFloat3(&VectorHelpers::Up));
+}
+
+void Camera::OnResize()
+{
+	Window& window = GetMainWindow();
+	const float32 aspectRatio = window.GetAspectRatio();
+	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
 }
 
 // Converts from screen coordinates to world coordinates

@@ -2,5 +2,7 @@
 **/Debug/*
 **/Release/*
 !**/src/Debug/*
+!**/ThirdParty/Debug/*
+!**/ThirdParty/Release/*
 !**/ThirdParty/**/*.dll
 !**/ThirdParty/**/*.lib

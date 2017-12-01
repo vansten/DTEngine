@@ -3,6 +3,7 @@
 #include "Core/MessageSystem.h"
 #include "Core/Input.h"
 #include "Debug/Debug.h"
+#include "Rendering/Graphics.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -30,16 +31,27 @@ bool WindowWin32::Open()
 
 		return false;
 	}
+
+	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+
+	RECT desiredClientRect;
+	desiredClientRect.left = 0;
+	desiredClientRect.right = _width;
+	desiredClientRect.top = 0;
+	desiredClientRect.bottom = _height;
+
+	AdjustWindowRect(&desiredClientRect, windowStyle, false);
+
 	// Create window and store handle
 	_hWnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE,
 		wndClassEx.lpszClassName,
 		_title.c_str(),
-		WS_OVERLAPPEDWINDOW,
+		windowStyle,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		_width,
-		_height,
+		desiredClientRect.right - desiredClientRect.left,
+		desiredClientRect.bottom - desiredClientRect.top,
 		0,
 		0,
 		wndClassEx.hInstance,
@@ -80,6 +92,9 @@ bool WindowWin32::Close()
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	// Helper bool to catch only size msg in EXITSIZEMMOVE and ENTERSIZEMOVE
+	static bool wasResizing = false;
+
 	switch(msg)
 	{
 	case WM_ACTIVATE:
@@ -97,6 +112,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 		{
 			MessageSystem::PostQuit();
+			break;
+		}
+	case WM_SIZE:
+		{
+			const uint16 newWidth = LOWORD(lParam);
+			const uint16 newHeight = HIWORD(lParam);
+
+			GetMainWindow().SetNewSize(newWidth, newHeight);
+
+			if(App::GetInstance()->IsRunning())
+			{
+				wasResizing = true;
+				GetGraphics().OnResize();
+			}
+
+			break;
+		}
+	case WM_ENTERSIZEMOVE:
+		{
+			GetGraphics().BeginResize();
+			break;
+		}
+	case WM_EXITSIZEMOVE:
+		{
+			if(wasResizing)
+			{
+				wasResizing = false;
+				GetGraphics().EndResize();
+			}
 			break;
 		}
 	case WM_KEYDOWN:

@@ -1,10 +1,13 @@
 #include "Graphics.h"
 
-#include "Debug/Debug.h"
 #include "Core/Win32/WindowWin32.h"
+
+#include "Debug/Debug.h"
+
 #include "GameFramework/GameObject.h"
 #include "GameFramework/Components/Camera.h"
 #include "GameFramework/Components/MeshRenderer.h"
+
 #include "MeshBase.h"
 #include "Material.h"
 
@@ -66,35 +69,42 @@ bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& de
 	return true;
 }
 
-bool Graphics::Initialize(bool vsync)
+bool Graphics::InitializeWindowDependentResources(const Window& window)
 {
-	GetDebug().RegisterChannel(DT_TEXT("Rendering"));
-
 	uint32 numerator;
 	uint32 denominator;
 
-	Window& window = GetMainWindow();
+	const uint32 windowWidth = (uint32)window.GetWidth();
+	const uint32 windowHeight = (uint32)window.GetHeight();
 
-	if(!GetRefreshRate((uint32)window.GetHeight(), numerator, denominator))
+	if(!GetRefreshRate(windowHeight, numerator, denominator))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot retrieve refresh rate"));
 		return false;
 	}
-	
+
+	IDXGIDevice* DXGIDevice = nullptr;
+	_device->QueryInterface(__uuidof(IDXGIDevice), (void **)&DXGIDevice);
+
+	IDXGIAdapter* DXGIAdapter = nullptr;
+	DXGIDevice->GetAdapter(&DXGIAdapter);
+
+	IDXGIFactory* DXGIFactory = nullptr;
+	DXGIAdapter->GetParent(__uuidof(DXGIFactory), (void **)&DXGIFactory);
+
 	// Create swap chain, device and device context
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};
 	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = (uint32)window.GetWidth();
-	swapChainDesc.BufferDesc.Height = (uint32)window.GetHeight();
+	swapChainDesc.BufferDesc.Width = windowWidth;
+	swapChainDesc.BufferDesc.Height = windowHeight;
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-	_vsync = vsync;
 	swapChainDesc.BufferDesc.RefreshRate.Numerator = _vsync ? numerator : 0;
 	swapChainDesc.BufferDesc.RefreshRate.Denominator = _vsync ? denominator : 1;
 
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	WindowWin32 windowWin32 = (WindowWin32&)window;
+	const WindowWin32& windowWin32 = (const WindowWin32&)window;
 	swapChainDesc.OutputWindow = windowWin32.GetHWND();
 
 	swapChainDesc.SampleDesc.Count = 1;
@@ -107,13 +117,12 @@ bool Graphics::Initialize(bool vsync)
 
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
+	HRESULT result = DXGIFactory->CreateSwapChain(_device, &swapChainDesc, &_swapChain);
 
-#if DT_DEBUG
-	HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
-#else
-	HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
-#endif
+	RELEASE_COM(DXGIFactory);
+	RELEASE_COM(DXGIAdapter);
+	RELEASE_COM(DXGIDevice);
+
 	HR(result);
 
 	ID3D11Texture2D* backBuffer = 0;
@@ -129,8 +138,8 @@ bool Graphics::Initialize(bool vsync)
 
 	// Create depth buffer
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {0};
-	depthBufferDesc.Width = (uint32)window.GetWidth();
-	depthBufferDesc.Height = (uint32)window.GetHeight();
+	depthBufferDesc.Width = windowWidth;
+	depthBufferDesc.Height = windowHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -190,7 +199,7 @@ bool Graphics::Initialize(bool vsync)
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	rasterizerDesc.DepthClipEnable = true;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	
+
 	result = _device->CreateRasterizerState(&rasterizerDesc, &_rasterizerState);
 	HR(result);
 
@@ -198,8 +207,8 @@ bool Graphics::Initialize(bool vsync)
 
 	// Create viewport
 	D3D11_VIEWPORT viewport = {0};
-	viewport.Width = (float32)window.GetWidth();
-	viewport.Height = (float32)window.GetHeight();
+	viewport.Width = (float32)windowWidth;
+	viewport.Height = (float32)windowHeight;
 	viewport.MaxDepth = 1.0f;
 
 	_deviceContext->RSSetViewports(1, &viewport);
@@ -207,22 +216,51 @@ bool Graphics::Initialize(bool vsync)
 	return true;
 }
 
-void Graphics::Shutdown()
+void Graphics::ReleaseWindowDependentResources()
 {
 	if(_swapChain)
 	{
 		// Set to windowed before shutdown
 		_swapChain->SetFullscreenState(false, NULL);
 	}
-
 	RELEASE_COM(_rasterizerState);
 	RELEASE_COM(_depthStencilView);
 	RELEASE_COM(_depthStencilState);
 	RELEASE_COM(_depthStencilBuffer);
 	RELEASE_COM(_renderTargetView);
+	RELEASE_COM(_swapChain);
+}
+
+bool Graphics::Initialize(bool vsync)
+{
+	_vsync = vsync;
+
+	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	uint32 deviceFlag = 0;
+
+#if DT_DEBUG
+	deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+	HRESULT result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, deviceFlag, &featureLevel, 1, D3D11_SDK_VERSION, &_device, nullptr, &_deviceContext);
+
+	HR(result);
+
+	if(!InitializeWindowDependentResources(GetMainWindow()))
+	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize window size dependent resources"));
+		return false;
+	}
+
+	return true;
+}
+
+void Graphics::Shutdown()
+{
+	ReleaseWindowDependentResources();
 	RELEASE_COM(_deviceContext);
 	RELEASE_COM(_device);
-	RELEASE_COM(_swapChain);
 }
 
 void Graphics::BeginScene(D3D11_PRIMITIVE_TOPOLOGY topology)
@@ -247,6 +285,34 @@ void Graphics::EndScene()
 	{
 		_swapChain->Present(0, 0);
 	}
+}
+
+void Graphics::BeginResize()
+{
+	_isResizing = true;
+}
+
+void Graphics::OnResize()
+{
+	if(_isResizing)
+	{
+		return;
+	}
+
+	uint16 width = GetMainWindow().GetWidth();
+	uint16 height = GetMainWindow().GetHeight();
+	GetDebug().Printf(LogVerbosity::Log, CHANNEL_GRAPHICS, DT_TEXT("Resizing... New size is %i X %i"), width, height);
+
+	ReleaseWindowDependentResources();
+	InitializeWindowDependentResources(GetMainWindow());
+
+	Camera::GetMainCamera()->OnResize();
+}
+
+void Graphics::EndResize()
+{
+	_isResizing = false;
+	OnResize();
 }
 
 bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUBRESOURCE_DATA& bufferData, ID3D11Buffer** bufferPtr)

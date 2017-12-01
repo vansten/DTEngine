@@ -32,11 +32,16 @@ private:
 	SharedPtr<GameObject> _currentlyRenderedObject;
 	bool _vsync;
 
+	bool _isResizing;
+
 public:
 	Graphics();
 
 private:
 	bool GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& denominator);
+
+	bool InitializeWindowDependentResources(const Window& window);
+	void ReleaseWindowDependentResources();
 
 public:
 	bool Initialize(bool vsync);
@@ -44,6 +49,10 @@ public:
 
 	void BeginScene(D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	void EndScene();
+
+	void BeginResize();
+	void OnResize();
+	void EndResize();
 
 	bool CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUBRESOURCE_DATA& bufferData, ID3D11Buffer** bufferPtr);
 	bool CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader** vertexShader);

@@ -29,10 +29,10 @@ TODOs:
 -- Event classes							|> ALL DONE
 -- Input adjusted to Delegate class 		|> ALL DONE
 -- Debug class + logging					|> ALL DONE
--- Find a way to reflect shader's parameters (color, textures, floats etc.)
--- Resize window handling
+-- Resize window handling					|> IN PROGRESS (TODO: Replace Camera::GetMain()->OnResize with Camera::OnResize() which iterates through all of the registered cameras and calls OnResize on them. AFTER reorganizing rendering architecture)
 -- Reorganize rendering architecture in DTEngine
 -- Debug drawing lines, spheres, boxes etc. (visible only in DT_DEBUG builds, renderstates)
+-- Find a way to reflect shader's parameters (color, textures, floats etc.)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
 -- GUI (delegates on click for buttons using std::function (Functions), elements created once and rendered, GUIText and GUIImage classes responsible for rendering, components, texts, shaders for texts and images, font loading)
 -- Debug console rendered by texts on GUI, toggled by ~ (VK_OEM_3) (maybe commands?), console attaches itself to Debug::OnLog, gathers also commands (and marks them to be visible), colors?

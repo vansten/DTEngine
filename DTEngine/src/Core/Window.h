@@ -37,6 +37,8 @@ public:
 	virtual bool Hide() = 0;
 	virtual bool Close() = 0;
 
+	void SetNewSize(uint16 width, uint16 height);
+
 public:
 	static UniquePtr<Window> Create(const String& title, uint16 width, uint16 height);
 };

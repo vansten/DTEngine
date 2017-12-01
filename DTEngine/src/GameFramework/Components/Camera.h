@@ -32,6 +32,8 @@ public:
 
 	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform) override;
 
+	void OnResize();
+
 	XMFLOAT3 ConvertScreenToWorldPoint(const XMINT2& screenPoint) const;
 	XMINT2 ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const;
 

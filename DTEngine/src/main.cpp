@@ -7,7 +7,9 @@
 #include "Core/Window.h"
 #include "Core/Event.h"
 
-#include "../ThirdParty/VLD/include/vld.h"
+#if DT_DEBUG
+#include "Includes/vld.h"
+#endif
 
 #if DT_WINDOWS
 
@@ -21,7 +23,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			App::FreeInstance();
 
 #if DT_DEBUG
-			VLDReportLeaks();
 			if(_CrtDumpMemoryLeaks())
 			{
 				return APP_MEMORY_LEAKS;
