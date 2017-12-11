@@ -155,7 +155,8 @@ public:
 	void PreSave();
 
 	void Update(float32 deltaTime);
-	void Render(Graphics& graphics);
+
+	void OnWillRender(Graphics& graphics);
 
 	void OnTransformUpdated();
 	void SetEnabled(bool enabled);

@@ -37,9 +37,6 @@ void Scene::Load()
 	cameraObject->GetTransform()->SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
 	cameraObject->AddComponent<CameraControl>();
 
-	SharedPtr<GameObject> testObject = SpawnObject(gridObject, DT_TEXT("Test"));
-	testObject->GetTransform()->SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
-	
 	SharedPtr<Hexagon> h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));
 	SharedPtr<Hexagon> h2 = grid->GetHexagonAt(AxialCoordinates(3, 1));
 	
@@ -123,11 +120,27 @@ void Scene::Update(float32 deltaTime)
 
 void Scene::Render(Graphics& graphics)
 {
-	for (auto go : _gameObjects)
+	const DynamicArray<SharedPtr<Camera>>& cameras = Camera::GetAllCameras();
+	for(auto camera : cameras)
 	{
-		if(go->IsEnabledInHierarchy())
+		if(camera)
 		{
-			go->Render(graphics);
+			camera->Render(graphics, MeshRenderer::GetAllMeshRenderers());
+		}
+	}
+
+	SharedPtr<Camera> main = Camera::GetMainCamera();
+	if(main)
+	{
+		main->RenderDebug(graphics);
+		main->RenderSky(graphics);
+	}
+
+	for(auto camera : cameras)
+	{
+		if(camera)
+		{
+			// camera->RenderUI();
 		}
 	}
 }

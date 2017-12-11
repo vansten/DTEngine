@@ -51,7 +51,9 @@ public:
 
 	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform);
 	virtual void Update(float32 deltaTime);
-	virtual void Render(Graphics& graphics);
+	virtual void OnRender(Graphics& graphics);
+
+	virtual void OnEnableChanged(bool enabled);
 
 	SharedPtr<GameObject> GetOwner() const;
 

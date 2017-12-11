@@ -25,16 +25,16 @@ TODOs:
 -- Cloning GameObjects						|> ALL DONE
 -- Smart pointers + architecture reworked	|> ALL DONE
 -- Message passing 							|> ALL DONE
--- RnederingIssues.txt 						|> IN PROGRESS (TODO: Read about shader reflection in directx without Effects framework usage!)
 -- Event classes							|> ALL DONE
 -- Input adjusted to Delegate class 		|> ALL DONE
 -- Debug class + logging					|> ALL DONE
--- Resize window handling					|> IN PROGRESS (TODO: Replace Camera::GetMain()->OnResize with Camera::OnResize() which iterates through all of the registered cameras and calls OnResize on them. AFTER reorganizing rendering architecture)
--- Reorganize rendering architecture in DTEngine
+-- Resize window handling					|> ALL DONE
+-- Reorganize rendering architecture		|> IN PROGRESS (TODO: MeshRenderer::OnOwnerEnabled/OnOwnerDisabled, determining bounding box of renderers (and use it in frustum checks), material parameters, order, culling etc, material serialization/deserialization, render states)
 -- Debug drawing lines, spheres, boxes etc. (visible only in DT_DEBUG builds, renderstates)
--- Find a way to reflect shader's parameters (color, textures, floats etc.)
+-- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
+-- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
--- GUI (delegates on click for buttons using std::function (Functions), elements created once and rendered, GUIText and GUIImage classes responsible for rendering, components, texts, shaders for texts and images, font loading)
+-- UI (delegates on click for buttons using std::function (Functions), elements created once and rendered, UIText and UIImage classes responsible for rendering, both deriving from UIRenderer (?), components, texts, shaders for texts and images, font loading)
 -- Debug console rendered by texts on GUI, toggled by ~ (VK_OEM_3) (maybe commands?), console attaches itself to Debug::OnLog, gathers also commands (and marks them to be visible), colors?
 -- Physics (simple raycasting with PhysX? simple colliders box, sphere, capsule, cone, quad (also for plane), cylinder, hexagon)
 -- MemoryManagers/Allocators (new and delete overrides, with lines and files parameters)

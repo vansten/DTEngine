@@ -5,48 +5,66 @@
 // - once written (uirenderer, material, meshrenderer, skinnedmeshrenderer) should require no work in future
 // - scenes/cameras automatically know in which order draw the elements (opaque->transparent->ui, front->back, back->front), which state of render device to use
 
-Scene::RegisterCamera(newCamera)
-	registeredCameras.add(newCamera)
-	registeredCameras.sort(cameraPriority)	// Descending order (highest priority first then lower ones)
+Camera::allCameras
 
-Scene::GetMainCamera()
-	return registeredCameras[0]
+Camera::RegisterCamera(camera)
+	allCameras.add(camera)
 
-Camera::GetMainCamera()
-	return Scene::GetMainCamera()
+MeshRenderer::allRenderers
+
+MeshRenderer::RegisterMeshRenderer(meshRenderer)
+	allRenderers.add(meshRenderer)
 
 Scene::Render()
-	foreach camera in registeredCameras
-		camera.Render(gameObjects.getAllByPredicate(go => go.IsEnabledInHierarchy && go.IsVisibleBy(camera)))
+	foreach camera in Camera::allCameras
+		camera.Render(MeshRenderer::allRenderers))
 
-Camera::Render(gameObjects)
-	opaqueRenderers = gameObjects.GetPotentialyVisibleOpaqueRenderers(*this)
+	Camera::GetMain()->RenderDebug()
+
+	Camera::GetMain()->RenderSky()
+
+	foreach camera in Camera::allCameras
+		camera->RenderUI()
+
+Camera::Render(meshRenderers)
+	opaqueRenderers = GetPotentialyVisibleOpaqueRenderers(meshRenderers)
 	opaqueRenderers.sort(materialQueue && frontToBack)
 	opaqueRenderers.groupBy(material)
 	foreach(renderer in opaqueRenderers)
 		renderer.GetOwner().OnWillRender()
 		renderer.Render()	// Here materials will set render states
 
-	transparentRenderers = gameObjects.GetPotentialyVisibleTransparentRenderers(*this)
+	transparentRenderers = meshRenderers.GetPotentialyVisibleTransparentRenderers(*this)
 	transparentRenderers.sort(materialQueue && backToFront)
 	transparentRenerers.groupBy(material)
 	foreach(renderer in transparentRenderers)
 		renderer.GetOwner().OnWillRender()
 		renderer.Render()	// Here materials will set render states
 
+Camera::RenderDebug()
 	SetDebugRS()
 	debugRenders = Debug::GetPotentialyVisiblePrimitives(*this)
 	foreach(object in debugRenders)
 		object.Render()
 
+Camera::RenderSky()
 	skybox.Render()	// Here material will set render state
 
-	uiRenderers = gameObjects.GetUIRenderers()
+Camera::RenderUI(uiRenderers)
 	uiRenderers.sort(sortingOrder)
 	foreach(renderer in uiRenderers)
 		renderer.GetOwner().OnWillRender()
 		renderer.Render()	// Here materials will set render states
 
+Camera::IsVisible(renderer)
+	return IsInsideFrustum(renderer.position)
+
+Camera::IsInsideFrustum(position)
+	foreach plane in frustum
+		if(dot(plane.normal, position) < 0)
+			return false
+
+	return true
 
 So the material asset (for example xyz.dtmat) must be constructed as follows:
 #Material

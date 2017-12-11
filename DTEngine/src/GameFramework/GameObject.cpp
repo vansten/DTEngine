@@ -217,15 +217,12 @@ void GameObject::Update(float32 deltaTime)
 	_isInUpdate = false;
 }
 
-void GameObject::Render(Graphics& graphics)
+void GameObject::OnWillRender(Graphics& graphics)
 {
 	graphics.SetObject(SharedFromThis());
-	for (auto component : _components)
+	for(auto component : _components)
 	{
-		if (component->IsEnabled())
-		{
-			component->Render(graphics);
-		}
+		component->OnRender(graphics);
 	}
 }
 

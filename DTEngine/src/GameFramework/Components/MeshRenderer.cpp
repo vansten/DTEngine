@@ -6,6 +6,8 @@
 #include "Rendering/Material.h"
 #include "ResourceManagement/ResourceManager.h"
 
+DynamicArray<SharedPtr<MeshRenderer>> MeshRenderer::_allRenderers;
+
 MeshRenderer::MeshRenderer(SharedPtr<GameObject> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
 {
 	ResourceManager& resourceManager = GetResourceManager();
@@ -27,7 +29,35 @@ SharedPtr<Component> MeshRenderer::Copy(SharedPtr<GameObject> newOwner) const
 	return StaticPointerCast<Component>(copy);
 }
 
-void MeshRenderer::Render(Graphics& graphics)
+void MeshRenderer::RegisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
+{
+	_allRenderers.push_back(meshRenderer);
+}
+
+void MeshRenderer::UnregisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
+{
+	auto& found = std::find(_allRenderers.begin(), _allRenderers.end(), meshRenderer);
+	if(found != _allRenderers.end())
+	{
+		_allRenderers.erase(found);
+	}
+}
+
+void MeshRenderer::Initialize()
+{
+	Component::Initialize();
+
+	RegisterMeshRenderer(SharedFromThis());
+}
+
+void MeshRenderer::Shutdown()
+{
+	Component::Shutdown();
+
+	UnregisterMeshRenderer(SharedFromThis());
+}
+
+void MeshRenderer::OnRender(Graphics& graphics)
 {
 	if(!_mesh)
 	{
@@ -37,4 +67,26 @@ void MeshRenderer::Render(Graphics& graphics)
 
 	graphics.SetMaterial(_material);
 	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
+}
+
+void MeshRenderer::OnEnableChanged(bool enabled)
+{
+	if(enabled)
+	{
+		RegisterMeshRenderer(SharedFromThis());
+	}
+	else
+	{
+		UnregisterMeshRenderer(SharedFromThis());
+	}
+}
+
+RenderQueue MeshRenderer::GetQueue() const
+{
+	if(!_material)
+	{
+		return RenderQueue::Opaque;
+	}
+
+	return _material->GetRenderQueue();
 }

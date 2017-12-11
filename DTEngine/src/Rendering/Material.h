@@ -2,27 +2,47 @@
 
 #include "Shader.h"
 
+enum class RenderQueue
+{
+	Opaque,
+	Transparent
+};
+
 class Material : public Asset
 {
 protected:
+	static const uint16 OpaqueUpperLimit = 1000;
+
 	ID3D11Buffer* _perFrameBuffer;
 
 	std::shared_ptr<Shader> _shader;
 	XMFLOAT4 _color;
 
+	uint16 _queue;
+
 public:
 	Material();
 	virtual ~Material();
 
-	bool Initialize(const String& path);
+	virtual bool Initialize(const String& path) override;
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);
 	void SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject);
 
+	inline RenderQueue GetRenderQueue() const
+	{
+		if(_queue <= OpaqueUpperLimit)
+		{
+			return RenderQueue::Opaque;
+		}
+
+		return RenderQueue::Transparent;
+	}
+
 	inline const XMFLOAT4& GetColor() const { return _color; }
 	inline void SetColor(const XMFLOAT4& newColor) { _color = newColor; }
 
-	const std::shared_ptr<Shader> GetShader() const { return _shader; }
-	void SetShader(std::shared_ptr<Shader> shader) {_shader = shader;}
+	inline const std::shared_ptr<Shader> GetShader() const { return _shader; }
+	inline void SetShader(std::shared_ptr<Shader> shader) {_shader = shader;}
 };

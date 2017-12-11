@@ -15,6 +15,8 @@ bool Material::Initialize(const String& path)
 {
 	Asset::Initialize(path);
 
+	_queue = OpaqueUpperLimit;
+
 	ResourceManager& resourceManager = GetResourceManager();
 
 	// Basic shader

@@ -74,7 +74,12 @@ void Component::Update(float32 deltaTime)
 
 }
 
-void Component::Render(Graphics& graphics)
+void Component::OnRender(Graphics& graphics)
+{
+
+}
+
+void Component::OnEnableChanged(bool enabled)
 {
 
 }
@@ -92,4 +97,5 @@ bool Component::IsEnabled() const
 void Component::SetEnabled(bool enabled)
 {
 	_enabled = enabled;
+	OnEnableChanged(_enabled);
 }

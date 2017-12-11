@@ -22,13 +22,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			int exitCode = app->Run();
 			App::FreeInstance();
 
-#if DT_DEBUG
-			if(_CrtDumpMemoryLeaks())
-			{
-				return APP_MEMORY_LEAKS;
-			}
-#endif
-
 			return exitCode;
 		}
 	}

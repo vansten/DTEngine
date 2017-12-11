@@ -306,7 +306,7 @@ void Graphics::OnResize()
 	ReleaseWindowDependentResources();
 	InitializeWindowDependentResources(GetMainWindow());
 
-	Camera::GetMainCamera()->OnResize();
+	Camera::OnResize();
 }
 
 void Graphics::EndResize()

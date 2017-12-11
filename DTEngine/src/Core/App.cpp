@@ -110,6 +110,8 @@ void App::Loop()
 {
 	_isRunning = true;
 	float32 deltaTime = 1.0f / 60.0f;
+	float32 timer = 0.0f;
+	uint32 frames = 0;
 
 	while(!MessageSystem::IsPendingQuit())
 	{
@@ -123,6 +125,17 @@ void App::Loop()
 
 		_globalTime->Tick();
 		deltaTime = _globalTime->GetDeltaTime();
+		timer += deltaTime;
+		frames += 1;
+
+		if(timer > 1.0f)
+		{
+			float32 fps = frames / timer;
+			timer = 0.0f;
+			frames = 0;
+
+			GetDebug().Printf(LogVerbosity::Log, CHANNEL_GENERAL, DT_TEXT("Current FPS: %.3f"), fps);
+		}
 	}
 
 	_isRunning = false;
