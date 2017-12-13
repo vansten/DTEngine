@@ -179,6 +179,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\ResourceManagement\Asset.cpp" />
     <ClCompile Include="src\ResourceManagement\ResourceManager.cpp" />
     <ClCompile Include="src\GameFramework\Components\HexagonalGrid.cpp" />
+    <ClCompile Include="src\Utility\BoundingBox.cpp" />
     <ClCompile Include="src\Utility\Math.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +218,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\ResourceManagement\Asset.h" />
     <ClInclude Include="src\ResourceManagement\ResourceManager.h" />
     <ClInclude Include="src\GameFramework\Components\HexagonalGrid.h" />
+    <ClInclude Include="src\Utility\BoundingBox.h" />
     <ClInclude Include="src\Utility\Math.h" />
     <ClInclude Include="src\Utility\String.h" />
     <ClInclude Include="src\Utility\UniqueSingleton.h" />

@@ -29,7 +29,8 @@ TODOs:
 -- Input adjusted to Delegate class 		|> ALL DONE
 -- Debug class + logging					|> ALL DONE
 -- Resize window handling					|> ALL DONE
--- Reorganize rendering architecture		|> IN PROGRESS (TODO: MeshRenderer::OnOwnerEnabled/OnOwnerDisabled, determining bounding box of renderers (and use it in frustum checks), material parameters, order, culling etc, material serialization/deserialization, render states)
+-- Renaming functions in Component 			|> ALL DONE
+-- Reorganize rendering architecture		|> IN PROGRESS (TODO: material parameters, order, culling etc, material serialization/deserialization, render states)
 -- Debug drawing lines, spheres, boxes etc. (visible only in DT_DEBUG builds, renderstates)
 -- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)

@@ -2,6 +2,7 @@
 
 #include "GameFramework/Component.h"
 #include "Utility/Math.h"
+#include "Utility/BoundingBox.h"
 
 class MeshRenderer;
 class UIRenderer;
@@ -26,6 +27,11 @@ private:
 		inline float32 Dot(const XMFLOAT3& worldPoint) const
 		{
 			return XMPlaneDotCoord(_planeVector, XMLoadFloat3(&worldPoint)).m128_f32[0];
+		}
+
+		inline float32 Dot(const XMVECTOR& worldVector) const
+		{
+			return XMPlaneDotCoord(_planeVector, worldVector).m128_f32[0];
 		}
 	};
 
@@ -53,7 +59,8 @@ public:
 
 private:
 	void Resize();
-	void DivideVisibleRenderersByRenderQueue(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& opaqueRenderers, DynamicArray<SharedPtr<MeshRenderer>>& transparentRenderers);
+	void DetermineVisibleRenderers(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& visibleRenderers);
+	void DivideRenderersByRenderQueue(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& opaqueRenderers, DynamicArray<SharedPtr<MeshRenderer>>& transparentRenderers);
 	void ConstructFrustum();
 
 	bool IsVisible(SharedPtr<MeshRenderer> renderer);
@@ -65,8 +72,8 @@ protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
 public:
-	virtual void Initialize() override;
-	virtual void Shutdown() override;
+	virtual void OnInitialize() override;
+	virtual void OnShutdown() override;
 	virtual void PostLoad() override;
 
 	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform) override;
@@ -76,7 +83,14 @@ public:
 	void RenderSky(Graphics& graphics);
 	void RenderUI(Graphics& graphics, const DynamicArray<SharedPtr<UIRenderer>>& uiRenderers) = delete;
 
-	bool IsInsideFrustum(const XMFLOAT3& viewSpacePosition) const;
+	// Returns true if a worldPoint is inside a frustum
+	bool IsInsideFrustum(const XMFLOAT3& worldPoint) const;
+	// Returns true if one of boundingBox corners is inside frustum
+	// NOTE: this function variant assumes that boundingBox has corners in world space already
+	bool IsInsideFrustum(const BoundingBox& boundingBox) const;
+	// Returns true if one of boundingBox corners transformed by modelToWorld matrix is inside frustum
+	// NOTE: this function variant assumes that boundingBox has corners in model/object space
+	bool IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const;
 
 	XMFLOAT3 ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const;
 	XMFLOAT3 ConvertScreenToWorldPoint(const XMINT2& screenPoint) const;

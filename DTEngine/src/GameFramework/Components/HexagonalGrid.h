@@ -203,7 +203,7 @@ protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
 
 public:
-	virtual void Shutdown() override;
+	virtual void OnShutdown() override;
 
 	// Returns neighboor of given hexagon along given direction (or nullptr if there is no neighboor)
 	SharedPtr<Hexagon> GetNeighboor(SharedPtr<Hexagon> hexagon, HexagonDirection direction) const;

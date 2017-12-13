@@ -30,6 +30,7 @@ void Scene::Load()
 
 	SharedPtr<GameObject> gridObject = SpawnObject(DT_TEXT("Grid"));
 	SharedPtr<GameObject> cameraObject = SpawnObject(DT_TEXT("Camera"));
+
 	SharedPtr<HexagonalGrid> grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridObject);
 
 	cameraObject->AddComponent<Camera>();
@@ -132,7 +133,10 @@ void Scene::Render(Graphics& graphics)
 	SharedPtr<Camera> main = Camera::GetMainCamera();
 	if(main)
 	{
+#if DT_DEBUG
 		main->RenderDebug(graphics);
+#endif
+
 		main->RenderSky(graphics);
 	}
 

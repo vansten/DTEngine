@@ -38,20 +38,28 @@ void Camera::Resize()
 	GetDebug().Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("Resizing camera for object: %s"), GetOwner()->GetName().c_str());
 }
 
-void Camera::DivideVisibleRenderersByRenderQueue(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& opaqueRenderers, DynamicArray<SharedPtr<MeshRenderer>>& transparentRenderers)
+void Camera::DetermineVisibleRenderers(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& visibleRenderers)
 {
 	for(auto renderer : allRenderers)
 	{
 		if(IsVisible(renderer))
 		{
-			if(renderer->GetQueue() == RenderQueue::Opaque)
-			{
-				opaqueRenderers.push_back(renderer);
-			}
-			else
-			{
-				transparentRenderers.push_back(renderer);
-			}
+			visibleRenderers.push_back(renderer);
+		}
+	}
+}
+
+void Camera::DivideRenderersByRenderQueue(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& opaqueRenderers, DynamicArray<SharedPtr<MeshRenderer>>& transparentRenderers)
+{
+	for(auto renderer : allRenderers)
+	{
+		if(renderer->GetQueue() == RenderQueue::Opaque)
+		{
+			opaqueRenderers.push_back(renderer);
+		}
+		else
+		{
+			transparentRenderers.push_back(renderer);
 		}
 	}
 }
@@ -94,8 +102,9 @@ void Camera::ConstructFrustum()
 
 bool Camera::IsVisible(SharedPtr<MeshRenderer> renderer)
 {
-	// TODO: Replace GetPosition by renderer->GetBoundingBox();
-	return IsInsideFrustum(renderer->GetOwner()->GetTransform()->GetPosition());
+	// Check if bounding box of given renderer is inside frustum
+	// Pass also a model-to-world matrix
+	return IsInsideFrustum(renderer->GetBoundingBox(), renderer->GetOwner()->GetTransform()->GetModelMatrix());
 }
 
 void Camera::RegisterCamera(SharedPtr<Camera> camera)
@@ -137,9 +146,9 @@ SharedPtr<Component> Camera::Copy(SharedPtr<GameObject> newOwner) const
 	return StaticPointerCast<Component>(copy);
 }
 
-void Camera::Initialize()
+void Camera::OnInitialize()
 {
-	Component::Initialize();
+	Component::OnInitialize();
 
 	if(!_main.lock())
 	{
@@ -153,9 +162,9 @@ void Camera::Initialize()
 	_order = 0;
 }
 
-void Camera::Shutdown()
+void Camera::OnShutdown()
 {
-	Component::Shutdown();
+	Component::OnShutdown();
 
 	SharedPtr<Camera> cam = SharedFromThis();
 	UnregisterCamera(SharedFromThis());
@@ -184,21 +193,31 @@ void Camera::Render(Graphics& graphics, const DynamicArray<SharedPtr<MeshRendere
 {
 	static DynamicArray<SharedPtr<MeshRenderer>> opaqueRenderers;
 	static DynamicArray<SharedPtr<MeshRenderer>> transparentRenderers;
+	static DynamicArray<SharedPtr<MeshRenderer>> visibleRenderers;
 	opaqueRenderers.clear();
 	transparentRenderers.clear();
+	visibleRenderers.clear();
 
-	DivideVisibleRenderersByRenderQueue(renderers, opaqueRenderers, transparentRenderers);
+	DetermineVisibleRenderers(renderers, visibleRenderers);
+	DivideRenderersByRenderQueue(visibleRenderers, opaqueRenderers, transparentRenderers);
 
-	for(auto meshRenderer : opaqueRenderers)
+	for(auto& meshRenderer : opaqueRenderers)
 	{
-		meshRenderer->GetOwner()->OnWillRender(graphics);
-		meshRenderer->OnRender(graphics);
+		meshRenderer->GetOwner()->Render(graphics);
+	}
+
+	for(auto& meshRenderer : transparentRenderers)
+	{
+		meshRenderer->GetOwner()->Render(graphics);
 	}
 }
 
 void Camera::RenderDebug(Graphics& graphics)
 {
-
+	// Remember current render state
+	// Set render state to debug wireframe
+	// Draw all debug draws
+	// Reset render state
 }
 
 void Camera::RenderSky(Graphics& graphics)
@@ -210,13 +229,71 @@ bool Camera::IsInsideFrustum(const XMFLOAT3& worldPoint) const
 {
 	for(uint8 i = 0; i < 6; ++i)
 	{
+		// Check if worldPoint is outside a frustum ith plane
 		if(_frustum[i].Dot(worldPoint) < 0.0f)
 		{
+			// Return false if condition is met
 			return false;
 		}
 	}
 
 	return true;
+}
+
+bool Camera::IsInsideFrustum(const BoundingBox& boundingBox) const
+{
+	const DynamicArray<XMVECTOR>& corners = boundingBox.GetCorners();
+	for(auto& corner : corners)
+	{
+		bool isCornerVisible = true;
+		for(uint8 i = 0; i < 6; ++i)
+		{
+			// Check if a corner is outside a frustum ith plane
+			if(_frustum[i].Dot(corner) < 0.0f)
+			{
+				// If so then there is no need for other frustum planes calculations
+				// We already know that this corner is not visible
+				isCornerVisible = false;
+				break;
+			}
+		}
+
+		if(isCornerVisible)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const
+{
+	const DynamicArray<XMVECTOR>& corners = boundingBox.GetCorners();
+	for(auto& corner : corners)
+	{
+		// Calculate world position of a corner
+		XMVECTOR worldCorner = XMVector3Transform(corner, modelToWorld);
+		bool isCornerVisible = true;
+		for(uint8 i = 0; i < 6; ++i)
+		{
+			// Check if a worldCorner is outside a frustum ith plane
+			if(_frustum[i].Dot(worldCorner) < 0.0f)
+			{
+				// If so then there is no need for other frustum planes calculations
+				// We already know that this worldCorner is not visible
+				isCornerVisible = false;
+				break;
+			}
+		}
+
+		if(isCornerVisible)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // Converts from world coordinates to view (camera) space coordinates

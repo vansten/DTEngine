@@ -115,7 +115,7 @@ bool CameraControl::OnLMBReleased()
 	return false;
 }
 
-void CameraControl::Initialize()
+void CameraControl::OnInitialize()
 {
 	Input& input = GetInput();
 
@@ -141,7 +141,7 @@ void CameraControl::Initialize()
 	_isRMBPressed = false;
 }
 
-void CameraControl::Update(float32 deltaTime)
+void CameraControl::OnUpdate(float32 deltaTime)
 {
 	if (_isRMBPressed)
 	{

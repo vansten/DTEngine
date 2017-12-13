@@ -38,11 +38,10 @@ protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const;
 
 public:
-	virtual void Initialize();
-	virtual void Shutdown();
+	virtual void OnInitialize();
+	virtual void OnShutdown();
 
-	virtual void OnOwnerEnabled();
-	virtual void OnOwnerDisabled();
+	virtual void OnOwnerEnableChanged(bool enabled);
 
 	virtual void Load(Archive& archive);
 	virtual void Save(Archive& archive);
@@ -50,7 +49,7 @@ public:
 	virtual void PreSave();
 
 	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform);
-	virtual void Update(float32 deltaTime);
+	virtual void OnUpdate(float32 deltaTime);
 	virtual void OnRender(Graphics& graphics);
 
 	virtual void OnEnableChanged(bool enabled);

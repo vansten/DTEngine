@@ -44,6 +44,6 @@ protected:
 	bool OnLMBReleased();
 
 public:
-	virtual void Initialize() override;
-	virtual void Update(float32 deltaTime) override;
+	virtual void OnInitialize() override;
+	virtual void OnUpdate(float32 deltaTime) override;
 };

@@ -132,7 +132,7 @@ SharedPtr<Component> HexagonalGrid::Copy(SharedPtr<GameObject> newOwner) const
 	return StaticPointerCast<Component>(copy);
 }
 
-void HexagonalGrid::Shutdown()
+void HexagonalGrid::OnShutdown()
 {
 	_hexagonalMap.clear();
 }

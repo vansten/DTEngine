@@ -56,6 +56,24 @@ static inline XMFLOAT3 Cross(const XMFLOAT3& a, const XMFLOAT3& b)
 	return cross;
 }
 
+static inline XMFLOAT3 Min(const XMFLOAT3& a, const XMFLOAT3& b)
+{
+	return XMFLOAT3(
+		min(a.x, b.x),
+		min(a.y, b.y),
+		min(a.z, b.z)
+	);
+}
+
+static inline XMFLOAT3 Max(const XMFLOAT3& a, const XMFLOAT3& b)
+{
+	return XMFLOAT3(
+		max(a.x, b.x),
+		max(a.y, b.y),
+		max(a.z, b.z)
+	);
+}
+
 static inline float32 GetMatrixComponentAt(XMMATRIX& matrix, uint32 rowIndex, uint32 columnIndex)
 {
 	assert(rowIndex < 4 && columnIndex < 4);

@@ -125,7 +125,7 @@ public:
 
 class GameObject : public EnableSharedFromThis<GameObject>
 {
-protected:
+private:
 	String _name;
 	bool _enabled;
 
@@ -156,7 +156,7 @@ public:
 
 	void Update(float32 deltaTime);
 
-	void OnWillRender(Graphics& graphics);
+	void Render(Graphics& graphics);
 
 	void OnTransformUpdated();
 	void SetEnabled(bool enabled);
@@ -191,7 +191,7 @@ inline SharedPtr<T> GameObject::AddComponent()
 	}
 
 	// Initialize new component when created (do not defer this)
-	newComponent->Initialize();
+	newComponent->OnInitialize();
 	newComponent->PostLoad();
 	return newComponent;
 }

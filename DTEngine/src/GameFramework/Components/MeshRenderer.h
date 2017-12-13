@@ -1,18 +1,17 @@
 #pragma once
 
 #include "GameFramework/Component.h"
-
-class MeshBase;
-class Material;
+#include "Rendering/Material.h"
+#include "Rendering/MeshBase.h"
 
 enum class RenderQueue;
 
 class MeshRenderer : public Component
 {
-protected:
+private:
 	static DynamicArray<SharedPtr<MeshRenderer>> _allRenderers;
 
-protected:
+private:
 	SharedPtr<MeshBase> _mesh;
 	SharedPtr<Material> _material;
 
@@ -23,17 +22,19 @@ public:
 
 	DECLARE_SHARED_FROM_THIS(MeshRenderer)
 
-protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
-
+private:
 	static void RegisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer);
 	static void UnregisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer);
 
+protected:
+	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
+
 public:
-	virtual void Initialize() override;
-	virtual void Shutdown() override;
+	virtual void OnInitialize() override;
+	virtual void OnShutdown() override;
 	virtual void OnRender(Graphics& graphics) override;
 
+	virtual void OnOwnerEnableChanged(bool enabled) override;
 	virtual void OnEnableChanged(bool enabled) override;
 
 	RenderQueue GetQueue() const;
@@ -43,6 +44,11 @@ public:
 
 	inline SharedPtr<Material> GetMaterial() const { return _material; }
 	inline SharedPtr<MeshBase> GetMesh() const { return _mesh; }
+	inline const BoundingBox& GetBoundingBox() const
+	{
+		assert(_mesh);
+		return _mesh->GetBoundingBox();
+	}
 
 	inline static const DynamicArray<SharedPtr<MeshRenderer>>& GetAllMeshRenderers()
 	{

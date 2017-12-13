@@ -24,22 +24,17 @@ SharedPtr<Component>Component::Copy(SharedPtr<GameObject> newOwner) const
 	return copy;
 }
 
-void Component::Initialize()
+void Component::OnInitialize()
 {
 
 }
 
-void Component::Shutdown()
+void Component::OnShutdown()
 {
 
 }
 
-void Component::OnOwnerEnabled()
-{
-
-}
-
-void Component::OnOwnerDisabled()
+void Component::OnOwnerEnableChanged(bool enabled)
 {
 
 }
@@ -69,7 +64,7 @@ void Component::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
 
 }
 
-void Component::Update(float32 deltaTime)
+void Component::OnUpdate(float32 deltaTime)
 {
 
 }

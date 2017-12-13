@@ -132,7 +132,7 @@ void GameObject::Initialize()
 
 	for (auto component : _components)
 	{
-		component->Initialize();
+		component->OnInitialize();
 	}
 }
 
@@ -140,7 +140,7 @@ void GameObject::Shutdown()
 {
 	for (auto component : _components)
 	{
-		component->Shutdown();
+		component->OnShutdown();
 	}
 	_components.clear();
 
@@ -210,14 +210,14 @@ void GameObject::Update(float32 deltaTime)
 	{
 		if (component->IsEnabled())
 		{
-			component->Update(deltaTime);
+			component->OnUpdate(deltaTime);
 		}
 	}
 
 	_isInUpdate = false;
 }
 
-void GameObject::OnWillRender(Graphics& graphics)
+void GameObject::Render(Graphics& graphics)
 {
 	graphics.SetObject(SharedFromThis());
 	for(auto component : _components)
@@ -238,21 +238,10 @@ void GameObject::SetEnabled(bool enabled)
 {
 	_enabled = enabled;
 
-	if(_enabled)
+	// Notify all component that enabled property has changed
+	for(auto component : _components)
 	{
-		// Owner enabled in this call, notify components
-		for(auto component : _components)
-		{
-			component->OnOwnerEnabled();
-		}
-	}
-	else
-	{
-		// Owner disabled in this call, notify components
-		for(auto component : _components)
-		{
-			component->OnOwnerDisabled();
-		}
+		component->OnOwnerEnableChanged(_enabled);
 	}
 }
 
@@ -288,7 +277,7 @@ void GameObject::RemoveComponent(SharedPtr<Component> component)
 		{
 			if ((*it) == component)
 			{
-				component->Shutdown();
+				component->OnShutdown();
 				_components.erase(it);
 				break;
 			}

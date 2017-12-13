@@ -2,6 +2,7 @@
 
 #include "ResourceManagement/Asset.h"
 #include "Utility/Math.h"
+#include "Utility/BoundingBox.h"
 
 struct ID3D11Buffer;
 
@@ -22,6 +23,8 @@ protected:
 	uint32 _verticesCount;
 	uint32 _indicesCount;
 
+	BoundingBox _boundingBox;
+
 public:
 	MeshBase();
 	MeshBase(const MeshBase& other);
@@ -37,4 +40,6 @@ public:
 	inline ID3D11Buffer* GetIndexBuffer() const { return _indexBuffer; }
 	inline uint32 GetIndicesCount() const { return _indicesCount; }
 	inline uint32 GetVertexTypeSize() const { return sizeof(VertexType); }
+
+	inline const BoundingBox& GetBoundingBox() const { return _boundingBox; }
 };

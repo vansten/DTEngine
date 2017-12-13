@@ -54,6 +54,10 @@ bool MeshBase::CreateBuffers(VertexType* vertices, uint32* indices)
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create index buffer"));
 	}
 
+	// Calculate bounding box
+	static const auto positionGetter = [](const VertexType& vertex) -> const XMFLOAT3& { return vertex.Position; };
+	_boundingBox.CalculateMinMax<VertexType>(vertices, _verticesCount, positionGetter);
+
 	return result;
 }
 
