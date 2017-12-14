@@ -92,6 +92,7 @@ bool CameraControl::OnShiftReleased()
 
 bool CameraControl::OnRMBPressed()
 {
+	_timer = 0.0f;
 	_isRMBPressed = true;
 	_previousMousePosition = GetInput().GetMousePosition();
 	return false;
@@ -100,6 +101,7 @@ bool CameraControl::OnRMBPressed()
 bool CameraControl::ONRMBReleased()
 {
 	_isRMBPressed = false;
+	
 	return false;
 }
 
@@ -145,6 +147,9 @@ void CameraControl::OnUpdate(float32 deltaTime)
 {
 	if (_isRMBPressed)
 	{
+		_timer += deltaTime;
+		GetDebug().DrawSphere(XMFLOAT3(0.0f, 0.0f, 0.0f), _timer, XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
+
 		const XMFLOAT3 direction = _owner->GetTransform()->TransformDirection(_movementVector);
 		const float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 

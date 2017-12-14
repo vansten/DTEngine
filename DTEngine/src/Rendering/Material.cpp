@@ -7,6 +7,11 @@ Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr)
 {
 }
 
+Material::Material(SharedPtr<Material> other) : _perFrameBuffer(nullptr), _shader(nullptr)
+{
+	Initialize(other->_path);
+}
+
 Material::~Material()
 {
 }
@@ -71,5 +76,13 @@ void Material::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> 
 	if (_shader)
 	{
 		_shader->SetPerObjectParameters(graphics, gameObject);
+	}
+}
+
+void Material::SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix)
+{
+	if(_shader)
+	{
+		_shader->SetWorldMatrix(graphics, worldMatrix);
 	}
 }

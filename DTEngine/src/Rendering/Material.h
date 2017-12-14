@@ -22,6 +22,7 @@ protected:
 
 public:
 	Material();
+	Material(SharedPtr<Material> other);
 	virtual ~Material();
 
 	virtual bool Initialize(const String& path) override;
@@ -29,6 +30,7 @@ public:
 
 	void SetPerFrameParameters(Graphics& graphics);
 	void SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject);
+	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
 
 	inline RenderQueue GetRenderQueue() const
 	{

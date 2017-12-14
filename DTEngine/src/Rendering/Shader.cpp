@@ -142,3 +142,17 @@ void Shader::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> ga
 	graphics.Unmap(_perObjectBuffer);
 	graphics.SetVSConstantBuffers(1, 1, &_perObjectBuffer);
 }
+
+void Shader::SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix)
+{
+	PerObjectBuffer* data = (PerObjectBuffer*)graphics.Map(_perObjectBuffer);
+	if(!data)
+	{
+		graphics.Unmap(_perObjectBuffer);
+		return;
+	}
+	data->world = XMMatrixTranspose(worldMatrix);
+
+	graphics.Unmap(_perObjectBuffer);
+	graphics.SetVSConstantBuffers(1, 1, &_perObjectBuffer);
+}

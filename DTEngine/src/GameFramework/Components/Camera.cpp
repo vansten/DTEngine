@@ -216,7 +216,14 @@ void Camera::RenderDebug(Graphics& graphics)
 {
 	// Remember current render state
 	// Set render state to debug wireframe
+	
 	// Draw all debug draws
+	const DynamicArray<DebugDrawGeometry>& debugDraws = GetDebug().GetDraws();
+	for(auto& draw : debugDraws)
+	{
+		draw.Render(graphics);
+	}
+
 	// Reset render state
 }
 

@@ -33,8 +33,6 @@ bool App::Initialize()
 		return false;
 	}
 
-	_input = UniquePtr<Input>(new Input());
-
 	_mainWindow = Window::Create(DT_TEXT("DT Engine"), 1024, 768);
 
 	if(!_mainWindow)
@@ -69,17 +67,21 @@ bool App::Initialize()
 	}
 
 	_resourceManager = UniquePtr<ResourceManager>(new ResourceManager());
-	if (!_resourceManager)
+	if(!_resourceManager)
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create resource manager"));
 		return false;
 	}
 
-	if (!_resourceManager->Initialize())
+	if(!_resourceManager->Initialize())
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize resource manager"));
 		return false;
 	}
+
+	_debug->InitializeDraws();
+
+	_input = UniquePtr<Input>(new Input());
 
 	_globalTime = Time::Create();
 	if(!_globalTime)
@@ -116,6 +118,8 @@ void App::Loop()
 	while(!MessageSystem::IsPendingQuit())
 	{
 		MessageSystem::GatherMessages(_mainWindow);
+
+		_debug->Update(deltaTime);
 
 		// Physics::Resolve();
 

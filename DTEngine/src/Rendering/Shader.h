@@ -42,6 +42,7 @@ public:
 
 	void SetPerFrameParameters(Graphics& graphics);
 	void SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject);
+	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
 
 	inline ID3D11Buffer* const* GetPerFrameBuffer() const { return &_perFrameBuffer; }
 	inline ID3D11Buffer* const* GetPerObjectBuffer() const { return &_perObjectBuffer; }

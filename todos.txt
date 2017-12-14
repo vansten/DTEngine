@@ -21,7 +21,7 @@ TODOs:
 -- CylinderMesh 							|> ALL DONE
 -- ConeMesh									|> ALL DONE
 -- CapsuleMesh								|> ALL DONE
--- StaticMesh								|> IN PROGRESS (TODO: fbx loading)
+-- StaticMesh (obj)							|> ALL DONE
 -- Cloning GameObjects						|> ALL DONE
 -- Smart pointers + architecture reworked	|> ALL DONE
 -- Message passing 							|> ALL DONE
@@ -31,7 +31,7 @@ TODOs:
 -- Resize window handling					|> ALL DONE
 -- Renaming functions in Component 			|> ALL DONE
 -- Reorganize rendering architecture		|> IN PROGRESS (TODO: material parameters, order, culling etc, material serialization/deserialization, render states)
--- Debug drawing lines, spheres, boxes etc. (visible only in DT_DEBUG builds, renderstates)
+-- Debug drawing lines, spheres, boxes etc. |> IN PROGRESS (TODO: Setting render state, line drawing, wireframe render state)
 -- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
@@ -46,3 +46,7 @@ TODOs:
 -- Think about ComPtr from <wrl/client.h>
 -- Think about engine's DLL and connecting it to other projects where game will be written (maybe some sort of registering game derrived class? or registering game by passing it to the App constructor/initializer?)
 -- MATH library
+-- FBX loading
+-- Animation class with virtual calls like Update(float deltaTime), SetAnimationFrame(int frame), SetAnimationTime(float time), SetAnimationNormalizedTime(float normalizedTime)
+-- Animation state machine with animations
+-- Animations loading

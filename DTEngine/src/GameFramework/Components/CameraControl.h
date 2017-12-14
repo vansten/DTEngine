@@ -19,6 +19,8 @@ private:
 
 	bool _isRMBPressed;
 
+	float32 _timer;
+
 public:
 	CameraControl(SharedPtr<GameObject> owner);
 	CameraControl(const CameraControl& other);

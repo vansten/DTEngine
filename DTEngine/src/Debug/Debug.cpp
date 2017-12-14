@@ -1,5 +1,43 @@
 #include "Debug.h"
 
+#include "Rendering/Graphics.h"
+#include "Rendering/MeshBase.h"
+#include "Rendering/Material.h"
+#include "ResourceManagement/ResourceManager.h"
+#include "Rendering/Meshes/CubeMesh.h"
+#include "Rendering/Meshes/SphereMesh.h"
+
+DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale, XMFLOAT4 color, float32 lifetime) : _mesh(mesh), _lifetime(lifetime)
+{
+	const XMFLOAT3 radianRotation = XMFLOAT3(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)); 
+	_worldMatrix = XMMatrixScalingFromVector(XMLoadFloat3(&scale)) *
+		XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&radianRotation)) *
+		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
+
+	_material = std::make_shared<Material>(GetResourceManager().Load<Material>(WHITE_MATERIAL));
+	_material->SetColor(color);
+}
+
+void DebugDrawGeometry::Render(Graphics& graphics) const
+{
+	graphics.SetMaterial(_material);
+	_material->SetWorldMatrix(graphics, _worldMatrix);
+	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
+}
+
+void Debug::UpdateDraws(float32 deltaTime)
+{
+	const int64 drawsCount = (int64)_draws.size();
+	for(int64 i = drawsCount - 1; i >= 0; --i)
+	{
+		_draws[i]._lifetime -= deltaTime;
+		if(_draws[i]._lifetime <= 0.0f)
+		{
+			_draws.pop_back();
+		}
+	}
+}
+
 bool Debug::Initialize()
 {
 #if DT_DEBUG
@@ -22,10 +60,26 @@ bool Debug::Initialize()
 	return true;
 }
 
+bool Debug::InitializeDraws()
+{
+#if DT_DEBUG
+	_cube = GetResourceManager().Load<CubeMesh>(CUBE_MESH);
+	_sphere = GetResourceManager().Load<SphereMesh>(SPHERE_MESH);
+#endif
+	return true;
+}
+
 void Debug::Shutdown()
 {
 	_channels.clear();
 	_logsPerChannel.clear();
+}
+
+void Debug::Update(float32 deltaTime)
+{
+#if DT_DEBUG
+	UpdateDraws(deltaTime);
+#endif
 }
 
 void Debug::Print(LogVerbosity verbosity, const String& channel, const String& message)
@@ -82,5 +136,19 @@ void Debug::SetChannelVisibility(const String& name, bool visibility)
 	Channel& channel = _channels[name];
 	channel.Visible = visibility;
 	OnChannelVisibilityChanged.Execute(channel);
+#endif
+}
+
+void Debug::DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation, XMFLOAT4 color, float32 lifetime)
+{
+#if DT_DEBUG
+	_draws.push_back(DebugDrawGeometry(_cube, center, rotation, size, color, lifetime));
+#endif
+}
+
+void Debug::DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color, float32 lifetime)
+{
+#if DT_DEBUG
+	_draws.push_back(DebugDrawGeometry(_sphere, center, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime));
 #endif
 }
