@@ -136,7 +136,7 @@ using double64 = double;
 		#define DT_TEXT(string) string
 
 	#endif
-	
+
 	// Windows specific includes
 	#include <Windows.h>
 	#include <windowsx.h>

@@ -4,6 +4,7 @@
 
 #include "Graphics.h"
 #include "ResourceManagement/ResourceManager.h"
+#include "Utility/JSON.h"
 
 Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr)
 {
@@ -31,13 +32,21 @@ bool Material::Initialize(const String& path)
 		return false;
 	}
 
+	JSON materialData = JSON::parse(materialFile);
+	String shaderPath = materialData["Shader"];
+	_queue = materialData["Queue"];
+	CullMode cullMode = EnumInfo<CullMode>::FromString(materialData["Cull"]);
+	FillMode fillMode = EnumInfo<FillMode>::FromString(materialData["Fill"]);
+	ZWrite zWrite = EnumInfo<ZWrite>::FromString(materialData["ZWrite"]);
+	CompareFunction zTest = EnumInfo<CompareFunction>::FromString(materialData["ZTest"]);
+	BlendMode srcBlendMode = EnumInfo<BlendMode>::FromString(materialData["SrcBlend"]);
+	BlendMode destBlendMode = EnumInfo<BlendMode>::FromString(materialData["DestBlend"]);
+	_color = materialData["color"];
+
 	materialFile.close();
 	
 	ResourceManager& resourceManager = GetResourceManager();
-
-	// Basic shader
-	_shader = resourceManager.Load<Shader>(COLOR_SHADER);
-	_color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	_shader = resourceManager.Load<Shader>(shaderPath);
 	
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
 	bufferData.pSysMem = &_color;
@@ -55,7 +64,7 @@ bool Material::Initialize(const String& path)
 		return false;
 	}
 
-	if(!graphics.CreateRenderState(_renderState))
+	if(!graphics.CreateRenderState(_renderState, RenderStateParams(cullMode, fillMode, zWrite, srcBlendMode, destBlendMode, zTest)))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
 		return false;

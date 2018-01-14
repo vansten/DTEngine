@@ -17,16 +17,10 @@ private:
 	static EnumStringPair<Enum> EnumInfo<Enum>::_pairList[];
 	static const String _emptyName;
 
-private:
-	static const EnumStringPair<Enum>* GetPairList()
-	{
-		return _pairList;
-	}
-
 public:
 	static Enum FromString(const String& name)
 	{
-		static const EnumStringPair<Enum>* pairs = GetPairList();
+		const EnumStringPair<Enum>* pairs = _pairList;
 		for(; pairs->Name[0] != 0; ++pairs)
 		{
 			if(name.compare(pairs->Name) == 0)
@@ -41,7 +35,7 @@ public:
 
 	static const String& ToString(Enum value)
 	{
-		static const EnumStringPair<Enum>* pairs = GetPairList();
+		const EnumStringPair<Enum>* pairs = _pairList;
 		for(; pairs->Name[0] != 0; ++pairs)
 		{
 			if(pairs->Value == value)

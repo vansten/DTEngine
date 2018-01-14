@@ -31,6 +31,7 @@
 #define CONE_MESH DT_TEXT("Hidden/Primitives/Cone")
 
 #define WHITE_MATERIAL DT_TEXT("Resources/Materials/White.dtmat")
+#define DEBUG_MATERIAL DT_TEXT("Resources/Materials/Debug.dtmat")
 
 #define COLOR_SHADER DT_TEXT("Resources/Shaders/Color")
 

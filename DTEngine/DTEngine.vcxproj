@@ -222,6 +222,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\GameFramework\Components\HexagonalGrid.h" />
     <ClInclude Include="src\Utility\BoundingBox.h" />
     <ClInclude Include="src\Utility\EnumUtility.h" />
+    <ClInclude Include="src\Utility\JSON.h" />
     <ClInclude Include="src\Utility\Math.h" />
     <ClInclude Include="src\Utility\String.h" />
     <ClInclude Include="src\Utility\UniqueSingleton.h" />

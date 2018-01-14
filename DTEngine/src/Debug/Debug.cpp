@@ -15,7 +15,7 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
 
 	_material = std::make_shared<Material>();
-	_material->Initialize(WHITE_MATERIAL);
+	_material->Initialize(DEBUG_MATERIAL);
 	_material->SetColor(color);
 }
 
