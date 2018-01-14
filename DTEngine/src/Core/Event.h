@@ -89,7 +89,7 @@ public:
 				return (rawPtr->*_function)(args...);
 			}
 
-			DT_ASSERT(false && "Shouldn't be here");
+			DT_ASSERT(false, "Shouldn't be here");
 			return ReturnType();
 		}
 

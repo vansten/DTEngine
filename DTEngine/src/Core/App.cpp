@@ -104,7 +104,7 @@ bool App::Initialize()
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize game"));
 		return false;
 	}
-	
+
 	return true;
 }
 

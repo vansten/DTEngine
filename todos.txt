@@ -30,8 +30,8 @@ TODOs:
 -- Debug class + logging					|> ALL DONE
 -- Resize window handling					|> ALL DONE
 -- Renaming functions in Component 			|> ALL DONE
--- Reorganize rendering architecture		|> IN PROGRESS (TODO: material parameters, order, culling etc, material serialization/deserialization, render states)
--- Debug drawing lines, spheres, boxes etc. |> IN PROGRESS (TODO: Setting render state, line drawing, wireframe render state)
+-- Reorganize rendering architecture		|> IN PROGRESS (TODO: material parameters, order, culling etc, material serialization/deserialization)
+-- Debug drawing lines, spheres, boxes etc. |> IN PROGRESS (TODO: line drawing (it is possible to tell DirectX about thickness of a line?))
 -- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)

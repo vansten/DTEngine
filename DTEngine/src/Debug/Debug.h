@@ -63,6 +63,8 @@ private:
 
 public:
 	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1, 1, 1, 1), float32 lifetime = 0.0f);
+	DebugDrawGeometry(DebugDrawGeometry&& other);
+	~DebugDrawGeometry();
 
 	void Render(Graphics& graphics) const;
 };

@@ -11,7 +11,7 @@ DynamicArray<SharedPtr<MeshRenderer>> MeshRenderer::_allRenderers;
 MeshRenderer::MeshRenderer(SharedPtr<GameObject> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
 {
 	ResourceManager& resourceManager = GetResourceManager();
-	_material = resourceManager.Load<Material>(MAGENTA_MATERIAL);
+	_material = resourceManager.Load<Material>(WHITE_MATERIAL);
 }
 
 MeshRenderer::MeshRenderer(const MeshRenderer& other) : Component(other), _mesh(other._mesh), _material(other._material)
@@ -71,6 +71,7 @@ void MeshRenderer::OnRender(Graphics& graphics)
 		return;
 	}
 
+	graphics.SetRenderState(_material->GetRenderState());
 	graphics.SetMaterial(_material);
 	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
 }

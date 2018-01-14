@@ -14,8 +14,23 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position
 		XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&radianRotation)) *
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
 
-	_material = std::make_shared<Material>(GetResourceManager().Load<Material>(WHITE_MATERIAL));
+	_material = std::make_shared<Material>();
+	_material->Initialize(WHITE_MATERIAL);
 	_material->SetColor(color);
+}
+
+DebugDrawGeometry::DebugDrawGeometry(DebugDrawGeometry&& other) : _mesh(std::move(other._mesh)), _lifetime(other._lifetime), _worldMatrix(other._worldMatrix), _material(std::move(other._material))
+{
+	
+}
+
+DebugDrawGeometry::~DebugDrawGeometry()
+{
+	if(_material)
+	{
+		_material->Shutdown();
+	}
+	_material = nullptr;
 }
 
 void DebugDrawGeometry::Render(Graphics& graphics) const
@@ -85,7 +100,7 @@ void Debug::Update(float32 deltaTime)
 void Debug::Print(LogVerbosity verbosity, const String& channel, const String& message)
 {
 #if DT_DEBUG
-	DT_ASSERT(_channels.find(channel) != _channels.end() && DT_TEXT("Channel does not exist!"));
+	DT_ASSERT(_channels.find(channel) != _channels.end(), DT_TEXT("Channel does not exist!"));
 
 	Log l(verbosity, message);
 	const Channel& channelRef = _channels[channel];
@@ -122,7 +137,7 @@ void Debug::Printf(LogVerbosity verbosity, const String& channel, const Char* co
 void Debug::RegisterChannel(const String& name)
 {
 #if DT_DEBUG
-	DT_ASSERT(_channels.find(name) == _channels.end() && DT_TEXT("Channel already exists"));
+	DT_ASSERT(_channels.find(name) == _channels.end(), DT_TEXT("Channel already exists"));
 
 	_channels.emplace(name, Channel(name, true));
 #endif
@@ -131,7 +146,7 @@ void Debug::RegisterChannel(const String& name)
 void Debug::SetChannelVisibility(const String& name, bool visibility)
 {
 #if DT_DEBUG
-	DT_ASSERT(_channels.find(name) != _channels.end() && DT_TEXT("Channel does not exist!"));
+	DT_ASSERT(_channels.find(name) != _channels.end(), DT_TEXT("Channel does not exist!"));
 
 	Channel& channel = _channels[name];
 	channel.Visible = visibility;
@@ -142,13 +157,13 @@ void Debug::SetChannelVisibility(const String& name, bool visibility)
 void Debug::DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation, XMFLOAT4 color, float32 lifetime)
 {
 #if DT_DEBUG
-	_draws.push_back(DebugDrawGeometry(_cube, center, rotation, size, color, lifetime));
+	_draws.push_back(std::move(DebugDrawGeometry(_cube, center, rotation, size, color, lifetime)));
 #endif
 }
 
 void Debug::DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color, float32 lifetime)
 {
 #if DT_DEBUG
-	_draws.push_back(DebugDrawGeometry(_sphere, center, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime));
+	_draws.push_back(std::move(DebugDrawGeometry(_sphere, center, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime)));
 #endif
 }

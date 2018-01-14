@@ -293,7 +293,7 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	
 	// Load hexagon mesh and default material
 	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Load<HexagonMesh>(HEXAGON_MESH);
-	SharedPtr<Material> material = resourceManager.Load<Material>(RED_MATERIAL);
+	SharedPtr<Material> material = resourceManager.Load<Material>(WHITE_MATERIAL);
 
 	const float32 hexagonWidth = 2.0f * hexagonSize * 0.5f;
 	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;

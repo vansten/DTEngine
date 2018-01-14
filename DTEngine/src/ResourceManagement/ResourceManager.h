@@ -30,14 +30,7 @@
 #define CAPSULE_MESH DT_TEXT("Hidden/Primitives/Capsule")
 #define CONE_MESH DT_TEXT("Hidden/Primitives/Cone")
 
-#define WHITE_MATERIAL DT_TEXT("Hidden/Materials/White")
-#define RED_MATERIAL DT_TEXT("Hidden/Materials/Red")
-#define GREEN_MATERIAL DT_TEXT("Hidden/Materials/Green")
-#define BLUE_MATERIAL DT_TEXT("Hidden/Materials/Blue")
-#define YELLOW_MATERIAL DT_TEXT("Hidden/Materials/Yellow")
-#define CYAN_MATERIAL DT_TEXT("Hidden/Materials/Cyan")
-#define MAGENTA_MATERIAL DT_TEXT("Hidden/Materials/Magenta")
-#define BLACK_MATERIAL DT_TEXT("Hidden/Materials/Black")
+#define WHITE_MATERIAL DT_TEXT("Resources/Materials/White.dtmat")
 
 #define COLOR_SHADER DT_TEXT("Resources/Shaders/Color")
 

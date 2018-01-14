@@ -1,5 +1,7 @@
 #include "Material.h"
 
+#include <fstream>
+
 #include "Graphics.h"
 #include "ResourceManagement/ResourceManager.h"
 
@@ -14,6 +16,7 @@ Material::Material(SharedPtr<Material> other) : _perFrameBuffer(nullptr), _shade
 
 Material::~Material()
 {
+
 }
 
 bool Material::Initialize(const String& path)
@@ -22,6 +25,14 @@ bool Material::Initialize(const String& path)
 
 	_queue = OpaqueUpperLimit;
 
+	std::ifstream materialFile(path);
+	if(!materialFile.is_open())
+	{
+		return false;
+	}
+
+	materialFile.close();
+	
 	ResourceManager& resourceManager = GetResourceManager();
 
 	// Basic shader
@@ -44,16 +55,29 @@ bool Material::Initialize(const String& path)
 		return false;
 	}
 
+	if(!graphics.CreateRenderState(_renderState))
+	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
+		return false;
+	}
+
 	return true;
 }
 
 void Material::Shutdown()
 {
+	if(_renderState != nullptr)
+	{
+		_renderState->Shutdown();
+		_renderState = nullptr;
+	}
 	RELEASE_COM(_perFrameBuffer);
 }
 
 void Material::SetPerFrameParameters(Graphics& graphics)
 {
+	graphics.SetRenderState(_renderState);
+
 	if (_shader)
 	{
 		_shader->SetPerFrameParameters(graphics);

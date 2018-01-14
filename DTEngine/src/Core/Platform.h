@@ -168,14 +168,14 @@ using String = std::string;
 	#define DT_DEBUG 1
 	#define DT_RELEASE 0
 
-	#define DT_ASSERT(cond) assert((cond));
+	#define DT_ASSERT(cond, message) assert((cond) && message)
 
 #else
 
 	#define DT_DEBUG 0
 	#define DT_RELEASE 1
 
-	#define DT_ASSERT(cond) assert((cond));
+	#define DT_ASSERT(cond, message)
 
 #endif
 

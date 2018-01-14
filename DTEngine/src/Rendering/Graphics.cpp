@@ -11,7 +11,75 @@
 #include "MeshBase.h"
 #include "Material.h"
 
-Graphics::Graphics() : _swapChain(nullptr), _device(nullptr), _deviceContext(nullptr), _renderTargetView(nullptr), _depthStencilBuffer(nullptr), _depthStencilState(nullptr), _depthStencilView(nullptr), _rasterizerState(nullptr)
+RenderState Graphics::CommonRenderStates::WireframeRenderState(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::One, BlendMode::Zero, CompareFunction::Always));
+RenderState Graphics::CommonRenderStates::DefaultRenderState(RenderStateParams(CullMode::Back, FillMode::Solid, ZWrite::On, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Less));
+
+bool RenderState::Initialize(ID3D11Device* device)
+{
+	if(!device)
+	{
+		return false;
+	}
+
+	HRESULT result;
+	
+	// Create depth stencil state
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {0};
+
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = (D3D11_DEPTH_WRITE_MASK)_params._zWrite;
+	depthStencilDesc.DepthFunc = (D3D11_COMPARISON_FUNC)_params._zTestFunction;
+
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	result = device->CreateDepthStencilState(&depthStencilDesc, &_depthStencilState);
+	HR(result);
+
+	// Create rasterizer
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	// Cause cannot write = {0} in above line
+	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerDesc.CullMode = (D3D11_CULL_MODE)_params._cullMode;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.FillMode = (D3D11_FILL_MODE)_params._fillMode;
+
+	result = device->CreateRasterizerState(&rasterizerDesc, &_rasterizerState);
+	HR(result);
+
+	return true;
+}
+
+void RenderState::Shutdown()
+{
+	RELEASE_COM(_rasterizerState);
+	RELEASE_COM(_depthStencilState);
+}
+
+bool Graphics::CommonRenderStates::Initialize(ID3D11Device* device)
+{
+	return WireframeRenderState.Initialize(device) && DefaultRenderState.Initialize(device);
+}
+
+void Graphics::CommonRenderStates::Shutdown()
+{
+	WireframeRenderState.Shutdown();
+	DefaultRenderState.Shutdown();
+}
+
+Graphics::Graphics() : _swapChain(nullptr), _device(nullptr), _deviceContext(nullptr), _renderTargetView(nullptr), _depthStencilBuffer(nullptr), _depthStencilView(nullptr)
 {
 
 }
@@ -151,32 +219,6 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 	result = _device->CreateTexture2D(&depthBufferDesc, NULL, &_depthStencilBuffer);
 	HR(result);
 
-	// Create depth stencil state
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {0};
-
-	depthStencilDesc.DepthEnable = true;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-	depthStencilDesc.StencilEnable = true;
-	depthStencilDesc.StencilReadMask = 0xFF;
-	depthStencilDesc.StencilWriteMask = 0xFF;
-
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	result = _device->CreateDepthStencilState(&depthStencilDesc, &_depthStencilState);
-	HR(result);
-
-	_deviceContext->OMSetDepthStencilState(_depthStencilState, 1);
-
 	// Create depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	// Cause cannot write = {0} in above line
@@ -191,19 +233,12 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 
 	_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
 
-	// Create rasterizer
-	D3D11_RASTERIZER_DESC rasterizerDesc;
-	// Cause cannot write = {0} in above line
-	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+	if(!CommonRenderStates::Initialize(_device))
+	{
+		return false;
+	}
 
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-
-	result = _device->CreateRasterizerState(&rasterizerDesc, &_rasterizerState);
-	HR(result);
-
-	_deviceContext->RSSetState(_rasterizerState);
+	SetRenderState(CommonRenderStates::DefaultRenderState);
 
 	// Create viewport
 	D3D11_VIEWPORT viewport = {0};
@@ -223,9 +258,8 @@ void Graphics::ReleaseWindowDependentResources()
 		// Set to windowed before shutdown
 		_swapChain->SetFullscreenState(false, NULL);
 	}
-	RELEASE_COM(_rasterizerState);
+	CommonRenderStates::Shutdown();
 	RELEASE_COM(_depthStencilView);
-	RELEASE_COM(_depthStencilState);
 	RELEASE_COM(_depthStencilBuffer);
 	RELEASE_COM(_renderTargetView);
 	RELEASE_COM(_swapChain);
@@ -422,4 +456,43 @@ void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer
 	_deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	_deviceContext->DrawIndexed(indicesCount, 0, 0);
+}
+
+bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState)
+{
+	if(renderState != nullptr)
+	{
+		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
+	}
+
+	renderState.reset(new RenderState());
+
+	return renderState->Initialize(_device);
+}
+
+bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState, const RenderStateParams& renderStateParams)
+{
+	if(renderState != nullptr)
+	{
+		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
+	}
+
+	renderState.reset(new RenderState(renderStateParams));
+
+	return renderState->Initialize(_device);
+}
+
+void Graphics::SetRenderState(const RenderState& renderState)
+{
+	_deviceContext->OMSetDepthStencilState(renderState._depthStencilState, 1);
+	_deviceContext->RSSetState(renderState._rasterizerState);
+}
+
+void Graphics::SetRenderState(const UniquePtr<RenderState>& renderState)
+{
+	if(renderState.get() != nullptr)
+	{
+		const RenderState& renderStateRef = *renderState;
+		SetRenderState(renderStateRef);
+	}
 }

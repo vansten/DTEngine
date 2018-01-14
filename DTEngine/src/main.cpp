@@ -8,7 +8,7 @@
 #include "Core/Event.h"
 
 #if DT_DEBUG
-#include "Includes/vld.h"
+#include "vld.h"
 #endif
 
 #if DT_WINDOWS

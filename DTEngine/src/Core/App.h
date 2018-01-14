@@ -51,43 +51,43 @@ public:
 
 	inline Window& GetWindow()
 	{
-		DT_ASSERT(_mainWindow);
+		DT_ASSERT(_mainWindow, "");
 		return *_mainWindow;
 	}
 
 	inline Time& GetGlobalTime()
 	{
-		DT_ASSERT(_globalTime);
+		DT_ASSERT(_globalTime, "");
 		return *_globalTime;
 	}
 
 	inline Game& GetGame()
 	{
-		DT_ASSERT(_game);
+		DT_ASSERT(_game, "");
 		return *_game;
 	}
 
 	inline Graphics& GetGraphics()
 	{
-		DT_ASSERT(_graphics);
+		DT_ASSERT(_graphics, "");
 		return *_graphics;
 	}
 
 	inline ResourceManager& GetResourceManager() 
 	{
-		DT_ASSERT(_resourceManager);
+		DT_ASSERT(_resourceManager, "");
 		return *_resourceManager; 
 	}
 
 	inline Input& GetInput()
 	{
-		DT_ASSERT(_input);
+		DT_ASSERT(_input, "");
 		return *_input;
 	}
 
 	inline Debug& GetDebug()
 	{
-		DT_ASSERT(_debug);
+		DT_ASSERT(_debug, "");
 		return *_debug;
 	}
 };

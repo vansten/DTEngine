@@ -2,20 +2,28 @@
 
 #include "Shader.h"
 
+struct RenderState;
+
 enum class RenderQueue
 {
+	// Normal geometry
 	Opaque,
-	Transparent
+	// Transparent geometry
+	Transparent,
+	// UI
+	Overlay
 };
 
 class Material : public Asset
 {
 protected:
 	static const uint16 OpaqueUpperLimit = 1000;
+	static const uint16 TransparentUpperLimit = 2000;
 
 	ID3D11Buffer* _perFrameBuffer;
 
-	std::shared_ptr<Shader> _shader;
+	UniquePtr<RenderState> _renderState;
+	SharedPtr<Shader> _shader;
 	XMFLOAT4 _color;
 
 	uint16 _queue;
@@ -38,13 +46,19 @@ public:
 		{
 			return RenderQueue::Opaque;
 		}
+		if(_queue <= TransparentUpperLimit)
+		{
+			return RenderQueue::Transparent;
+		}
 
-		return RenderQueue::Transparent;
+		return RenderQueue::Overlay;
 	}
 
 	inline const XMFLOAT4& GetColor() const { return _color; }
 	inline void SetColor(const XMFLOAT4& newColor) { _color = newColor; }
 
-	inline const std::shared_ptr<Shader> GetShader() const { return _shader; }
-	inline void SetShader(std::shared_ptr<Shader> shader) {_shader = shader;}
+	inline const SharedPtr<Shader> GetShader() const { return _shader; }
+	inline void SetShader(SharedPtr<Shader> shader) {_shader = shader;}
+
+	inline const UniquePtr<RenderState>& GetRenderState() const { return _renderState; }
 };

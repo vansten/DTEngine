@@ -216,6 +216,7 @@ void Camera::RenderDebug(Graphics& graphics)
 {
 	// Remember current render state
 	// Set render state to debug wireframe
+	graphics.SetRenderState(Graphics::CommonRenderStates::WireframeRenderState);
 	
 	// Draw all debug draws
 	const DynamicArray<DebugDrawGeometry>& debugDraws = GetDebug().GetDraws();
@@ -225,6 +226,7 @@ void Camera::RenderDebug(Graphics& graphics)
 	}
 
 	// Reset render state
+	graphics.SetRenderState(Graphics::CommonRenderStates::DefaultRenderState);
 }
 
 void Camera::RenderSky(Graphics& graphics)
@@ -321,7 +323,7 @@ XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 {
 	Window& window = GetMainWindow();
 
-	DT_ASSERT(window.GetHeight() * window.GetWidth() != 0);
+	DT_ASSERT(window.GetHeight() * window.GetWidth() != 0, "");
 
 	XMFLOAT3 viewPosition;
 	viewPosition.x = window.GetAspectRatio() * (float32)screenPoint.x / window.GetWidth();
@@ -343,7 +345,7 @@ XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
 {
 	Window& window = GetMainWindow();
-	DT_ASSERT(window.GetAspectRatio() != 0);
+	DT_ASSERT(window.GetAspectRatio() != 0, "");
 
 	const XMVECTOR viewVector = XMVector3TransformCoord(XMLoadFloat3(&worldPoint), _viewMatrix);
 	XMFLOAT3 viewPosition;
