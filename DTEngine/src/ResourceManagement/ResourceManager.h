@@ -20,10 +20,6 @@
 
 #include <map>
 
-#define WHITE_MATERIAL DT_TEXT("Resources/Materials/White.dtmat")
-
-#define COLOR_SHADER DT_TEXT("Resources/Shaders/Color")
-
 class Shader;
 class MeshBase;
 class Material;

@@ -6,6 +6,8 @@
 #include "ResourceManagement/ResourceManager.h"
 #include "Utility/JSON.h"
 
+static const String DEFAULT_SHADER_PATH = DT_TEXT("Resources/Shaders/Color");
+
 Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr)
 {
 }
@@ -65,7 +67,7 @@ bool Material::Save(const String& path)
 	}
 	else
 	{
-		materialData["Shader"] = COLOR_SHADER;
+		materialData["Shader"] = DEFAULT_SHADER_PATH;
 	}
 	materialData["Queue"] = _queue;
 	materialData["Cull"] = EnumInfo<CullMode>::ToString(_renderStateParams.GetCullMode());
@@ -111,7 +113,7 @@ bool Material::Initialize()
 
 	if(!_shader)
 	{
-		_shader = GetResourceManager().Get<Shader>(COLOR_SHADER);
+		_shader = GetResourceManager().Get<Shader>(DEFAULT_SHADER_PATH);
 	}
 
 	return true;
