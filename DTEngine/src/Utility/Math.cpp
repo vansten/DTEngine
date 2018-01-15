@@ -85,3 +85,22 @@ XMFLOAT3 QuaternionToEuler(XMVECTOR quaternion)
 
 	return euler;
 }
+
+XMMATRIX RotationFromVector(const XMFLOAT3& vector)
+{
+	XMFLOAT3 normalizedVector = vector;
+	Normalize(normalizedVector);
+
+	XMFLOAT3 xAxis = Cross(VectorHelpers::Up, normalizedVector);
+	Normalize(xAxis);
+	XMFLOAT3 yAxis = Cross(normalizedVector, xAxis);
+	if(Length(yAxis) < 0.0001f)
+	{
+		yAxis = Cross(normalizedVector, VectorHelpers::Right);
+	}
+	Normalize(yAxis);
+
+	XMFLOAT3 eyePos(0, 0, 0);
+	XMMATRIX rotation = XMMatrixLookToLH(XMLoadFloat3(&eyePos), XMLoadFloat3(&normalizedVector), XMLoadFloat3(&VectorHelpers::Up));
+	return XMMatrixInverse(nullptr, rotation);
+}

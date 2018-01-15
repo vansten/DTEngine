@@ -15,10 +15,8 @@ QuadMesh::~QuadMesh()
 	
 }
 
-bool QuadMesh::Initialize(const String& path)
+bool QuadMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	_verticesCount = 4;
 	_indicesCount = 6;
 

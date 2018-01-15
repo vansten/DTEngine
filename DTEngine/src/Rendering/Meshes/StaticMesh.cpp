@@ -75,7 +75,7 @@ void ProcessFace(Face& face, const String& faceDefinition)
 	face.normalIndex = std::stoul(normalIndex) - 1;
 }
 
-bool StaticMesh::InitializeFromOBJ(const String& path)
+bool StaticMesh::LoadFromOBJ(const String& path)
 {
 	std::wifstream file;
 	file.open(path, std::ios::in);
@@ -142,9 +142,9 @@ bool StaticMesh::InitializeFromOBJ(const String& path)
 		}
 	}
 
-	std::vector<VertexType> vertices;
 	std::list<VertexType> verticesList;
-	std::vector<uint32> indices;
+	_vertices.clear();
+	_indices.clear();
 
 	std::unordered_map<Face, std::list<VertexType>::iterator, FaceHasher> face2Vertex;
 
@@ -155,13 +155,13 @@ bool StaticMesh::InitializeFromOBJ(const String& path)
 		auto found = face2Vertex.find(faces[i]);
 		if(found == face2Vertex.end())
 		{
-			indices.push_back(k);
+			_indices.push_back(k);
 
 			VertexType v;
 			v.Position = positions[faces[i].positionIndex];
 			v.Normal = normals[faces[i].normalIndex];
 			v.UV = uvs[faces[i].uvIndex];
-			vertices.push_back(v);
+			_vertices.push_back(v);
 			verticesList.push_back(v);
 			face2Vertex.insert({faces[i], --verticesList.end()});
 
@@ -170,36 +170,52 @@ bool StaticMesh::InitializeFromOBJ(const String& path)
 		else
 		{
 			auto index = std::distance(verticesList.begin(), found->second);
-			indices.push_back((uint32)index);
+			_indices.push_back((uint32)index);
 		}
 	}
 
-	_verticesCount = (uint64)vertices.size();
-	_indicesCount = (uint64)indices.size();
+	_verticesCount = (uint64)_vertices.size();
+	_indicesCount = (uint64)_indices.size();
 
-	return CreateBuffers(vertices.data(), indices.data());
+	return true;
 }
 
-bool StaticMesh::InitializeFromFBX(const String& path)
+bool StaticMesh::LoadFromFBX(const String& path)
 {
 	GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Importing FBX files is not supported yet"));
 	return false;
 }
 
-bool StaticMesh::Initialize(const String& path)
+bool StaticMesh::Load(const String& path)
 {
-	MeshBase::Initialize(path);
+	MeshBase::Load(path);
 
 	String extension = GetExtension(path);
 	if(extension == DT_TEXT("obj"))
 	{
-		return InitializeFromOBJ(path);
+		return LoadFromOBJ(path);
 	}
 	else if(extension == DT_TEXT("fbx"))
 	{
-		return InitializeFromFBX(path);
+		return LoadFromFBX(path);
 	}
 
 	GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to load static mesh from path (%s). Reason: Unknown extension (%s)"), path.c_str(), extension.c_str());
 	return false;
+}
+
+bool StaticMesh::Initialize()
+{
+	if(_vertices.size() == 0 || _indices.size() == 0)
+	{
+		_vertices.clear();
+		_indices.clear();
+		return false;
+	}
+
+	bool result = CreateBuffers(_vertices.data(), _indices.data());
+	_vertices.clear();
+	_indices.clear();
+
+	return result;
 }

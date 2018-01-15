@@ -15,7 +15,20 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
 
 	_material = std::make_shared<Material>();
-	_material->Initialize(DEBUG_MATERIAL);
+	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
+	_material->Initialize();
+	_material->SetColor(color);
+}
+
+DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation, XMFLOAT3 scale, XMFLOAT4 color, float32 lifetime) : _mesh(mesh), _lifetime(lifetime)
+{
+	_worldMatrix = XMMatrixScalingFromVector(XMLoadFloat3(&scale)) *
+		rotation *
+		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
+
+	_material = std::make_shared<Material>();
+	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
+	_material->Initialize();
 	_material->SetColor(color);
 }
 
@@ -56,13 +69,6 @@ void Debug::UpdateDraws(float32 deltaTime)
 bool Debug::Initialize()
 {
 #if DT_DEBUG
-	_verbosityToString = Map<LogVerbosity, String>
-	{
-		{LogVerbosity::Error, DT_TEXT("Error")},
-		{LogVerbosity::Exception, DT_TEXT("Exception")},
-		{LogVerbosity::Log, DT_TEXT("Log")},
-		{LogVerbosity::Warning, DT_TEXT("Warning")}
-	};
 	RegisterChannel(CHANNEL_ENGINE);
 	RegisterChannel(CHANNEL_GRAPHICS);
 	RegisterChannel(CHANNEL_AUDIO);
@@ -78,8 +84,8 @@ bool Debug::Initialize()
 bool Debug::InitializeDraws()
 {
 #if DT_DEBUG
-	_cube = GetResourceManager().Load<CubeMesh>(CUBE_MESH);
-	_sphere = GetResourceManager().Load<SphereMesh>(SPHERE_MESH);
+	_cube = GetResourceManager().Get<CubeMesh>();
+	_sphere = GetResourceManager().Get<SphereMesh>();
 #endif
 	return true;
 }
@@ -112,7 +118,7 @@ void Debug::Print(LogVerbosity verbosity, const String& channel, const String& m
 	{
 		String s = channel;
 		s += DT_TEXT(": ");
-		s += _verbosityToString[verbosity];
+		s += EnumInfo<LogVerbosity>::ToString(verbosity);
 		s += DT_TEXT(" - ");
 		s += message;
 		s += DT_TEXT("\n");
@@ -165,5 +171,14 @@ void Debug::DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color, float32 
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(_sphere, center, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime)));
+#endif
+}
+
+void Debug::DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color, float32 thickness, float32 lifetime)
+{
+#if DT_DEBUG
+	XMFLOAT3 direction = end - start;
+	XMFLOAT3 scale(thickness, thickness, Length(direction));
+	_draws.push_back(std::move(DebugDrawGeometry(_cube, start + (direction) * 0.5f, RotationFromVector(direction), scale, color, lifetime)));
 #endif
 }

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Shader.h"
-
-struct RenderState;
+#include "RenderState.h"
 
 enum class RenderQueue
 {
@@ -27,13 +26,17 @@ protected:
 	XMFLOAT4 _color;
 
 	uint16 _queue;
+	RenderStateParams _renderStateParams;
 
 public:
 	Material();
 	Material(SharedPtr<Material> other);
 	virtual ~Material();
 
-	virtual bool Initialize(const String& path) override;
+	virtual bool Load(const String& path) override;
+	virtual bool Save(const String& path) override;
+
+	virtual bool Initialize() override;
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);
@@ -61,4 +64,6 @@ public:
 	inline void SetShader(SharedPtr<Shader> shader) {_shader = shader;}
 
 	inline const UniquePtr<RenderState>& GetRenderState() const { return _renderState; }
+
+	inline void SetRenderStateParams(const RenderStateParams& params) { _renderStateParams = params; }
 };

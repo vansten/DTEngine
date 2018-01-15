@@ -20,18 +20,7 @@
 
 #include <map>
 
-#define HEXAGON_MESH DT_TEXT("Hidden/Primitives/Hexagon")
-#define TRIANGLE_MESH DT_TEXT("Hidden/Primitives/Triangle")
-#define QUAD_MESH DT_TEXT("Hidden/Primitives/Quad")
-#define PLANE_MESH DT_TEXT("Hidden/Primitives/Plane")
-#define SPHERE_MESH DT_TEXT("Hidden/Primitives/Sphere")
-#define CUBE_MESH DT_TEXT("Hidden/Primitives/Cube")
-#define CYLINDER_MESH DT_TEXT("Hidden/Primitives/Cylinder")
-#define CAPSULE_MESH DT_TEXT("Hidden/Primitives/Capsule")
-#define CONE_MESH DT_TEXT("Hidden/Primitives/Cone")
-
 #define WHITE_MATERIAL DT_TEXT("Resources/Materials/White.dtmat")
-#define DEBUG_MATERIAL DT_TEXT("Resources/Materials/Debug.dtmat")
 
 #define COLOR_SHADER DT_TEXT("Resources/Shaders/Color")
 
@@ -51,26 +40,67 @@ public:
 	void Shutdown();
 
 	template<typename T>
-	SharedPtr<T> Load(const String& path);
+	SharedPtr<T> Get();
+	template<typename T>
+	SharedPtr<T> Get(const String& path);
 };
 
 template<typename T>
-SharedPtr<T> ResourceManager::Load(const String& path)
+SharedPtr<T> ResourceManager::Get()
 {
+	String path = DT_TEXT("Hidden");
+	std::string typeName = typeid(T).name();
+	path += String(typeName.begin(), typeName.end());
 	if(_assetsMap.find(path) != _assetsMap.end())
 	{
 		return StaticPointerCast<T>(_assetsMap[path]);
 	}
 
 	SharedPtr<T> nAsset(new T());
-	bool result = nAsset->Initialize(path);
+	bool result =  nAsset->Initialize();
 	if(!result)
 	{
-		String typeName = STRING(T);
+		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s"), typeName.c_str());
+		nAsset->Shutdown();
+		return SharedPtr<T>(nullptr);
+	}
+
+	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s"), typeName.c_str());
+
+	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
+
+	return StaticPointerCast<T>(_assetsMap[path]);
+}
+
+template<typename T>
+SharedPtr<T> ResourceManager::Get(const String& path)
+{
+	if(_assetsMap.find(path) != _assetsMap.end())
+	{
+		return StaticPointerCast<T>(_assetsMap[path]);
+	}
+
+	std::string typeName = typeid(T).name();
+	SharedPtr<T> nAsset(new T());
+	bool result = nAsset->Load(path);
+	if(!result)
+	{
 		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot load %s at path: %s"), typeName.c_str(), path.c_str());
 		nAsset->Shutdown();
 		return SharedPtr<T>(nullptr);
 	}
+
+	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Loaded asset of type %s at path: %s"), typeName.c_str(), path.c_str());
+
+	result = nAsset->Initialize();
+	if(!result)
+	{
+		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s at path: %s"), typeName.c_str(), path.c_str());
+		nAsset->Shutdown();
+		return SharedPtr<T>(nullptr);
+	}
+
+	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s at path: %s"), typeName.c_str(), path.c_str());
 
 	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
 

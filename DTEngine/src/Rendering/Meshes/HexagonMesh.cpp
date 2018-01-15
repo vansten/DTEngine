@@ -12,10 +12,8 @@ HexagonMesh::~HexagonMesh()
 {
 }
 
-bool HexagonMesh::Initialize(const String& path)
+bool HexagonMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	_verticesCount = 7;
 	_indicesCount = 18;
 

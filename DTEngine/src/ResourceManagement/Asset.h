@@ -11,6 +11,11 @@ public:
 	Asset();
 	virtual ~Asset();
 
-	virtual bool Initialize(const String& path);
+	virtual bool Load(const String& path);
+	virtual bool Save(const String& path);
+
+	virtual bool Initialize();
 	virtual void Shutdown() = 0;
+
+	inline const String& GetPath() const { return _path; }
 };

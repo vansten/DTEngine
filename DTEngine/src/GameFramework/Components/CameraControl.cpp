@@ -101,7 +101,6 @@ bool CameraControl::OnRMBPressed()
 bool CameraControl::ONRMBReleased()
 {
 	_isRMBPressed = false;
-	GetDebug().DrawSphere(XMFLOAT3(0.0f, 0.0f, 0.0f), _timer, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), _timer);
 	
 	return false;
 }

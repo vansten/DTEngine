@@ -47,7 +47,7 @@ void Scene::Load()
 	ResourceManager& resourceManager = GetResourceManager();
 	
 	const DynamicArray<SharedPtr<Hexagon>>& hexagonPath = path.GetPath();
-	SharedPtr<Material> greenM = resourceManager.Load<Material>(WHITE_MATERIAL);
+	SharedPtr<Material> greenM = resourceManager.Get<Material>(WHITE_MATERIAL);
 	for(auto hexagon : hexagonPath)
 	{
 		SharedPtr<MeshRenderer> mr = hexagon->GetOwner()->GetComponent<MeshRenderer>();

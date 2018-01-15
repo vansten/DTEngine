@@ -162,6 +162,7 @@ using String = std::string;
 #endif
 
 #define STRING(s) DT_TEXT(#s)
+#define CONCATENATE(x1, x2) x1##x2
 
 #if defined(DEBUG) || defined(_DEBUG)
 

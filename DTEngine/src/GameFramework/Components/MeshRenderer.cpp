@@ -11,7 +11,6 @@ DynamicArray<SharedPtr<MeshRenderer>> MeshRenderer::_allRenderers;
 MeshRenderer::MeshRenderer(SharedPtr<GameObject> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
 {
 	ResourceManager& resourceManager = GetResourceManager();
-	_material = resourceManager.Load<Material>(WHITE_MATERIAL);
 }
 
 MeshRenderer::MeshRenderer(const MeshRenderer& other) : Component(other), _mesh(other._mesh), _material(other._material)
@@ -68,6 +67,12 @@ void MeshRenderer::OnRender(Graphics& graphics)
 	if(!_mesh)
 	{
 		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without mesh set. Aborting"));
+		return;
+	}
+
+	if(!_material)
+	{
+		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without material set. Aborting"));
 		return;
 	}
 

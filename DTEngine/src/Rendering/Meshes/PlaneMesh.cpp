@@ -15,10 +15,8 @@ PlaneMesh::~PlaneMesh()
 
 }
 
-bool PlaneMesh::Initialize(const String& path)
+bool PlaneMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	const uint32 size = 16;
 	_verticesCount = (size + 1) * (size + 1);
 	_indicesCount = size * size * 6;

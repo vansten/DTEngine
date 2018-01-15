@@ -5,7 +5,7 @@
 #include "ResourceManagement/ResourceManager.h"
 #include "MeshRenderer.h"
 
-AxialCoordinates HexagonalGridUtility::AxialDirections[(uint64)HexagonDirection::COUNT]
+AxialCoordinates HexagonalGridUtility::AxialDirections[(uint64)HexagonDirection::_COUNT]
 {
 	AxialCoordinates(0, 1),
 	AxialCoordinates(1, 0),
@@ -139,7 +139,7 @@ void HexagonalGrid::OnShutdown()
 
 SharedPtr<Hexagon> HexagonalGrid::GetNeighboor(SharedPtr<Hexagon> hexagon, HexagonDirection direction) const
 {
-	if (direction == HexagonDirection::COUNT || hexagon == nullptr)
+	if (direction == HexagonDirection::_COUNT || hexagon == nullptr)
 	{
 		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GENERAL, DT_TEXT("Cannot get neighboor. Either direction is invalid or hexagon argument is nullptr"));
 		return nullptr;
@@ -229,7 +229,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 		HexagonalPathNode hexPathNode = toVisit.top();
 		SharedPtr<Hexagon> hex = hexPathNode.GetHexagon();
 		toVisit.pop();
-		for(int i = 0; i < (int)HexagonDirection::COUNT; ++i)
+		for(int i = 0; i < (int)HexagonDirection::_COUNT; ++i)
 		{
 			const HexagonDirection direction = (HexagonDirection)i;
 			SharedPtr<Hexagon> neighboor = GetNeighboor(hex, direction);
@@ -292,8 +292,8 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	ResourceManager& resourceManager = GetResourceManager();
 	
 	// Load hexagon mesh and default material
-	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Load<HexagonMesh>(HEXAGON_MESH);
-	SharedPtr<Material> material = resourceManager.Load<Material>(WHITE_MATERIAL);
+	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Get<HexagonMesh>();
+	SharedPtr<Material> material = resourceManager.Get<Material>(WHITE_MATERIAL);
 
 	const float32 hexagonWidth = 2.0f * hexagonSize * 0.5f;
 	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;

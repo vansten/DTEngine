@@ -9,5 +9,5 @@ public:
 	CapsuleMesh(const CapsuleMesh& other);
 	virtual ~CapsuleMesh();
 
-	virtual bool Initialize(const String& path) override;
+	virtual bool Initialize() override;
 };

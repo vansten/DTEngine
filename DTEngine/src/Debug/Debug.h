@@ -3,6 +3,7 @@
 #include "Core/App.h"
 #include "Core/Event.h"
 #include "Core/Platform.h"
+#include "Utility/EnumUtility.h"
 #include "Utility/Math.h"
 
 class Graphics;
@@ -15,6 +16,14 @@ enum class LogVerbosity
 	Warning,
 	Error,
 	Exception
+};
+
+DECLARE_ENUM_NAMES(LogVerbosity)
+{
+	{ DT_TEXT("Error"), LogVerbosity::Error },
+	{ DT_TEXT("Exception"), LogVerbosity::Exception },
+	{ DT_TEXT("Log"), LogVerbosity::Log },
+	{ DT_TEXT("Warning"), LogVerbosity::Warning }
 };
 
 struct Channel
@@ -63,6 +72,7 @@ private:
 
 public:
 	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1, 1, 1, 1), float32 lifetime = 0.0f);
+	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation = XMMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = 0.0f);
 	DebugDrawGeometry(DebugDrawGeometry&& other);
 	~DebugDrawGeometry();
 
@@ -72,8 +82,6 @@ public:
 class Debug
 {
 private:
-	Map<LogVerbosity, String> _verbosityToString;
-
 	Dictionary<String, Channel> _channels;
 	Dictionary<Channel, DynamicArray<Log>, ChannelHasher> _logsPerChannel;
 
@@ -104,6 +112,7 @@ public:
 
 	void DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
 	void DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
+	void DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 thickness = 1.0f, float32 lifetime = -1.0f);
 
 	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const { return _draws; }
 };

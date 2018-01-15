@@ -18,35 +18,44 @@ Shader::~Shader()
 
 }
 
-bool Shader::Initialize(const String& path)
+bool Shader::Load(const String& path)
 {
-	Asset::Initialize(path);
+	Asset::Load(path);
 
 	const String vsFileName = path + DT_TEXT("VS.hlsl");
 	const String psFileName = path + DT_TEXT("PS.hlsl");
-
 	Graphics& graphics = GetGraphics();
-	ID3D10Blob* vertexShaderBuffer;
-	HRESULT result = D3DCompileFromFile(vsFileName.c_str(), nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, nullptr);
+
+	HRESULT result = D3DCompileFromFile(vsFileName.c_str(), nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &_vertexShaderBuffer, nullptr);
 	HR(result);
 
-	if(!graphics.CreateVertexShader(vertexShaderBuffer, &_vertexShader))
+	result = D3DCompileFromFile(psFileName.c_str(), nullptr, nullptr, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &_pixelShaderBuffer, nullptr);
+	HR(result);
+	
+	return true;
+}
+
+bool Shader::Initialize()
+{
+	if(!_vertexShaderBuffer || !_pixelShaderBuffer)
+	{
+		return false;
+	}
+
+	Graphics& graphics = GetGraphics();
+	
+	if(!graphics.CreateVertexShader(_vertexShaderBuffer, &_vertexShader))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader"));
 		return false;
 	}
-
-	ID3D10Blob* pixelShaderBuffer;
-	result = D3DCompileFromFile(psFileName.c_str(), nullptr, nullptr, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, nullptr);
-	HR(result);
-
-	if(!graphics.CreatePixelShader(pixelShaderBuffer, &_pixelShader))
+	if(!graphics.CreatePixelShader(_pixelShaderBuffer, &_pixelShader))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create pixel shader"));
 		return false;
 	}
 
-	RELEASE_COM(pixelShaderBuffer);
+	RELEASE_COM(_pixelShaderBuffer);
 
 	D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[3];
 	inputLayoutDesc[0] = {0};
@@ -65,13 +74,13 @@ bool Shader::Initialize(const String& path)
 	inputLayoutDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), vertexShaderBuffer->GetBufferPointer(), (uint64)vertexShaderBuffer->GetBufferSize(), &_inputLayout))
+	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), _vertexShaderBuffer->GetBufferPointer(), (uint64)_vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create input layout"));
 		return false;
 	}
 
-	RELEASE_COM(vertexShaderBuffer);
+	RELEASE_COM(_vertexShaderBuffer);
 
 	D3D11_SUBRESOURCE_DATA bufferData = {0};
 	PerFrameBuffer pfb;
@@ -112,6 +121,8 @@ void Shader::Shutdown()
 	RELEASE_COM(_inputLayout);
 	RELEASE_COM(_pixelShader);
 	RELEASE_COM(_vertexShader);
+	RELEASE_COM(_vertexShaderBuffer);
+	RELEASE_COM(_pixelShaderBuffer);
 }
 
 void Shader::SetPerFrameParameters(Graphics& graphics)

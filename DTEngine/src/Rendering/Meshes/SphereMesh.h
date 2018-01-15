@@ -9,5 +9,5 @@ public:
 	SphereMesh(const SphereMesh& other);
 	virtual ~SphereMesh();
 
-	virtual bool Initialize(const String& path) override;
+	virtual bool Initialize() override;
 };

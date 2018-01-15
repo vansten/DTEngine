@@ -14,7 +14,7 @@ enum class HexagonDirection
 	SOUTH_WEST	= 4,
 	NORTH_WEST	= 5,
 
-	COUNT		= 6
+	_COUNT		= 6
 };
 
 // Stores axial coordinates for hexagonal map
@@ -219,7 +219,7 @@ public:
 class HexagonalGridUtility
 {
 public:
-	static AxialCoordinates AxialDirections[(uint64)HexagonDirection::COUNT];
+	static AxialCoordinates AxialDirections[(uint64)HexagonDirection::_COUNT];
 
 public:
 	// Constructs hexagonal grid with given width and height from hexagons with given size (hexagonSize)

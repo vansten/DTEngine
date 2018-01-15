@@ -15,10 +15,8 @@ ConeMesh::~ConeMesh()
 
 }
 
-bool ConeMesh::Initialize(const String& path)
+bool ConeMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	const uint32 baseTriangles = 30;
 	_verticesCount = baseTriangles + 2;
 	// Each triangle in base is 3 indices plus 3 for connecting edge of the base to top center

@@ -4,15 +4,21 @@
 
 class StaticMesh : public MeshBase
 {
+private:
+	std::vector<VertexType> _vertices;
+	std::vector<uint32> _indices;
+
 public:
 	StaticMesh();
 	StaticMesh(const StaticMesh& other);
 	virtual ~StaticMesh();
 
 protected:
-	bool InitializeFromOBJ(const String& path);
-	bool InitializeFromFBX(const String& path);
+	bool LoadFromOBJ(const String& path);
+	bool LoadFromFBX(const String& path);
 
 public:
-	virtual bool Initialize(const String& path) override;
+	virtual bool Load(const String& path) override;
+
+	virtual bool Initialize() override;
 };

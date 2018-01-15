@@ -15,10 +15,8 @@ SphereMesh::~SphereMesh()
 
 }
 
-bool SphereMesh::Initialize(const String& path)
+bool SphereMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-	
 	const float32 radius = 0.5f;
 	const uint32 rings = 12;
 	const uint32 sectors = 12;

@@ -15,10 +15,8 @@ CylinderMesh::~CylinderMesh()
 	
 }
 
-bool CylinderMesh::Initialize(const String& path)
+bool CylinderMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	const uint32 baseTriangles = 30;
 	_verticesCount = (baseTriangles + 1) * 2;
 	// 3 for each triangle in bottom base, 3 for each triangle in top base, 6 for each side quad

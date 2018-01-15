@@ -12,7 +12,7 @@ Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr)
 
 Material::Material(SharedPtr<Material> other) : _perFrameBuffer(nullptr), _shader(nullptr)
 {
-	Initialize(other->_path);
+
 }
 
 Material::~Material()
@@ -20,11 +20,9 @@ Material::~Material()
 
 }
 
-bool Material::Initialize(const String& path)
+bool Material::Load(const String& path)
 {
-	Asset::Initialize(path);
-
-	_queue = OpaqueUpperLimit;
+	Asset::Load(path);
 
 	std::ifstream materialFile(path);
 	if(!materialFile.is_open())
@@ -41,12 +39,53 @@ bool Material::Initialize(const String& path)
 	CompareFunction zTest = EnumInfo<CompareFunction>::FromString(materialData["ZTest"]);
 	BlendMode srcBlendMode = EnumInfo<BlendMode>::FromString(materialData["SrcBlend"]);
 	BlendMode destBlendMode = EnumInfo<BlendMode>::FromString(materialData["DestBlend"]);
-	_color = materialData["color"];
+	_color = materialData["Color"];
 
 	materialFile.close();
-	
-	ResourceManager& resourceManager = GetResourceManager();
-	_shader = resourceManager.Load<Shader>(shaderPath);
+
+	_shader = GetResourceManager().Get<Shader>(shaderPath);
+
+	_renderStateParams = RenderStateParams(cullMode, fillMode, zWrite, srcBlendMode, destBlendMode, zTest);
+
+	return true;
+}
+
+bool Material::Save(const String& path)
+{
+	std::ofstream materialFile(path);
+	if(!materialFile.is_open())
+	{
+		return false;
+	}
+
+	JSON materialData;
+	if(_shader)
+	{
+		materialData["Shader"] = _shader->GetPath();
+	}
+	else
+	{
+		materialData["Shader"] = COLOR_SHADER;
+	}
+	materialData["Queue"] = _queue;
+	materialData["Cull"] = EnumInfo<CullMode>::ToString(_renderStateParams.GetCullMode());
+	materialData["Fill"] = EnumInfo<FillMode>::ToString(_renderStateParams.GetFillMode());
+	materialData["ZWrite"] = EnumInfo<ZWrite>::ToString(_renderStateParams.GetZWrite());
+	materialData["ZTest"] = EnumInfo<CompareFunction>::ToString(_renderStateParams.GetZTestFunction());
+	materialData["SrcBlend"] = EnumInfo<BlendMode>::ToString(_renderStateParams.GetSrcBlendMode());
+	materialData["DestBlend"] = EnumInfo<BlendMode>::ToString(_renderStateParams.GetDestBlendMode());
+	materialData["Color"] = _color;
+
+	std::string materialDataString = materialData.dump(1, '\t');
+	materialFile.write(materialDataString.c_str(), materialDataString.size());
+	materialFile.close();
+
+	return true;
+}
+
+bool Material::Initialize()
+{
+	_queue = OpaqueUpperLimit;
 	
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
 	bufferData.pSysMem = &_color;
@@ -64,10 +103,15 @@ bool Material::Initialize(const String& path)
 		return false;
 	}
 
-	if(!graphics.CreateRenderState(_renderState, RenderStateParams(cullMode, fillMode, zWrite, srcBlendMode, destBlendMode, zTest)))
+	if(!graphics.CreateRenderState(_renderState, _renderStateParams))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
 		return false;
+	}
+
+	if(!_shader)
+	{
+		_shader = GetResourceManager().Get<Shader>(COLOR_SHADER);
 	}
 
 	return true;

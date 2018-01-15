@@ -7,6 +7,6 @@
 	"ZTest": "Less",
 	"SrcBlend": "SrcAlpha",
 	"DestBlend": "InvSrcAlpha",
-	"color": {"x": 1, "y": 1, "z": 1, "w": 1},
-	"parameters": []
+	"Color": {"x": 1, "y": 1, "z": 1, "w": 1},
+	"Parameters": []
 }

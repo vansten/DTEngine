@@ -29,6 +29,11 @@ static void Normalize(XMFLOAT3& vector)
 	vector.z /= length;
 }
 
+static float32 Length(XMFLOAT3& vector)
+{
+	return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+}
+
 static float32 Clamp(float32 value, float32 minValue = 0.0f, float32 maxValue = 1.0f)
 {
 	return min(max(value, minValue), maxValue);
@@ -55,6 +60,13 @@ static inline XMFLOAT3 Cross(const XMFLOAT3& a, const XMFLOAT3& b)
 
 	return cross;
 }
+
+static inline float32 Dot(const XMFLOAT3& a, const XMFLOAT3& b)
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+XMMATRIX RotationFromVector(const XMFLOAT3& vector);
 
 static inline XMFLOAT3 Min(const XMFLOAT3& a, const XMFLOAT3& b)
 {

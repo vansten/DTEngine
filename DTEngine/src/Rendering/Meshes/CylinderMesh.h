@@ -9,5 +9,5 @@ public:
 	CylinderMesh(const CylinderMesh& other);
 	virtual ~CylinderMesh();
 
-	virtual bool Initialize(const String& path) override;
+	virtual bool Initialize() override;
 };

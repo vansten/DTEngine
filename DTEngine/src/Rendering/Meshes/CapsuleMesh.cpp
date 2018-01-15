@@ -15,10 +15,8 @@ CapsuleMesh::~CapsuleMesh()
 
 }
 
-bool CapsuleMesh::Initialize(const String& path)
+bool CapsuleMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-	
 	const uint32 numRings = 8;
 	const uint32 numSegments = 24;
 	const uint32 numSegmentsHeight = 1;

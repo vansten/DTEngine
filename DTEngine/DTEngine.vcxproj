@@ -177,6 +177,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\Rendering\Meshes\SphereMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\StaticMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\TriangleMesh.cpp" />
+    <ClCompile Include="src\Rendering\RenderState.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
     <ClCompile Include="src\ResourceManagement\Asset.cpp" />
     <ClCompile Include="src\ResourceManagement\ResourceManager.cpp" />
@@ -216,6 +217,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\Rendering\Meshes\SphereMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\StaticMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\TriangleMesh.h" />
+    <ClInclude Include="src\Rendering\RenderState.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
     <ClInclude Include="src\ResourceManagement\Asset.h" />
     <ClInclude Include="src\ResourceManagement\ResourceManager.h" />

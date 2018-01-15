@@ -15,10 +15,8 @@ TriangleMesh::~TriangleMesh()
 
 }
 
-bool TriangleMesh::Initialize(const String& path)
+bool TriangleMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	_verticesCount = 3;
 	_indicesCount = 3;
 

@@ -15,10 +15,8 @@ CubeMesh::~CubeMesh()
 
 }
 
-bool CubeMesh::Initialize(const String& path)
+bool CubeMesh::Initialize()
 {
-	MeshBase::Initialize(path);
-
 	_verticesCount = 8;
 	_indicesCount = 36;
 

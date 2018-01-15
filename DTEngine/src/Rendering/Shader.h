@@ -8,6 +8,7 @@ struct ID3D11PixelShader;
 struct ID3D11InputLayout;
 struct ID3D11Buffer;
 struct ID3D11DeviceContext;
+struct ID3D10Blob;
 
 class GameObject;
 class Graphics;
@@ -33,11 +34,16 @@ protected:
 	ID3D11Buffer* _perFrameBuffer;
 	ID3D11Buffer* _perObjectBuffer;
 
+	ID3D10Blob* _vertexShaderBuffer;
+	ID3D10Blob* _pixelShaderBuffer;
+
 public:
 	Shader();
 	virtual ~Shader();
 
-	virtual bool Initialize(const String& path) override;
+	virtual bool Load(const String& path) override;
+
+	virtual bool Initialize() override;
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);

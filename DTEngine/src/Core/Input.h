@@ -5,7 +5,6 @@
 #include "Utility/Math.h"
 #include "Event.h"
 
-
 class Input
 {
 protected:
