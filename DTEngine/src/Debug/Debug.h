@@ -110,7 +110,7 @@ public:
 	void RegisterChannel(const String& name);
 	void SetChannelVisibility(const String& name, bool visibility);
 
-	void DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
+	void DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
 	void DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
 	void DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 thickness = 1.0f, float32 lifetime = -1.0f);
 

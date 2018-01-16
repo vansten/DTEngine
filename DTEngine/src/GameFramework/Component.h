@@ -2,10 +2,10 @@
 
 #include "Core/Platform.h"
 #include "Rendering/Graphics.h"
+#include "Transform.h"
 
 class Archive;
-class GameObject;
-struct Transform;
+class Entity;
 
 #define DECLARE_SHARED_FROM_THIS(Type) \
 private: \
@@ -21,21 +21,21 @@ private:
 
 class Component : public EnableSharedFromThis<Component>
 {
-	friend class GameObject;
+	friend class Entity;
 
 protected:
-	SharedPtr<GameObject> _owner;
+	SharedPtr<Entity> _owner;
 	bool _enabled;
 
 public:
-	Component(SharedPtr<GameObject> owner);
+	Component(SharedPtr<Entity> owner);
 	Component(const Component& other);
 	virtual ~Component();
 
 	DECLARE_SHARED_FROM_THIS(Component)
 
 protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const;
+	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const;
 
 public:
 	virtual void OnInitialize();
@@ -48,13 +48,13 @@ public:
 	virtual void PostLoad();
 	virtual void PreSave();
 
-	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform);
+	virtual void OnOwnerTransformUpdated(const Transform& transform);
 	virtual void OnUpdate(float32 deltaTime);
 	virtual void OnRender(Graphics& graphics);
 
 	virtual void OnEnableChanged(bool enabled);
 
-	SharedPtr<GameObject> GetOwner() const;
+	SharedPtr<Entity> GetOwner() const;
 
 	bool IsEnabled() const;
 	void SetEnabled(bool enabled);

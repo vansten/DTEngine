@@ -3,7 +3,7 @@
 #include "Debug/Debug.h"
 
 #include "Graphics.h"
-#include "GameFramework/GameObject.h"
+#include "GameFramework/Entity.h"
 #include "GameFramework/Components/Camera.h"
 
 #include <d3d11.h>
@@ -140,7 +140,7 @@ void Shader::SetPerFrameParameters(Graphics& graphics)
 	graphics.SetVSConstantBuffers(0, 1, &_perFrameBuffer);
 }
 
-void Shader::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject)
+void Shader::SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> entity)
 {
 	PerObjectBuffer* data = (PerObjectBuffer*)graphics.Map(_perObjectBuffer);
 	if (!data)
@@ -148,7 +148,7 @@ void Shader::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> ga
 		graphics.Unmap(_perObjectBuffer);
 		return;
 	}
-	data->world = XMMatrixTranspose(gameObject->GetTransform()->GetModelMatrix());
+	data->world = XMMatrixTranspose(entity->GetTransform().GetModelMatrix());
 
 	graphics.Unmap(_perObjectBuffer);
 	graphics.SetVSConstantBuffers(1, 1, &_perObjectBuffer);

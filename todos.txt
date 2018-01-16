@@ -33,8 +33,10 @@ TODOs:
 -- Asset reorganization 					|> ALL DONE
 -- Reorganize rendering architecture		|> ALL DONE
 -- Debug drawing lines, spheres, boxes 	 	|> ALL DONE
--- Transform as component (?)
--- Default material when mesh renderer doesn't have one (MAGENTA!)
+-- Reorganize transform structure 			|> ALL DONE
+-- Rename GameObject to Entity				|> ALL DONE
+-- Fix frustum culling						|> ALL DONE
+-- Default material
 -- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)

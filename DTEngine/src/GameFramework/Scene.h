@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Platform.h"
-#include "GameObject.h"
+#include "Entity.h"
 #include "Rendering/Graphics.h"
 
 class Camera;
@@ -11,8 +11,8 @@ class Scene
 protected:
 	String _scenePath;
 
-	DynamicArray<SharedPtr<GameObject>> _gameObjects;
-	DynamicArray<SharedPtr<GameObject>> _newGameObjects;
+	DynamicArray<SharedPtr<Entity>> _entities;
+	DynamicArray<SharedPtr<Entity>> _newEntities;
 
 public:
 	Scene(const String& scenePath);
@@ -25,7 +25,7 @@ public:
 	void Update(float32 deltaTime);
 	void Render(Graphics& graphics);
 
-	SharedPtr<GameObject> SpawnObject(const String& name);
-	SharedPtr<GameObject> SpawnObject(SharedPtr<GameObject> original);
-	SharedPtr<GameObject> SpawnObject(SharedPtr<GameObject> original, const String& name);
+	SharedPtr<Entity> SpawnEntity(const String& name);
+	SharedPtr<Entity> SpawnEntity(SharedPtr<Entity> original);
+	SharedPtr<Entity> SpawnEntity(SharedPtr<Entity> original, const String& name);
 };

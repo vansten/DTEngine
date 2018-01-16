@@ -98,17 +98,17 @@ class Hexagon : public Component
 {
 protected:
 	AxialCoordinates _coordinates;
-	SharedPtr<GameObject> _objectOnHexagon;
+	SharedPtr<Entity> _entityOnHexagon;
 
 public:
-	Hexagon(SharedPtr<GameObject> owner);
+	Hexagon(SharedPtr<Entity> owner);
 	Hexagon(const Hexagon& other);
 	virtual ~Hexagon();
 
 	DECLARE_SHARED_FROM_THIS(Hexagon)
 
 protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const override;
 
 public:
 	// Returns distance from this hexagon to the other
@@ -123,16 +123,16 @@ public:
 	}
 
 	inline AxialCoordinates GetCoordinates() const { return _coordinates; }
-	inline SharedPtr<GameObject> GetObjectOn() const { return _objectOnHexagon; }
+	inline SharedPtr<Entity> GetEntityOn() const { return _entityOnHexagon; }
 	
 	inline void SetCoordinates(const AxialCoordinates& coordinates)
 	{
 		_coordinates = coordinates;
 	}
 
-	inline void SetObjectOn(SharedPtr<GameObject> object)
+	inline void SetEntityOn(SharedPtr<Entity> object)
 	{
-		_objectOnHexagon = object;
+		_entityOnHexagon = object;
 	}
 };
 
@@ -193,14 +193,14 @@ protected:
 	uint32 _height;
 
 public:
-	HexagonalGrid(SharedPtr<GameObject> owner);
+	HexagonalGrid(SharedPtr<Entity> owner);
 	HexagonalGrid(const HexagonalGrid& other);
 	virtual ~HexagonalGrid();
 
 	DECLARE_SHARED_FROM_THIS(HexagonalGrid)
 
 protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const override;
 
 public:
 	virtual void OnShutdown() override;
@@ -226,5 +226,5 @@ public:
 	// Attaches created grid to gridOwner object
 	// Returns created grid (there is no need to attach this grid to an object after these functions returns)
 	// Return nullptr if grid creation wasn't successful (i.e. gridOwner was nullptr, width, height or hexagonSize was less or equal to 0)
-	static SharedPtr<HexagonalGrid> CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<GameObject> gridOwner);
+	static SharedPtr<HexagonalGrid> CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<Entity> gridOwner);
 };

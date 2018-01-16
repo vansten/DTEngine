@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "GameFramework/GameObject.h"
+#include "GameFramework/Entity.h"
 #include "Core/Window.h"
 #include "Debug/Debug.h"
 
@@ -12,7 +12,7 @@
 WeakPtr<Camera> Camera::_main;
 DynamicArray<SharedPtr<Camera>> Camera::_allCameras;
 
-Camera::Camera(SharedPtr<GameObject> owner) : Component(owner)
+Camera::Camera(SharedPtr<Entity> owner) : Component(owner)
 {
 
 }
@@ -104,7 +104,7 @@ bool Camera::IsVisible(SharedPtr<MeshRenderer> renderer)
 {
 	// Check if bounding box of given renderer is inside frustum
 	// Pass also a model-to-world matrix
-	return IsInsideFrustum(renderer->GetBoundingBox(), renderer->GetOwner()->GetTransform()->GetModelMatrix());
+	return IsInsideFrustum(renderer->GetBoundingBox(), renderer->GetOwner()->GetTransform().GetModelMatrix());
 }
 
 void Camera::RegisterCamera(SharedPtr<Camera> camera)
@@ -139,7 +139,7 @@ void Camera::UnregisterCamera(SharedPtr<Camera> camera)
 	}
 }
 
-SharedPtr<Component> Camera::Copy(SharedPtr<GameObject> newOwner) const
+SharedPtr<Component> Camera::Copy(SharedPtr<Entity> newOwner) const
 {
 	SharedPtr<Camera> copy = SharedPtr<Camera>(new Camera(*this));
 	copy->_owner = newOwner;
@@ -174,16 +174,15 @@ void Camera::PostLoad()
 {
 	Resize();
 
-	SharedPtr<Transform> ownerTransform = _owner->GetTransform();
-	OnOwnerTransformUpdated(ownerTransform);
+	OnOwnerTransformUpdated(_owner->GetTransform());
 
 	RegisterCamera(SharedFromThis());
 }
 
-void Camera::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
+void Camera::OnOwnerTransformUpdated(const Transform& transform)
 {
-	const XMFLOAT3 forward = transform->GetForward();
-	const XMFLOAT3 position = transform->GetPosition();
+	const XMFLOAT3 forward = transform.GetForward();
+	const XMFLOAT3 position = transform.GetPosition();
 	_viewMatrix = XMMatrixLookToLH(XMLoadFloat3(&position), XMLoadFloat3(&forward), XMLoadFloat3(&VectorHelpers::Up));
 
 	ConstructFrustum();
@@ -249,60 +248,50 @@ bool Camera::IsInsideFrustum(const XMFLOAT3& worldPoint) const
 	return true;
 }
 
-bool Camera::IsInsideFrustum(const BoundingBox& boundingBox) const
+bool Camera::IsInsideFrustum(const XMVECTOR & worldPoint) const
 {
-	const DynamicArray<XMVECTOR>& corners = boundingBox.GetCorners();
-	for(auto& corner : corners)
+	for(uint8 i = 0; i < 6; ++i)
 	{
-		bool isCornerVisible = true;
-		for(uint8 i = 0; i < 6; ++i)
+		// Check if worldPoint is outside a frustum ith plane
+		if(_frustum[i].Dot(worldPoint) < 0.0f)
 		{
-			// Check if a corner is outside a frustum ith plane
-			if(_frustum[i].Dot(corner) < 0.0f)
-			{
-				// If so then there is no need for other frustum planes calculations
-				// We already know that this corner is not visible
-				isCornerVisible = false;
-				break;
-			}
-		}
-
-		if(isCornerVisible)
-		{
-			return true;
+			// Return false if condition is met
+			return false;
 		}
 	}
 
-	return false;
+	return true;
+}
+
+bool Camera::IsInsideFrustum(const BoundingBox& boundingBox) const
+{
+	return IsInsideFrustum(boundingBox, XMMatrixIdentity());
 }
 
 bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const
 {
 	const DynamicArray<XMVECTOR>& corners = boundingBox.GetCorners();
-	for(auto& corner : corners)
+	for(uint8 i = 0; i < 6; ++i)
 	{
-		// Calculate world position of a corner
-		XMVECTOR worldCorner = XMVector3Transform(corner, modelToWorld);
-		bool isCornerVisible = true;
-		for(uint8 i = 0; i < 6; ++i)
+		bool liesBehind = true;
+		for(auto& corner : corners)
 		{
-			// Check if a worldCorner is outside a frustum ith plane
-			if(_frustum[i].Dot(worldCorner) < 0.0f)
+			// Calculate world position of a corner
+			XMVECTOR worldCorner = XMVector3Transform(corner, modelToWorld);
+			if(_frustum[i].Dot(worldCorner) > 0.0f)
 			{
-				// If so then there is no need for other frustum planes calculations
-				// We already know that this worldCorner is not visible
-				isCornerVisible = false;
+				liesBehind = false;
 				break;
 			}
 		}
 
-		if(isCornerVisible)
+		if(liesBehind)
 		{
-			return true;
+			return false;
 		}
 	}
 
-	return false;
+	return true;
 }
 
 // Converts from world coordinates to view (camera) space coordinates

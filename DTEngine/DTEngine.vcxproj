@@ -160,8 +160,9 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\GameFramework\Components\CameraControl.cpp" />
     <ClCompile Include="src\GameFramework\Components\MeshRenderer.cpp" />
     <ClCompile Include="src\GameFramework\Game.cpp" />
-    <ClCompile Include="src\GameFramework\GameObject.cpp" />
+    <ClCompile Include="src\GameFramework\Entity.cpp" />
     <ClCompile Include="src\GameFramework\Scene.cpp" />
+    <ClCompile Include="src\GameFramework\Transform.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Core\Window.cpp" />
     <ClCompile Include="src\Rendering\Graphics.cpp" />
@@ -202,8 +203,9 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Release\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\GameFramework\Components\CameraControl.h" />
     <ClInclude Include="src\GameFramework\Components\MeshRenderer.h" />
     <ClInclude Include="src\GameFramework\Game.h" />
-    <ClInclude Include="src\GameFramework\GameObject.h" />
+    <ClInclude Include="src\GameFramework\Entity.h" />
     <ClInclude Include="src\GameFramework\Scene.h" />
+    <ClInclude Include="src\GameFramework\Transform.h" />
     <ClInclude Include="src\Rendering\Graphics.h" />
     <ClInclude Include="src\Rendering\Material.h" />
     <ClInclude Include="src\Rendering\MeshBase.h" />

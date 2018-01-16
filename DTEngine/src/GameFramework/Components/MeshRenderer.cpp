@@ -1,14 +1,14 @@
 #include "MeshRenderer.h"
 
 #include "Debug/Debug.h"
-#include "GameFramework/GameObject.h"
+#include "GameFramework/Entity.h"
 #include "Rendering/MeshBase.h"
 #include "Rendering/Material.h"
 #include "ResourceManagement/ResourceManager.h"
 
 DynamicArray<SharedPtr<MeshRenderer>> MeshRenderer::_allRenderers;
 
-MeshRenderer::MeshRenderer(SharedPtr<GameObject> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
+MeshRenderer::MeshRenderer(SharedPtr<Entity> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
 {
 	ResourceManager& resourceManager = GetResourceManager();
 }
@@ -41,7 +41,7 @@ void MeshRenderer::UnregisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
 	}
 }
 
-SharedPtr<Component> MeshRenderer::Copy(SharedPtr<GameObject> newOwner) const
+SharedPtr<Component> MeshRenderer::Copy(SharedPtr<Entity> newOwner) const
 {
 	SharedPtr<MeshRenderer> copy = SharedPtr<MeshRenderer>(new MeshRenderer(*this));
 	copy->_owner = newOwner;

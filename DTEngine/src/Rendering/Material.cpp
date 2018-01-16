@@ -150,11 +150,11 @@ void Material::SetPerFrameParameters(Graphics& graphics)
 	graphics.SetVSConstantBuffers(2, 1, &_perFrameBuffer);
 }
 
-void Material::SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject)
+void Material::SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> entity)
 {
 	if (_shader)
 	{
-		_shader->SetPerObjectParameters(graphics, gameObject);
+		_shader->SetPerObjectParameters(graphics, entity);
 	}
 }
 

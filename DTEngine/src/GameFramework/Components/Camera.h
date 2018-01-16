@@ -51,7 +51,7 @@ private:
 	int16 _order;
 
 public:
-	Camera(SharedPtr<GameObject> owner);
+	Camera(SharedPtr<Entity> owner);
 	Camera(const Camera& other);
 	virtual ~Camera();
 
@@ -69,14 +69,14 @@ private:
 	static void UnregisterCamera(SharedPtr<Camera> camera);
 
 protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const override;
 
 public:
 	virtual void OnInitialize() override;
 	virtual void OnShutdown() override;
 	virtual void PostLoad() override;
 
-	virtual void OnOwnerTransformUpdated(SharedPtr<Transform> transform) override;
+	virtual void OnOwnerTransformUpdated(const Transform& transform) override;
 
 	void Render(Graphics& graphics, const DynamicArray<SharedPtr<MeshRenderer>>& renderers);
 	void RenderDebug(Graphics& graphics);
@@ -85,6 +85,8 @@ public:
 
 	// Returns true if a worldPoint is inside a frustum
 	bool IsInsideFrustum(const XMFLOAT3& worldPoint) const;
+	// Returns true if a worldPoint is inside frustum
+	bool IsInsideFrustum(const XMVECTOR& worldPoint) const;
 	// Returns true if one of boundingBox corners is inside frustum
 	// NOTE: this function variant assumes that boundingBox has corners in world space already
 	bool IsInsideFrustum(const BoundingBox& boundingBox) const;

@@ -1,7 +1,7 @@
 #include "CameraControl.h"
 
 #include "Core/Input.h"
-#include "GameFramework/GameObject.h"
+#include "GameFramework/Entity.h"
 #include "GameFramework/Components/Camera.h"
 
 #include "Debug/Debug.h"
@@ -9,7 +9,7 @@
 const float32 CameraControl::_xRotationMax = 89.99f;
 const float32 CameraControl::_xRotationMin = -89.99f;
 
-CameraControl::CameraControl(SharedPtr<GameObject> owner) : Component(owner)
+CameraControl::CameraControl(SharedPtr<Entity> owner) : Component(owner)
 {
 }
 
@@ -23,7 +23,7 @@ CameraControl::~CameraControl()
 
 }
 
-SharedPtr<Component> CameraControl::Copy(SharedPtr<GameObject> newOwner) const
+SharedPtr<Component> CameraControl::Copy(SharedPtr<Entity> newOwner) const
 {
 	SharedPtr<CameraControl> copy = SharedPtr<CameraControl>(new CameraControl(*this));
 	copy->_owner = newOwner;
@@ -149,21 +149,21 @@ void CameraControl::OnUpdate(float32 deltaTime)
 	{
 		_timer += deltaTime;
 
-		const XMFLOAT3 direction = _owner->GetTransform()->TransformDirection(_movementVector);
+		const XMFLOAT3 direction = _owner->GetTransform().TransformDirection(_movementVector);
 		const float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 
-		XMFLOAT3 currentPosition = _owner->GetTransform()->GetPosition();
+		XMFLOAT3 currentPosition = _owner->GetPosition();
 		currentPosition += direction * speedMulDeltaTime;
-		_owner->GetTransform()->SetPosition(currentPosition);
+		_owner->SetPosition(currentPosition);
 
 		const XMINT2 mousePosition = GetInput().GetMousePosition();
 		XMINT2 mouseDeltaPosition = mousePosition - _previousMousePosition;
 
-		XMFLOAT3 currentRotation = _owner->GetTransform()->GetRotation();
+		XMFLOAT3 currentRotation = _owner->GetRotation();
 		currentRotation.x += (mouseDeltaPosition.y * deltaTime * _mouseSensitivity);
 		currentRotation.x = Clamp(currentRotation.x, _xRotationMin, _xRotationMax);
 		currentRotation.y = currentRotation.y + (mouseDeltaPosition.x * deltaTime * _mouseSensitivity);
-		_owner->GetTransform()->SetRotation(currentRotation);
+		_owner->SetRotation(currentRotation);
 
 		_previousMousePosition = mousePosition;
 	}

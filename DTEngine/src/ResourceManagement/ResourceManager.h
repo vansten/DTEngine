@@ -45,8 +45,9 @@ template<typename T>
 SharedPtr<T> ResourceManager::Get()
 {
 	String path = DT_TEXT("Hidden");
-	std::string typeName = typeid(T).name();
-	path += String(typeName.begin(), typeName.end());
+	std::string typeNameStr = typeid(T).name();
+	String typeName(typeNameStr.begin(), typeNameStr.end());
+	path += typeName;
 	if(_assetsMap.find(path) != _assetsMap.end())
 	{
 		return StaticPointerCast<T>(_assetsMap[path]);
@@ -76,7 +77,8 @@ SharedPtr<T> ResourceManager::Get(const String& path)
 		return StaticPointerCast<T>(_assetsMap[path]);
 	}
 
-	std::string typeName = typeid(T).name();
+	std::string typeNameStr = typeid(T).name();
+	String typeName(typeNameStr.begin(), typeNameStr.end());
 	SharedPtr<T> nAsset(new T());
 	bool result = nAsset->Load(path);
 	if(!result)

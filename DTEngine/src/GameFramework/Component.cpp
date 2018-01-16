@@ -1,8 +1,8 @@
 #include "Component.h"
 
-#include "GameObject.h"
+#include "Entity.h"
 
-Component::Component(SharedPtr<GameObject> owner) : EnableSharedFromThis<Component>(), _owner(owner), _enabled(true)
+Component::Component(SharedPtr<Entity> owner) : EnableSharedFromThis<Component>(), _owner(owner), _enabled(true)
 {
 
 }
@@ -17,7 +17,7 @@ Component::~Component()
 
 }
 
-SharedPtr<Component>Component::Copy(SharedPtr<GameObject> newOwner) const
+SharedPtr<Component>Component::Copy(SharedPtr<Entity> newOwner) const
 {
 	SharedPtr<Component> copy = SharedPtr<Component>(new Component(*this));
 	copy->_owner = newOwner;
@@ -59,7 +59,7 @@ void Component::PreSave()
 
 }
 
-void Component::OnOwnerTransformUpdated(SharedPtr<Transform> transform)
+void Component::OnOwnerTransformUpdated(const Transform& transform)
 {
 
 }
@@ -79,7 +79,7 @@ void Component::OnEnableChanged(bool enabled)
 
 }
 
-SharedPtr<GameObject> Component::GetOwner() const
+SharedPtr<Entity> Component::GetOwner() const
 {
 	return _owner;
 }

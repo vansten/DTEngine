@@ -10,7 +10,7 @@ struct ID3D11Buffer;
 struct ID3D11DeviceContext;
 struct ID3D10Blob;
 
-class GameObject;
+class Entity;
 class Graphics;
 
 class Shader : public Asset
@@ -47,7 +47,7 @@ public:
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);
-	void SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject);
+	void SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> gameObject);
 	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
 
 	inline ID3D11Buffer* const* GetPerFrameBuffer() const { return &_perFrameBuffer; }

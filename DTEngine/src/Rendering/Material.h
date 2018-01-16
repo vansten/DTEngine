@@ -40,7 +40,7 @@ public:
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);
-	void SetPerObjectParameters(Graphics& graphics, SharedPtr<GameObject> gameObject);
+	void SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> entity);
 	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
 
 	inline RenderQueue GetRenderQueue() const

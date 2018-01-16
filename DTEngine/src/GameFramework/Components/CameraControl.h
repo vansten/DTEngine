@@ -22,14 +22,14 @@ private:
 	float32 _timer;
 
 public:
-	CameraControl(SharedPtr<GameObject> owner);
+	CameraControl(SharedPtr<Entity> owner);
 	CameraControl(const CameraControl& other);
 	virtual ~CameraControl();
 
 	DECLARE_SHARED_FROM_THIS(CameraControl)
 
 protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const override;
 
 	bool OnWPressed();
 	bool OnWReleased();

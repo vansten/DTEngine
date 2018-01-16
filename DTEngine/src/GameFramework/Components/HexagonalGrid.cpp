@@ -1,6 +1,6 @@
 #include "HexagonalGrid.h"
 
-#include "GameFramework/GameObject.h"
+#include "GameFramework/Entity.h"
 #include "GameFramework/Game.h"
 #include "ResourceManagement/ResourceManager.h"
 #include "MeshRenderer.h"
@@ -57,12 +57,12 @@ int32 CubeCoordinates::Distance(CubeCoordinates& other) const
 	return (abs(X - other.X) + abs(Y - other.Y) + abs(Z - other.Z)) / 2;
 }
 
-Hexagon::Hexagon(SharedPtr<GameObject> owner) : Component(owner), _objectOnHexagon(nullptr), _coordinates(0, 0)
+Hexagon::Hexagon(SharedPtr<Entity> owner) : Component(owner), _entityOnHexagon(nullptr), _coordinates(0, 0)
 {
 
 }
 
-Hexagon::Hexagon(const Hexagon& other) : Component(other), _objectOnHexagon(nullptr), _coordinates(other._coordinates)
+Hexagon::Hexagon(const Hexagon& other) : Component(other), _entityOnHexagon(nullptr), _coordinates(other._coordinates)
 {
 
 }
@@ -72,7 +72,7 @@ Hexagon::~Hexagon()
 
 }
 
-SharedPtr<Component> Hexagon::Copy(SharedPtr<GameObject> newOwner) const
+SharedPtr<Component> Hexagon::Copy(SharedPtr<Entity> newOwner) const
 {
 	SharedPtr<Hexagon> copy = SharedPtr<Hexagon>(new Hexagon(*this));
 	copy->_owner = newOwner;
@@ -106,11 +106,11 @@ void HexagonalGridPath::ConstructWorldPath()
 {
 	for(auto hexagon : _path)
 	{
-		_worldPath.push_back(hexagon->GetOwner()->GetTransform()->GetPosition());
+		_worldPath.push_back(hexagon->GetOwner()->GetPosition());
 	}
 }
 
-HexagonalGrid::HexagonalGrid(SharedPtr<GameObject> owner) : Component(owner)
+HexagonalGrid::HexagonalGrid(SharedPtr<Entity> owner) : Component(owner)
 {
 
 }
@@ -125,7 +125,7 @@ HexagonalGrid::~HexagonalGrid()
 
 }
 
-SharedPtr<Component> HexagonalGrid::Copy(SharedPtr<GameObject> newOwner) const
+SharedPtr<Component> HexagonalGrid::Copy(SharedPtr<Entity> newOwner) const
 {
 	SharedPtr<HexagonalGrid> copy = SharedPtr<HexagonalGrid>(new HexagonalGrid(*this));
 	copy->_owner = newOwner;
@@ -273,7 +273,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 	return true;
 }
 
-SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<GameObject> gridOwner)
+SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<Entity> gridOwner)
 {
 	// If grid owner doesn't exist or width, height or hexagonSize are less or equal than 0
 	if (!gridOwner || width <= 0 || height <= 0 || hexagonSize <= 0.0f)
@@ -283,7 +283,6 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	}
 
 	SharedPtr<HexagonalGrid> gridComponent = gridOwner->AddComponent<HexagonalGrid>();
-	SharedPtr<Transform> gridTransform = gridOwner->GetTransform();
 
 	// Calculate half width and half height to properly position hexagons
 	const int32 halfW = (int32)(width * 0.5f);
@@ -315,28 +314,30 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 			const AxialCoordinates coordinates(w - halfW, h - halfH);
 
 			// Create new game object and mesh renderer for hexagon
-			SharedPtr<GameObject> newHexagonObject = game.GetActiveScene()->SpawnObject(DT_TEXT("Hexagon"));
-			SharedPtr<MeshRenderer> hexagonRenderer = newHexagonObject->AddComponent<MeshRenderer>();
+			SharedPtr<Entity> hexagonEntity = game.GetActiveScene()->SpawnEntity(DT_TEXT("Hexagon"));
+			SharedPtr<MeshRenderer> hexagonRenderer = hexagonEntity->AddComponent<MeshRenderer>();
 			// Set visuals
 			hexagonRenderer->SetMesh(hexagonMesh);
 			hexagonRenderer->SetMaterial(material);
 
 			// Create new hexagon with coordinates
-			SharedPtr<Hexagon> hexagon = newHexagonObject->AddComponent<Hexagon>();
+			SharedPtr<Hexagon> hexagon = hexagonEntity->AddComponent<Hexagon>();
 			hexagon->SetCoordinates(coordinates);
 			// Sets scale and parent
-			newHexagonObject->GetTransform()->SetParent(gridTransform);
-			newHexagonObject->GetTransform()->SetScale(XMFLOAT3(hexagonSize, 1.0f, hexagonSize));
+			hexagonEntity->SetParent(gridOwner);
+			hexagonEntity->SetScale(XMFLOAT3(hexagonSize, 1.0f, hexagonSize));
 
 			// Calculate hexagon's position
 			XMFLOAT3 position;
 			position.x = xDirection.x * coordinates.X;
 			position.y = 0.0f;
 			position.z = xDirection.z * coordinates.X + yDirection.z * coordinates.Y;
-			newHexagonObject->GetTransform()->SetPosition(position);
+			hexagonEntity->SetPosition(position);
 
 			// Add hexagon to map
 			gridComponent->_hexagonalMap.insert({coordinates, hexagon});
+
+			GetDebug().DrawCube(position, hexagonRenderer->GetBoundingBox().GetHalfExtents() * 2.0f, XMFLOAT3(), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 50.0f);
 		}
 	}
 

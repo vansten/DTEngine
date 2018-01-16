@@ -4,7 +4,7 @@
 
 #include "Debug/Debug.h"
 
-#include "GameFramework/GameObject.h"
+#include "GameFramework/Entity.h"
 #include "GameFramework/Components/Camera.h"
 #include "GameFramework/Components/MeshRenderer.h"
 
@@ -370,9 +370,9 @@ void Graphics::SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D1
 	_deviceContext->VSSetConstantBuffers(bufferSlot, bufferCount, buffers);
 }
 
-void Graphics::SetObject(SharedPtr<GameObject> gameObject)
+void Graphics::SetObject(SharedPtr<Entity> entity)
 {
-	_currentlyRenderedObject = gameObject;
+	_currentlyRenderedEntity = entity;
 }
 
 void Graphics::SetMaterial(SharedPtr<Material> material)
@@ -390,9 +390,9 @@ void Graphics::SetMaterial(SharedPtr<Material> material)
 		}
 	}
 	
-	if (_lastUsedMaterial && _currentlyRenderedObject)
+	if (_lastUsedMaterial && _currentlyRenderedEntity)
 	{
-		_lastUsedMaterial->SetPerObjectParameters(*this, _currentlyRenderedObject);
+		_lastUsedMaterial->SetPerObjectParameters(*this, _currentlyRenderedEntity);
 	}
 }
 

@@ -28,15 +28,15 @@ void Scene::Load()
 	// GameObject* go = new GameObject(readName);
 	// go->Load(archive);
 
-	SharedPtr<GameObject> gridObject = SpawnObject(DT_TEXT("Grid"));
-	SharedPtr<GameObject> cameraObject = SpawnObject(DT_TEXT("Camera"));
+	SharedPtr<Entity> gridEntity = SpawnEntity(DT_TEXT("Grid"));
+	SharedPtr<Entity> cameraEntity = SpawnEntity(DT_TEXT("Camera"));
 
-	SharedPtr<HexagonalGrid> grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridObject);
+	SharedPtr<HexagonalGrid> grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridEntity);
 
-	cameraObject->AddComponent<Camera>();
-	cameraObject->GetTransform()->SetPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
-	cameraObject->GetTransform()->SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
-	cameraObject->AddComponent<CameraControl>();
+	cameraEntity->AddComponent<Camera>();
+	cameraEntity->SetPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
+	cameraEntity->SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
+	cameraEntity->AddComponent<CameraControl>();
 
 	SharedPtr<Hexagon> h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));
 	SharedPtr<Hexagon> h2 = grid->GetHexagonAt(AxialCoordinates(3, 1));
@@ -57,7 +57,7 @@ void Scene::Load()
 		}
 	}
 
-	for(auto go : _gameObjects)
+	for(auto go : _entities)
 	{
 		go->PostLoad();
 	}
@@ -75,7 +75,7 @@ void Scene::Save()
 	Archive archive;	//TODO: Replace with something like FileSystem::GetArchive(_scenePath);
 	UNREFERENCED_PARAMETER(archive);
 	
-	for(auto go : _gameObjects)
+	for(auto go : _entities)
 	{
 		go->PreSave();
 	}
@@ -89,28 +89,28 @@ void Scene::Save()
 
 void Scene::Unload()
 {
-	for (auto go : _gameObjects)
+	for (auto go : _entities)
 	{
 		go->Shutdown();
 	}
-	_gameObjects.clear();
+	_entities.clear();
 
-	for(auto go : _newGameObjects)
+	for(auto go : _newEntities)
 	{
 		go->Shutdown();
 	}
-	_newGameObjects.clear();
+	_newEntities.clear();
 }
 
 void Scene::Update(float32 deltaTime)
 {
-	for (auto go : _newGameObjects)
+	for (auto go : _newEntities)
 	{
-		_gameObjects.push_back(go);
+		_entities.push_back(go);
 	}
-	_newGameObjects.clear();
+	_newEntities.clear();
 
-	for (auto go : _gameObjects)
+	for (auto go : _entities)
 	{
 		if(go->IsEnabledInHierarchy())
 		{
@@ -149,33 +149,33 @@ void Scene::Render(Graphics& graphics)
 	}
 }
 
-SharedPtr<GameObject> Scene::SpawnObject(const String& name)
+SharedPtr<Entity> Scene::SpawnEntity(const String& name)
 {
-	SharedPtr<GameObject> newGO = SharedPtr<GameObject>(new GameObject(name));
+	SharedPtr<Entity> entity = SharedPtr<Entity>(new Entity(name));
 
-	_newGameObjects.push_back(newGO);
-	newGO->Initialize();
+	_newEntities.push_back(entity);
+	entity->Initialize();
 
-	return newGO;
+	return entity;
 }
 
-SharedPtr<GameObject> Scene::SpawnObject(SharedPtr<GameObject> original)
+SharedPtr<Entity> Scene::SpawnEntity(SharedPtr<Entity> original)
 {
-	SharedPtr<GameObject> newGO = original->Copy();
+	SharedPtr<Entity> entity = original->Copy();
 
-	_newGameObjects.push_back(newGO);
-	newGO->Initialize();
+	_newEntities.push_back(entity);
+	entity->Initialize();
 
-	return newGO;
+	return entity;
 }
 
-SharedPtr<GameObject> Scene::SpawnObject(SharedPtr<GameObject> original, const String& name)
+SharedPtr<Entity> Scene::SpawnEntity(SharedPtr<Entity> original, const String& name)
 {
-	SharedPtr<GameObject> newGO = original->Copy();
-	newGO->SetName(name);
+	SharedPtr<Entity> entity = original->Copy();
+	entity->SetName(name);
 
-	_newGameObjects.push_back(newGO);
-	newGO->Initialize();
+	_newEntities.push_back(entity);
+	entity->Initialize();
 
-	return newGO;
+	return entity;
 }

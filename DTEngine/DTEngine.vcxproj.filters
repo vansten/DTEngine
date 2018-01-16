@@ -54,9 +54,6 @@
     <ClCompile Include="src\GameFramework\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameFramework\GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameFramework\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,6 +126,12 @@
     <ClCompile Include="src\Rendering\RenderState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameFramework\Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameFramework\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Window.h">
@@ -168,9 +171,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GameFramework\Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameFramework\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GameFramework\Scene.h">
@@ -255,6 +255,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\RenderState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameFramework\Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameFramework\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

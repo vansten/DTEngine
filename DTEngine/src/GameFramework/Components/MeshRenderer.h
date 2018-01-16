@@ -16,7 +16,7 @@ private:
 	SharedPtr<Material> _material;
 
 public:
-	MeshRenderer(SharedPtr<GameObject> owner);
+	MeshRenderer(SharedPtr<Entity> owner);
 	MeshRenderer(const MeshRenderer& other);
 	virtual ~MeshRenderer();
 
@@ -27,7 +27,7 @@ private:
 	static void UnregisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer);
 
 protected:
-	virtual SharedPtr<Component> Copy(SharedPtr<GameObject> newOwner) const override;
+	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const override;
 
 public:
 	virtual void OnInitialize() override;
