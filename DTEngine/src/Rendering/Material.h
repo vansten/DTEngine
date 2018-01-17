@@ -30,7 +30,6 @@ protected:
 
 public:
 	Material();
-	Material(SharedPtr<Material> other);
 	virtual ~Material();
 
 	virtual bool Load(const String& path) override;
@@ -40,7 +39,7 @@ public:
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);
-	void SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> entity);
+	void SetPerObjectParameters(Graphics& graphics, Entity* entity);
 	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
 
 	inline RenderQueue GetRenderQueue() const

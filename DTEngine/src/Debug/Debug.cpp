@@ -7,6 +7,14 @@
 #include "Rendering/Meshes/CubeMesh.h"
 #include "Rendering/Meshes/SphereMesh.h"
 
+const String CHANNEL_ENGINE = DT_TEXT("Engine");
+const String CHANNEL_GRAPHICS = DT_TEXT("Graphics");
+const String CHANNEL_AUDIO = DT_TEXT("Audio");
+const String CHANNEL_INPUT = DT_TEXT("Input");
+const String CHANNEL_CAMERA = DT_TEXT("Camera");
+const String CHANNEL_GAMEOBJECT = DT_TEXT("GameObject");
+const String CHANNEL_GENERAL = DT_TEXT("General");
+
 DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale, XMFLOAT4 color, float32 lifetime) : _mesh(mesh), _lifetime(lifetime)
 {
 	const XMFLOAT3 radianRotation = XMFLOAT3(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)); 
@@ -14,7 +22,7 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position
 		XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&radianRotation)) *
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
 
-	_material = std::make_shared<Material>();
+	_material = std::make_unique<Material>();
 	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
 	_material->Initialize();
 	_material->SetColor(color);
@@ -26,7 +34,7 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position
 		rotation *
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position));
 
-	_material = std::make_shared<Material>();
+	_material = std::make_unique<Material>();
 	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
 	_material->Initialize();
 	_material->SetColor(color);
@@ -48,9 +56,24 @@ DebugDrawGeometry::~DebugDrawGeometry()
 
 void DebugDrawGeometry::Render(Graphics& graphics) const
 {
-	graphics.SetMaterial(_material);
+	graphics.SetMaterial(_material.get());
 	_material->SetWorldMatrix(graphics, _worldMatrix);
 	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
+}
+
+DebugDrawGeometry& DebugDrawGeometry::operator=(const DebugDrawGeometry& other)
+{
+	_mesh = other._mesh;
+
+	_material = std::make_unique<Material>();
+	_material->SetColor(other._material->GetColor());
+	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
+	_material->Initialize();
+
+	_worldMatrix = other._worldMatrix;
+	_lifetime = other._lifetime;
+
+	return *this;
 }
 
 void Debug::UpdateDraws(float32 deltaTime)
@@ -61,7 +84,7 @@ void Debug::UpdateDraws(float32 deltaTime)
 		_draws[i]._lifetime -= deltaTime;
 		if(_draws[i]._lifetime <= 0.0f)
 		{
-			_draws.pop_back();
+			_draws.erase(_draws.begin() + i);
 		}
 	}
 }

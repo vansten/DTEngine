@@ -47,7 +47,7 @@ public:
 	virtual void Shutdown() override;
 
 	void SetPerFrameParameters(Graphics& graphics);
-	void SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> gameObject);
+	void SetPerObjectParameters(Graphics& graphics, Entity* gameObject);
 	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
 
 	inline ID3D11Buffer* const* GetPerFrameBuffer() const { return &_perFrameBuffer; }

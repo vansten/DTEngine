@@ -65,7 +65,7 @@ struct DebugDrawGeometry
 
 private:
 	SharedPtr<MeshBase> _mesh;
-	SharedPtr<Material> _material;
+	UniquePtr<Material> _material;
 	XMMATRIX _worldMatrix;
 
 	float32 _lifetime;
@@ -77,6 +77,8 @@ public:
 	~DebugDrawGeometry();
 
 	void Render(Graphics& graphics) const;
+
+	DebugDrawGeometry& operator=(const DebugDrawGeometry& other);
 };
 
 class Debug
@@ -117,10 +119,10 @@ public:
 	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const { return _draws; }
 };
 
-#define CHANNEL_ENGINE DT_TEXT("Engine")
-#define CHANNEL_GRAPHICS DT_TEXT("Graphics")
-#define CHANNEL_AUDIO DT_TEXT("Audio")
-#define CHANNEL_INPUT DT_TEXT("Input")
-#define CHANNEL_CAMERA DT_TEXT("Camera")
-#define CHANNEL_GAMEOBJECT DT_TEXT("GameObject")
-#define CHANNEL_GENERAL DT_TEXT("General")
+extern const String CHANNEL_ENGINE;
+extern const String CHANNEL_GRAPHICS;
+extern const String CHANNEL_AUDIO;
+extern const String CHANNEL_INPUT;
+extern const String CHANNEL_CAMERA;
+extern const String CHANNEL_GAMEOBJECT;
+extern const String CHANNEL_GENERAL;

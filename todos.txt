@@ -36,7 +36,7 @@ TODOs:
 -- Reorganize transform structure 			|> ALL DONE
 -- Rename GameObject to Entity				|> ALL DONE
 -- Fix frustum culling						|> ALL DONE
--- Default material
+-- Default material 						|> ALL DONE
 -- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)

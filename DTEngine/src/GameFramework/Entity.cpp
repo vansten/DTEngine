@@ -129,7 +129,7 @@ void Entity::Update(float32 deltaTime)
 
 void Entity::Render(Graphics& graphics)
 {
-	graphics.SetObject(SharedFromThis());
+	graphics.SetObject(this);
 	for(auto component : _components)
 	{
 		component->OnRender(graphics);

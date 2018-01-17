@@ -187,7 +187,7 @@ public:
 	using CanWalkPredicate = bool(*)(SharedPtr<Hexagon>);
 
 protected:
-	Dictionary<const AxialCoordinates, WeakPtr<Hexagon>, AxialCoordinatesHasher> _hexagonalMap;
+	Dictionary<const AxialCoordinates, SharedPtr<Hexagon>, AxialCoordinatesHasher> _hexagonalMap;
 	float32 _hexagonSize;
 	uint32 _width;
 	uint32 _height;

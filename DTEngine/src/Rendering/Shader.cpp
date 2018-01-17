@@ -140,7 +140,7 @@ void Shader::SetPerFrameParameters(Graphics& graphics)
 	graphics.SetVSConstantBuffers(0, 1, &_perFrameBuffer);
 }
 
-void Shader::SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> entity)
+void Shader::SetPerObjectParameters(Graphics& graphics, Entity* entity)
 {
 	PerObjectBuffer* data = (PerObjectBuffer*)graphics.Map(_perObjectBuffer);
 	if (!data)

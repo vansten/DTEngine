@@ -370,12 +370,12 @@ void Graphics::SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D1
 	_deviceContext->VSSetConstantBuffers(bufferSlot, bufferCount, buffers);
 }
 
-void Graphics::SetObject(SharedPtr<Entity> entity)
+void Graphics::SetObject(Entity* entity)
 {
 	_currentlyRenderedEntity = entity;
 }
 
-void Graphics::SetMaterial(SharedPtr<Material> material)
+void Graphics::SetMaterial(Material* material)
 {
 	if (_lastUsedMaterial != material)
 	{

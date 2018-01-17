@@ -87,7 +87,7 @@ public:
 	inline void SetRotation(const XMFLOAT3& rotation) { _transform.SetRotation(rotation); }
 	inline void SetScale(const XMFLOAT3& scale) { _transform.SetScale(scale); }
 
-	inline const DynamicArray<SharedPtr<Entity>> GetChildren() const { return _children; }
+	inline const DynamicArray<SharedPtr<Entity>>& GetChildren() const { return _children; }
 	inline uint64 GetChildrenCount() const { return (uint64)_children.size(); }
 	inline SharedPtr<Entity> GetChildAt(uint64 index) const
 	{

@@ -42,8 +42,8 @@ private:
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
 
-	SharedPtr<Material> _lastUsedMaterial;
-	SharedPtr<Entity> _currentlyRenderedEntity;
+	Material* _lastUsedMaterial;
+	Entity* _currentlyRenderedEntity;
 	bool _vsync;
 
 	bool _isResizing;
@@ -77,8 +77,8 @@ public:
 	void Unmap(ID3D11Resource* resource);
 	void SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D11Buffer** buffers);
 
-	void SetObject(SharedPtr<Entity> entity);
-	void SetMaterial(SharedPtr<Material> material);
+	void SetObject(Entity* entity);
+	void SetMaterial(Material* material);
 	void DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, uint32 indicesCount, uint32 stride, uint32 offset);
 
 	bool CreateRenderState(UniquePtr<RenderState>& renderState);

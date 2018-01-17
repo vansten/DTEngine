@@ -157,7 +157,7 @@ SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const AxialCoordinates& axialCoor
 	auto foundIt = _hexagonalMap.find(axialCoordinates);
 	if (foundIt != _hexagonalMap.end())
 	{
-		return (*foundIt).second.lock();
+		return (*foundIt).second;
 	}
 
 	return nullptr;
@@ -292,7 +292,6 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	
 	// Load hexagon mesh and default material
 	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Get<HexagonMesh>();
-	SharedPtr<Material> material = resourceManager.Get<Material>(DT_TEXT("Resources/Materials/Red.dtmat"));
 
 	const float32 hexagonWidth = 2.0f * hexagonSize * 0.5f;
 	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
@@ -318,7 +317,6 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 			SharedPtr<MeshRenderer> hexagonRenderer = hexagonEntity->AddComponent<MeshRenderer>();
 			// Set visuals
 			hexagonRenderer->SetMesh(hexagonMesh);
-			hexagonRenderer->SetMaterial(material);
 
 			// Create new hexagon with coordinates
 			SharedPtr<Hexagon> hexagon = hexagonEntity->AddComponent<Hexagon>();
@@ -336,8 +334,6 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 
 			// Add hexagon to map
 			gridComponent->_hexagonalMap.insert({coordinates, hexagon});
-
-			GetDebug().DrawCube(position, hexagonRenderer->GetBoundingBox().GetHalfExtents() * 2.0f, XMFLOAT3(), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 50.0f);
 		}
 	}
 

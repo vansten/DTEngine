@@ -27,13 +27,16 @@ class Material;
 class ResourceManager
 {
 protected:
-	std::map<String, SharedPtr<Asset>> _assetsMap;
+	Map<String, SharedPtr<Asset>> _assetsMap;
+	UniquePtr<Material> _missingMaterial;
 
 public:
 	ResourceManager();
 
 	bool Initialize();
 	void Shutdown();
+
+	Material* GetDefaultMaterial() const;
 
 	template<typename T>
 	SharedPtr<T> Get();

@@ -11,6 +11,7 @@ DynamicArray<SharedPtr<MeshRenderer>> MeshRenderer::_allRenderers;
 MeshRenderer::MeshRenderer(SharedPtr<Entity> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
 {
 	ResourceManager& resourceManager = GetResourceManager();
+	_material = resourceManager.Get<Material>();
 }
 
 MeshRenderer::MeshRenderer(const MeshRenderer& other) : Component(other), _mesh(other._mesh), _material(other._material)
@@ -73,11 +74,15 @@ void MeshRenderer::OnRender(Graphics& graphics)
 	if(!_material)
 	{
 		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without material set. Aborting"));
+#if DT_DEBUG
+		graphics.SetMaterial(GetResourceManager().GetDefaultMaterial());
+		graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
+#endif
 		return;
 	}
 
 	graphics.SetRenderState(_material->GetRenderState());
-	graphics.SetMaterial(_material);
+	graphics.SetMaterial(_material.get());
 	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
 }
 

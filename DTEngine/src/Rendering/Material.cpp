@@ -8,11 +8,7 @@
 
 static const String DEFAULT_SHADER_PATH = DT_TEXT("Resources/Shaders/Color");
 
-Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr)
-{
-}
-
-Material::Material(SharedPtr<Material> other) : _perFrameBuffer(nullptr), _shader(nullptr)
+Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr), _color(1.0f, 1.0f, 1.0f, 1.0f), _queue(OpaqueUpperLimit), _renderState(nullptr)
 {
 
 }
@@ -150,7 +146,7 @@ void Material::SetPerFrameParameters(Graphics& graphics)
 	graphics.SetVSConstantBuffers(2, 1, &_perFrameBuffer);
 }
 
-void Material::SetPerObjectParameters(Graphics& graphics, SharedPtr<Entity> entity)
+void Material::SetPerObjectParameters(Graphics& graphics, Entity* entity)
 {
 	if (_shader)
 	{
