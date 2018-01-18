@@ -3,6 +3,7 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #include <d3d11.h>
 
@@ -98,4 +99,11 @@ if(comObject)					\
 if(FAILED(result))	\
 {					\
 	return false;	\
+}
+
+#define HR_REACTION(result, reaction)	\
+if(FAILED(result))						\
+{										\
+	reaction;							\
+	return false;						\
 }

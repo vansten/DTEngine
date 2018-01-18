@@ -8,6 +8,7 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <d3d11shader.h>
 
 Shader::Shader() : _vertexShader(nullptr), _pixelShader(nullptr), _inputLayout(nullptr), _perFrameBuffer(nullptr), _perObjectBuffer(nullptr)
 {
@@ -16,6 +17,83 @@ Shader::Shader() : _vertexShader(nullptr), _pixelShader(nullptr), _inputLayout(n
 Shader::~Shader()
 {
 
+}
+
+bool Shader::GatherConstantBuffersInfo(ID3D10Blob* compiledShader)
+{
+	if(compiledShader == nullptr)
+	{
+		return false;
+	}
+
+	ID3D11ShaderReflection* reflectedShader = nullptr;
+	HRESULT result = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflectedShader);
+	HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot reflect shader!")));
+
+	// Get shader description
+	D3D11_SHADER_DESC reflectedShaderDesc;
+	reflectedShader->GetDesc(&reflectedShaderDesc);
+
+	// For each of bound resource (textures, samplers, constant buffers)
+	for(uint32 i = 0; i < reflectedShaderDesc.BoundResources; ++i)
+	{
+		D3D11_SHADER_INPUT_BIND_DESC reflectedBoundResourceDesc;
+		result = reflectedShader->GetResourceBindingDesc(i, &reflectedBoundResourceDesc);
+
+		switch(reflectedBoundResourceDesc.Type)
+		{
+		case D3D_SIT_CBUFFER:
+			{
+				ID3D11ShaderReflectionConstantBuffer* reflectedConstantBuffer = reflectedShader->GetConstantBufferByName(reflectedBoundResourceDesc.Name);
+				CreateConstantBufferAndVariables(reflectedBoundResourceDesc, reflectedConstantBuffer);
+			}
+			break;
+		case D3D_SIT_TEXTURE:
+			break;
+		case D3D_SIT_SAMPLER:
+			break;
+		}
+	}
+
+	return true;
+}
+
+bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DESC& reflectedResourceDesc, ID3D11ShaderReflectionConstantBuffer* reflectedConstantBuffer)
+{
+	D3D11_SHADER_BUFFER_DESC reflectedConstantBufferDesc;
+	HRESULT result = reflectedConstantBuffer->GetDesc(&reflectedConstantBufferDesc);
+	HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain constant buffer description!")));
+
+	// Create constant buffer
+	UniquePtr<ShaderConstantBuffer> constantBuffer = std::make_unique<ShaderConstantBuffer>();
+	std::string name = reflectedConstantBufferDesc.Name;
+	constantBuffer->Name = String(name.begin(), name.end());
+	constantBuffer->Index = reflectedResourceDesc.BindPoint;
+
+	// Create variables that given constant buffer contains
+	for(uint32 j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
+	{
+		// Get variable description
+		ID3D11ShaderReflectionVariable* reflectedVariable = reflectedConstantBuffer->GetVariableByIndex(j);
+		D3D11_SHADER_VARIABLE_DESC reflectedVariableDesc;
+		result = reflectedVariable->GetDesc(&reflectedVariableDesc);
+		HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable description!")));
+
+		// Create variable
+		UniquePtr<ShaderVariable> variable = std::make_unique<ShaderVariable>();
+		variable->Offset = reflectedVariableDesc.StartOffset;
+		std::string name = reflectedVariableDesc.Name;
+		variable->Name = String(name.begin(), name.end());
+		variable->Size = reflectedVariableDesc.Size;
+
+		// Push variable to array
+		constantBuffer->Variables.push_back(std::move(variable));
+	}
+
+	// Push constant buffer to array
+	_constantBuffers.push_back(std::move(constantBuffer));
+
+	return true;
 }
 
 bool Shader::Load(const String& path)
@@ -52,6 +130,18 @@ bool Shader::Initialize()
 	if(!graphics.CreatePixelShader(_pixelShaderBuffer, &_pixelShader))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create pixel shader"));
+		return false;
+	}
+
+	if(!GatherConstantBuffersInfo(_vertexShaderBuffer))
+	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
+		return false;
+	}
+
+	if(!GatherConstantBuffersInfo(_pixelShaderBuffer))
+	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
 		return false;
 	}
 
@@ -116,6 +206,7 @@ bool Shader::Initialize()
 
 void Shader::Shutdown()
 {
+	_constantBuffers.clear();
 	RELEASE_COM(_perObjectBuffer);
 	RELEASE_COM(_perFrameBuffer);
 	RELEASE_COM(_inputLayout);

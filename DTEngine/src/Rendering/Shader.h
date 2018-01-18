@@ -9,9 +9,28 @@ struct ID3D11InputLayout;
 struct ID3D11Buffer;
 struct ID3D11DeviceContext;
 struct ID3D10Blob;
+struct ID3D11ShaderReflectionConstantBuffer;
+struct _D3D11_SHADER_INPUT_BIND_DESC;
 
 class Entity;
 class Graphics;
+
+struct ShaderVariable
+{
+public:
+	String Name;
+	uint32 Offset;
+	uint32 Size;
+};
+
+struct ShaderConstantBuffer
+{
+public:
+	String Name;
+	uint8 Index;
+
+	DynamicArray<UniquePtr<ShaderVariable>> Variables;
+};
 
 class Shader : public Asset
 {
@@ -27,7 +46,7 @@ public:
 		XMMATRIX world;
 	};
 
-protected:
+private:
 	ID3D11VertexShader* _vertexShader;
 	ID3D11PixelShader* _pixelShader;
 	ID3D11InputLayout* _inputLayout;
@@ -37,10 +56,17 @@ protected:
 	ID3D10Blob* _vertexShaderBuffer;
 	ID3D10Blob* _pixelShaderBuffer;
 
+	DynamicArray<UniquePtr<ShaderConstantBuffer>> _constantBuffers;
+
 public:
 	Shader();
 	virtual ~Shader();
 
+private:
+	bool GatherConstantBuffersInfo(ID3D10Blob* compiledShader);
+	bool CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DESC& reflectedResourceDesc, ID3D11ShaderReflectionConstantBuffer* reflectedConstantBuffer);
+
+public:
 	virtual bool Load(const String& path) override;
 
 	virtual bool Initialize() override;

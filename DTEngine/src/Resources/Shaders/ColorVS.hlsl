@@ -1,46 +1,46 @@
 cbuffer PerFrameBuffer : register(b0)
 {
-	matrix world2ViewMatrix;
-	matrix view2ProjectionMatrix;
+	matrix World2ViewMatrix;
+	matrix View2ProjectionMatrix;
 };
 
 cbuffer PerObjectBuffer : register(b1)
 {
-	matrix model2WorldMatrix;
+	matrix Model2WorldMatrix;
 };
 
 cbuffer ColorPerFrameBuffer : register(b2)
 {
-	float4 color;
+	float4 Color;
 }
 
 struct VertexInput
 {
-	float3 position : POSITION;
-	float3 normal : NORMAL;
-	float2 uvs : TEXCOORD0;
+	float3 Position : POSITION;
+	float3 Normal : NORMAL;
+	float2 UVs : TEXCOORD0;
 };
 
 struct PixelInput
 {
-	float4 position : SV_POSITION;
-	float3 normal : NORMAL;
-	float2 uvs : TEXCOORD0;
-	float4 color : COLOR;
+	float4 Position : SV_POSITION;
+	float3 Normal : NORMAL;
+	float2 UVs : TEXCOORD0;
+	float4 Color : COLOR;
 };
 
 PixelInput main(VertexInput input)
 {
 	PixelInput output;
-	output.position = mul(float4(input.position, 1.0f), model2WorldMatrix);
-	output.position = mul(output.position, world2ViewMatrix);
-	output.position = mul(output.position, view2ProjectionMatrix);
+	output.Position = mul(float4(input.Position, 1.0f), Model2WorldMatrix);
+	output.Position = mul(output.Position, World2ViewMatrix);
+	output.Position = mul(output.Position, View2ProjectionMatrix);
 
-	output.normal = (mul(float4(input.normal, 0.0f), model2WorldMatrix)).xyz;
+	output.Normal = (mul(float4(input.Normal, 0.0f), Model2WorldMatrix)).xyz;
 
-	output.uvs = input.uvs;
+	output.UVs = input.UVs;
 
-	output.color = color;
+	output.Color = Color;
 	
 	return output;
 }

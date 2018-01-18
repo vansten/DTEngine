@@ -37,8 +37,9 @@ TODOs:
 -- Rename GameObject to Entity				|> ALL DONE
 -- Fix frustum culling						|> ALL DONE
 -- Default material 						|> ALL DONE
--- Find a way to reflect shader's parameters (some specific way? or just use Effect11 framework?)
+-- Setting shader parameters (reflection)	|> IN PROGRESS (TODO: RenderingIssues.txt)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
+-- Read a little bit about 2D rendering in DX11
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
 -- UI (delegates on click for buttons using std::function (Functions), elements created once and rendered, UIText and UIImage classes responsible for rendering, both deriving from UIRenderer (?), components, texts, shaders for texts and images, font loading)
 -- Debug console rendered by texts on GUI, toggled by ~ (VK_OEM_3) (maybe commands?), console attaches itself to Debug::OnLog, gathers also commands (and marks them to be visible), colors?
@@ -54,6 +55,7 @@ TODOs:
 -- MATH library
 -- Debug drawing: custom mesh
 -- Debug drawing: cone
+-- 3D object texturing (do not forget about updating shader reflection to easily provide access like material->Set("MainTexture", mainTexturePtr))
 -- FBX loading
 -- Animation class with virtual calls like Update(float deltaTime), SetAnimationFrame(int frame), SetAnimationTime(float time), SetAnimationNormalizedTime(float normalizedTime)
 -- Animation state machine with animations
