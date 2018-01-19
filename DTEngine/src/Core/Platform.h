@@ -5,6 +5,7 @@
 #include <sstream>
 #include <functional>
 #include <memory>
+#include <type_traits>
 #include <vector>
 #include <unordered_map>
 #include <list>
@@ -23,6 +24,9 @@ template<typename T>
 using WeakPtr = std::weak_ptr<T>;
 template<typename T>
 using EnableSharedFromThis = std::enable_shared_from_this<T>;
+
+template<typename T>
+using IsPointer = std::is_pointer<T>;
 
 template<typename T>
 using Less = std::less<T>;

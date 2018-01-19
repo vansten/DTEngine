@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "RenderState.h"
+#include "MaterialParametersCollection.h"
 
 enum class RenderQueue
 {
@@ -27,6 +28,8 @@ protected:
 
 	uint16 _queue;
 	RenderStateParams _renderStateParams;
+
+	MaterialParametersCollection _parametersCollection;
 
 public:
 	Material();

@@ -239,6 +239,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\Core\Window.cpp" />
     <ClCompile Include="src\Rendering\Graphics.cpp" />
     <ClCompile Include="src\Rendering\Material.cpp" />
+    <ClCompile Include="src\Rendering\MaterialParametersCollection.cpp" />
     <ClCompile Include="src\Rendering\MeshBase.cpp" />
     <ClCompile Include="src\Rendering\Meshes\CapsuleMesh.cpp" />
     <ClCompile Include="src\Rendering\Meshes\ConeMesh.cpp" />
@@ -280,6 +281,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\GameFramework\Transform.h" />
     <ClInclude Include="src\Rendering\Graphics.h" />
     <ClInclude Include="src\Rendering\Material.h" />
+    <ClInclude Include="src\Rendering\MaterialParametersCollection.h" />
     <ClInclude Include="src\Rendering\MeshBase.h" />
     <ClInclude Include="src\Rendering\Meshes\CapsuleMesh.h" />
     <ClInclude Include="src\Rendering\Meshes\ConeMesh.h" />
