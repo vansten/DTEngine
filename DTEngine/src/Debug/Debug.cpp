@@ -57,7 +57,11 @@ DebugDrawGeometry::~DebugDrawGeometry()
 void DebugDrawGeometry::Render(Graphics& graphics) const
 {
 	graphics.SetMaterial(_material.get());
-	_material->SetWorldMatrix(graphics, _worldMatrix);
+
+	static const String MODEL_TO_WORLD_MATRIX_NAME = DT_TEXT("Model2WorldMatrix");
+	_material->SetMatrix(MODEL_TO_WORLD_MATRIX_NAME, XMMatrixTranspose(_worldMatrix));
+
+	_material->UpdatePerObjectBuffers(graphics);
 	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
 }
 

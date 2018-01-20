@@ -1,16 +1,65 @@
 #include "Shader.h"
 
-#include "Debug/Debug.h"
-
-#include "Graphics.h"
-#include "GameFramework/Entity.h"
-#include "GameFramework/Components/Camera.h"
-
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
 
-Shader::Shader() : _vertexShader(nullptr), _pixelShader(nullptr), _inputLayout(nullptr), _perFrameBuffer(nullptr), _perObjectBuffer(nullptr)
+#include "Debug/Debug.h"
+#include "Graphics.h"
+#include "GameFramework/Entity.h"
+#include "GameFramework/Components/Camera.h"
+#include "Rendering/MaterialParametersCollection.h"
+#include "Utility/String.h"
+
+bool ShaderConstantBuffer::Initialize(Graphics& graphics)
+{
+	uint32 bufferSize = 0;
+	for(auto& variable : Variables)
+	{
+		bufferSize += variable->Size;
+	}
+
+	D3D11_SUBRESOURCE_DATA bufferData = {0};
+
+	D3D11_BUFFER_DESC bufferDesc = {0};
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = bufferSize;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	return graphics.CreateBuffer(bufferDesc, &_constantBuffer);
+}
+
+void ShaderConstantBuffer::Shutdown()
+{
+	RELEASE_COM(_constantBuffer);
+}
+
+void ShaderConstantBuffer::Update(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
+{
+	void* data = graphics.Map(_constantBuffer);
+	if(!data)
+	{
+		graphics.Unmap(_constantBuffer);
+		return;
+	}
+
+	for(auto& variable : Variables)
+	{
+		const void* variableData = materialParametersCollection.Get(variable->Name);
+		if(variableData == nullptr)
+		{
+			continue;
+		}
+		void* destPtr = (char*)data + variable->Offset;
+		memcpy(destPtr, variableData, variable->Size);
+	}
+
+	graphics.Unmap(_constantBuffer);
+	graphics.SetVSConstantBuffers(Index, 1, &_constantBuffer);
+}
+
+Shader::Shader() : _vertexShader(nullptr), _pixelShader(nullptr), _inputLayout(nullptr)
 {
 }
 
@@ -69,6 +118,18 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 	std::string name = reflectedConstantBufferDesc.Name;
 	constantBuffer->Name = String(name.begin(), name.end());
 	constantBuffer->Index = reflectedResourceDesc.BindPoint;
+	if(Contains(constantBuffer->Name, DT_TEXT("PerFrame"), false))
+	{
+		constantBuffer->BufferType = ConstantBufferType::PerFrame;
+	}
+	else if(Contains(constantBuffer->Name, DT_TEXT("PerObject"), false))
+	{
+		constantBuffer->BufferType = ConstantBufferType::PerObject;
+	}
+	else
+	{
+		constantBuffer->BufferType = ConstantBufferType::PerDrawCall;
+	}
 
 	// Create variables that given constant buffer contains
 	for(uint32 j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
@@ -90,8 +151,8 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 		constantBuffer->Variables.push_back(std::move(variable));
 	}
 
-	// Push constant buffer to array
-	_constantBuffers.push_back(std::move(constantBuffer));
+	// Push constant buffer to array 
+	_constantBuffers[constantBuffer->BufferType].push_back(std::move(constantBuffer));
 
 	return true;
 }
@@ -145,6 +206,18 @@ bool Shader::Initialize()
 		return false;
 	}
 
+	for(auto& constantBufferArray : _constantBuffers)
+	{
+		for(auto& constantBuffer : constantBufferArray.second)
+		{
+			if(!constantBuffer->Initialize(graphics))
+			{
+				GetDebug().Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), constantBuffer->Name.c_str());
+				return false;
+			}
+		}
+	}
+
 	RELEASE_COM(_pixelShaderBuffer);
 
 	D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[3];
@@ -172,43 +245,19 @@ bool Shader::Initialize()
 
 	RELEASE_COM(_vertexShaderBuffer);
 
-	D3D11_SUBRESOURCE_DATA bufferData = {0};
-	PerFrameBuffer pfb;
-	pfb.view = XMMatrixIdentity();
-	pfb.projection = XMMatrixIdentity();
-	bufferData.pSysMem = &pfb;
-
-	D3D11_BUFFER_DESC bufferDesc = {0};
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.ByteWidth = sizeof(PerFrameBuffer);
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	if(!graphics.CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create constant buffer for PerFrame data"));
-		return false;
-	}
-
-	bufferDesc.ByteWidth = sizeof(PerObjectBuffer);
-	PerObjectBuffer pob;
-	pob.world = XMMatrixIdentity();
-	bufferData.pSysMem = &pob;
-
-	if(!graphics.CreateBuffer(bufferDesc, bufferData, &_perObjectBuffer))
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create constant buffer for PerObject data"));
-		return false;
-	}
-
 	return true;
 }
 
 void Shader::Shutdown()
 {
+	for(auto& constantBufferArray : _constantBuffers)
+	{
+		for(auto& constantBuffer : constantBufferArray.second)
+		{
+			constantBuffer->Shutdown();
+		}
+	}
 	_constantBuffers.clear();
-	RELEASE_COM(_perObjectBuffer);
-	RELEASE_COM(_perFrameBuffer);
 	RELEASE_COM(_inputLayout);
 	RELEASE_COM(_pixelShader);
 	RELEASE_COM(_vertexShader);
@@ -216,45 +265,29 @@ void Shader::Shutdown()
 	RELEASE_COM(_pixelShaderBuffer);
 }
 
-void Shader::SetPerFrameParameters(Graphics& graphics)
+void Shader::UpdatePerFrameBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	PerFrameBuffer* data = (PerFrameBuffer*)graphics.Map(_perFrameBuffer);
-	if (!data)
+	const DynamicArray<UniquePtr<ShaderConstantBuffer>>& perFrameBuffers = _constantBuffers[ConstantBufferType::PerFrame];
+	for(auto& constantBuffer : perFrameBuffers)
 	{
-		graphics.Unmap(_perFrameBuffer);
-		return;
+		constantBuffer->Update(graphics, materialParametersCollection);
 	}
-	data->view = XMMatrixTranspose(Camera::GetMainCamera()->GetViewMatrix());
-	data->projection = XMMatrixTranspose(Camera::GetMainCamera()->GetProjectionMatrix());
-	
-	graphics.Unmap(_perFrameBuffer);
-	graphics.SetVSConstantBuffers(0, 1, &_perFrameBuffer);
 }
 
-void Shader::SetPerObjectParameters(Graphics& graphics, Entity* entity)
+void Shader::UpdatePerObjectBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	PerObjectBuffer* data = (PerObjectBuffer*)graphics.Map(_perObjectBuffer);
-	if (!data)
+	const DynamicArray<UniquePtr<ShaderConstantBuffer>>& perObjectBuffers = _constantBuffers[ConstantBufferType::PerObject];
+	for(auto& constantBuffer : perObjectBuffers)
 	{
-		graphics.Unmap(_perObjectBuffer);
-		return;
+		constantBuffer->Update(graphics, materialParametersCollection);
 	}
-	data->world = XMMatrixTranspose(entity->GetTransform().GetModelMatrix());
-
-	graphics.Unmap(_perObjectBuffer);
-	graphics.SetVSConstantBuffers(1, 1, &_perObjectBuffer);
 }
 
-void Shader::SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix)
+void Shader::UpdatePerDrawCallBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	PerObjectBuffer* data = (PerObjectBuffer*)graphics.Map(_perObjectBuffer);
-	if(!data)
+	const DynamicArray<UniquePtr<ShaderConstantBuffer>>& perDrawCallBuffers = _constantBuffers[ConstantBufferType::PerDrawCall];
+	for(auto& constantBuffer : perDrawCallBuffers)
 	{
-		graphics.Unmap(_perObjectBuffer);
-		return;
+		constantBuffer->Update(graphics, materialParametersCollection);
 	}
-	data->world = XMMatrixTranspose(worldMatrix);
-
-	graphics.Unmap(_perObjectBuffer);
-	graphics.SetVSConstantBuffers(1, 1, &_perObjectBuffer);
 }

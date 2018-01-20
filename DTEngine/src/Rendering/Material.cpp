@@ -2,13 +2,15 @@
 
 #include <fstream>
 
+#include "GameFramework/Entity.h"
+#include "GameFramework/Components/Camera.h"
 #include "Graphics.h"
 #include "ResourceManagement/ResourceManager.h"
 #include "Utility/JSON.h"
 
 static const String DEFAULT_SHADER_PATH = DT_TEXT("Resources/Shaders/Color");
 
-Material::Material() : _perFrameBuffer(nullptr), _shader(nullptr), _color(1.0f, 1.0f, 1.0f, 1.0f), _queue(OpaqueUpperLimit), _renderState(nullptr)
+Material::Material() : _shader(nullptr), _color(1.0f, 1.0f, 1.0f, 1.0f), _queue(OpaqueUpperLimit), _renderState(nullptr)
 {
 
 }
@@ -95,12 +97,7 @@ bool Material::Initialize()
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	Graphics& graphics = GetGraphics();
-	if (!graphics.CreateBuffer(bufferDesc, bufferData, &_perFrameBuffer))
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create constant buffer for PerFrame data"));
-		return false;
-	}
-
+	
 	if(!graphics.CreateRenderState(_renderState, _renderStateParams))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
@@ -112,6 +109,8 @@ bool Material::Initialize()
 		_shader = GetResourceManager().Get<Shader>(DEFAULT_SHADER_PATH);
 	}
 
+	_parametersCollection.SetColor(DT_TEXT("Color"), _color);
+
 	return true;
 }
 
@@ -122,42 +121,34 @@ void Material::Shutdown()
 		_renderState->Shutdown();
 		_renderState = nullptr;
 	}
-	RELEASE_COM(_perFrameBuffer);
 }
 
-void Material::SetPerFrameParameters(Graphics& graphics)
+void Material::UpdatePerFrameBuffers(Graphics& graphics)
 {
-	graphics.SetRenderState(_renderState);
+	static const String WORLD_TO_VIEW_MATRIX_NAME = DT_TEXT("World2ViewMatrix");
+	static const String VIEW_TO_PROJECTION_MATRIX_NAME = DT_TEXT("View2ProjectionMatrix");
 
-	if (_shader)
+	SetMatrix(WORLD_TO_VIEW_MATRIX_NAME, XMMatrixTranspose(Camera::GetMainCamera()->GetViewMatrix()));
+	SetMatrix(VIEW_TO_PROJECTION_MATRIX_NAME, XMMatrixTranspose(Camera::GetMainCamera()->GetProjectionMatrix()));
+
+	if(_shader)
 	{
-		_shader->SetPerFrameParameters(graphics);
-	}
-
-	XMFLOAT4* data = (XMFLOAT4*)graphics.Map(_perFrameBuffer);
-	if (!data)
-	{
-		graphics.Unmap(_perFrameBuffer);
-		return;
-	}
-
-	*data = _color;
-	graphics.Unmap(_perFrameBuffer);
-	graphics.SetVSConstantBuffers(2, 1, &_perFrameBuffer);
-}
-
-void Material::SetPerObjectParameters(Graphics& graphics, Entity* entity)
-{
-	if (_shader)
-	{
-		_shader->SetPerObjectParameters(graphics, entity);
+		_shader->UpdatePerFrameBuffers(graphics, _parametersCollection);
 	}
 }
 
-void Material::SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix)
+void Material::UpdatePerObjectBuffers(Graphics& graphics)
 {
 	if(_shader)
 	{
-		_shader->SetWorldMatrix(graphics, worldMatrix);
+		_shader->UpdatePerObjectBuffers(graphics, _parametersCollection);
+	}
+}
+
+void Material::UpdatePerDrawCallBuffers(Graphics& graphics)
+{
+	if(_shader)
+	{
+		_shader->UpdatePerDrawCallBuffers(graphics, _parametersCollection);
 	}
 }

@@ -216,6 +216,7 @@ void Camera::RenderDebug(Graphics& graphics)
 	// Remember current render state
 	// Set render state to debug wireframe
 	graphics.SetRenderState(Graphics::CommonRenderStates::WireframeRenderState);
+	graphics.SetObject(nullptr);
 	
 	// Draw all debug draws
 	const DynamicArray<DebugDrawGeometry>& debugDraws = GetDebug().GetDraws();

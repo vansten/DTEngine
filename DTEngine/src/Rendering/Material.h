@@ -20,8 +20,6 @@ protected:
 	static const uint16 OpaqueUpperLimit = 1000;
 	static const uint16 TransparentUpperLimit = 2000;
 
-	ID3D11Buffer* _perFrameBuffer;
-
 	UniquePtr<RenderState> _renderState;
 	SharedPtr<Shader> _shader;
 	XMFLOAT4 _color;
@@ -41,9 +39,9 @@ public:
 	virtual bool Initialize() override;
 	virtual void Shutdown() override;
 
-	void SetPerFrameParameters(Graphics& graphics);
-	void SetPerObjectParameters(Graphics& graphics, Entity* entity);
-	void SetWorldMatrix(Graphics& graphics, const XMMATRIX& worldMatrix);
+	void UpdatePerFrameBuffers(Graphics& graphics);
+	void UpdatePerObjectBuffers(Graphics& graphics);
+	void UpdatePerDrawCallBuffers(Graphics& graphics);
 
 	inline RenderQueue GetRenderQueue() const
 	{
@@ -60,7 +58,11 @@ public:
 	}
 
 	inline const XMFLOAT4& GetColor() const { return _color; }
-	inline void SetColor(const XMFLOAT4& newColor) { _color = newColor; }
+	inline void SetColor(const XMFLOAT4& newColor) 
+	{
+		_color = newColor;
+		SetColor(DT_TEXT("Color"), _color);
+	}
 
 	inline const SharedPtr<Shader> GetShader() const { return _shader; }
 	inline void SetShader(SharedPtr<Shader> shader) {_shader = shader;}
@@ -68,4 +70,39 @@ public:
 	inline const UniquePtr<RenderState>& GetRenderState() const { return _renderState; }
 
 	inline void SetRenderStateParams(const RenderStateParams& params) { _renderStateParams = params; }
+
+	inline void SetFloat(const String& name, float value)
+	{
+		_parametersCollection.SetFloat(name, value);
+	}
+
+	inline void SetInt(const String& name, int value)
+	{
+		_parametersCollection.SetInt(name, value);
+	}
+
+	inline void SetVector(const String& name, const XMFLOAT2& vector)
+	{
+		_parametersCollection.SetVector(name, vector);
+	}
+
+	inline void SetVector(const String& name, const XMFLOAT3& vector)
+	{
+		_parametersCollection.SetVector(name, vector);
+	}
+
+	inline void SetVector(const String& name, const XMFLOAT4& vector)
+	{
+		_parametersCollection.SetVector(name, vector);
+	}
+	
+	inline void SetColor(const String& name, const XMFLOAT4& color)
+	{
+		_parametersCollection.SetColor(name, color);
+	}
+
+	inline void SetMatrix(const String& name, const XMMATRIX& matrix)
+	{
+		_parametersCollection.SetMatrix(name, matrix);
+	}
 };

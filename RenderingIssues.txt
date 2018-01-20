@@ -1,11 +1,8 @@
 Current rendering todos:
--- Creating constant buffer recognized during reflection
--- Passing MPC to shader SetPer*Parameters methods (* -> Frame, Object, DrawCall?)
 -- Global MPC
 -- Recognizing type of a variable during reflection (? is it necessary?)
--- Update shader's resources using MPC passed to SetPer*Parameters methods (also using global or overriden MPCs; think about using Map or UpdateSubresource? Map would be faster but the condition is that the code can write properly to mapped pointer using multiple variables)
 -- MPC as asset? Or another class (call it MPCAsset?)
--- Overriden MPC in mesh renderer
+-- Overriden MPC in mesh renderer (and pass it to UpdatePer*Buffers, check if variable is present in overriden MPC)
 
 // Think about rendering UI (different renderer states - Opaque, Transparent, UI, render order, gathering and sorting renderers? Get rid of MeshRenderer::Render function and instead implement Camera::Render which will be responsible for rendering objects? Add callbacks OnWillRender() and OnPostRender() to Component class (i.e. for MeshRenderer and UIRenderer classes)? graphics.SetState(RendererState rs)? Registering MeshRenderers and UIRenderers in some arrays?)
 

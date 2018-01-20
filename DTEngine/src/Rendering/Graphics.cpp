@@ -295,6 +295,19 @@ void Graphics::EndResize()
 	OnResize();
 }
 
+bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, ID3D11Buffer** bufferPtr)
+{
+	if(!bufferPtr || !_device)
+	{
+		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
+		return false;
+	}
+
+	HRESULT result = _device->CreateBuffer(&bufferDesc, nullptr, bufferPtr);
+	HR(result);
+	return true;
+}
+
 bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUBRESOURCE_DATA& bufferData, ID3D11Buffer** bufferPtr)
 {
 	if (!bufferPtr || !_device)
@@ -382,7 +395,7 @@ void Graphics::SetMaterial(Material* material)
 		_lastUsedMaterial = material;
 		if (_lastUsedMaterial)
 		{
-			_lastUsedMaterial->SetPerFrameParameters(*this);
+			_lastUsedMaterial->UpdatePerFrameBuffers(*this);
 			SharedPtr<Shader> shader = material->GetShader();
 			_deviceContext->IASetInputLayout(shader->GetInputLayout());
 			_deviceContext->VSSetShader(shader->GetVertexShader(), nullptr, 0);
@@ -392,7 +405,9 @@ void Graphics::SetMaterial(Material* material)
 	
 	if (_lastUsedMaterial && _currentlyRenderedEntity)
 	{
-		_lastUsedMaterial->SetPerObjectParameters(*this, _currentlyRenderedEntity);
+		static const String MODEL_TO_WORLD_MATRIX_NAME = DT_TEXT("Model2WorldMatrix");
+		_lastUsedMaterial->SetMatrix(MODEL_TO_WORLD_MATRIX_NAME, XMMatrixTranspose(_currentlyRenderedEntity->GetTransform().GetModelMatrix()));
+		_lastUsedMaterial->UpdatePerObjectBuffers(*this);
 	}
 }
 
