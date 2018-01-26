@@ -44,6 +44,7 @@ public:
 
 	inline SharedPtr<Material> GetMaterial() const { return _material; }
 	inline SharedPtr<MeshBase> GetMesh() const { return _mesh; }
+	
 	inline const BoundingBox& GetBoundingBox() const
 	{
 		assert(_mesh);

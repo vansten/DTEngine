@@ -108,6 +108,7 @@ public:
 		return _projectionMatrix;
 	}
 
+public:
 	inline static SharedPtr<Camera> GetMainCamera()
 	{
 		SharedPtr<Camera> mainShared = _main.lock();

@@ -16,10 +16,11 @@ enum class RenderQueue
 
 class Material : public Asset
 {
-protected:
-	static const uint16 OpaqueUpperLimit = 1000;
-	static const uint16 TransparentUpperLimit = 2000;
+private:
+	static const uint16 OPAQUE_UPPER_LIMIT = 1000;
+	static const uint16 TRANSPARENT_UPPER_LIMIT = 2000;
 
+private:
 	UniquePtr<RenderState> _renderState;
 	SharedPtr<Shader> _shader;
 	XMFLOAT4 _color;
@@ -31,6 +32,7 @@ protected:
 
 public:
 	Material();
+	Material(const Material& other);
 	virtual ~Material();
 
 	virtual bool Load(const String& path) override;
@@ -43,13 +45,15 @@ public:
 	void UpdatePerObjectBuffers(Graphics& graphics);
 	void UpdatePerDrawCallBuffers(Graphics& graphics);
 
+	SharedPtr<Material> CreateInstance() const;
+
 	inline RenderQueue GetRenderQueue() const
 	{
-		if(_queue <= OpaqueUpperLimit)
+		if(_queue <= OPAQUE_UPPER_LIMIT)
 		{
 			return RenderQueue::Opaque;
 		}
-		if(_queue <= TransparentUpperLimit)
+		if(_queue <= TRANSPARENT_UPPER_LIMIT)
 		{
 			return RenderQueue::Transparent;
 		}
@@ -104,5 +108,41 @@ public:
 	inline void SetMatrix(const String& name, const XMMATRIX& matrix)
 	{
 		_parametersCollection.SetMatrix(name, matrix);
+	}
+
+public:
+	inline static void SetGlobalFloat(const String& name, float value)
+	{
+		MaterialParametersCollection::GLOBAL.SetFloat(name, value);
+	}
+
+	inline static void SetGlobalInt(const String& name, int value)
+	{
+		MaterialParametersCollection::GLOBAL.SetInt(name, value);
+	}
+
+	inline static void SetGlobalVector(const String& name, const XMFLOAT2& vector)
+	{
+		MaterialParametersCollection::GLOBAL.SetVector(name, vector);
+	}
+
+	inline static void SetGlobalVector(const String& name, const XMFLOAT3& vector)
+	{
+		MaterialParametersCollection::GLOBAL.SetVector(name, vector);
+	}
+
+	inline static void SetGlobalVector(const String& name, const XMFLOAT4& vector)
+	{
+		MaterialParametersCollection::GLOBAL.SetVector(name, vector);
+	}
+
+	inline static void SetGlobalColor(const String& name, const XMFLOAT4& color)
+	{
+		MaterialParametersCollection::GLOBAL.SetColor(name, color);
+	}
+
+	inline static void SetGlobalMatrix(const String& name, const XMMATRIX& matrix)
+	{
+		MaterialParametersCollection::GLOBAL.SetMatrix(name, matrix);
 	}
 };

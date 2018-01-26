@@ -42,6 +42,8 @@ public:
 	SharedPtr<T> Get();
 	template<typename T>
 	SharedPtr<T> Get(const String& path);
+	template<typename T>
+	SharedPtr<T> GetCopy(const T& original);
 };
 
 template<typename T>
@@ -102,6 +104,29 @@ SharedPtr<T> ResourceManager::Get(const String& path)
 	}
 
 	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s at path: %s"), typeName.c_str(), path.c_str());
+
+	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
+
+	return StaticPointerCast<T>(_assetsMap[path]);
+}
+
+template<typename T>
+inline SharedPtr<T> ResourceManager::GetCopy(const T& original)
+{
+	SharedPtr<T> nAsset(new T(original));
+	std::string typeNameStr = typeid(T).name();
+	String typeName(typeNameStr.begin(), typeNameStr.end());
+	String path = original.GetPath() + DT_TEXT("_copy");
+
+	bool result = nAsset->Initialize();
+	if(!result)
+	{
+		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize copy of a %s"), typeName.c_str());
+		nAsset->Shutdown();
+		return SharedPtr<T>(nullptr);
+	}
+
+	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset copy of type %s"), typeName.c_str());
 
 	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
 

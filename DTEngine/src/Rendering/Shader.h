@@ -11,6 +11,7 @@ struct ID3D11DeviceContext;
 struct ID3D10Blob;
 struct ID3D11ShaderReflectionConstantBuffer;
 struct _D3D11_SHADER_INPUT_BIND_DESC;
+struct _D3D11_SHADER_TYPE_DESC;
 
 class Entity;
 class Graphics;
@@ -25,10 +26,16 @@ enum class ConstantBufferType : uint8
 
 struct ShaderVariable
 {
+	typedef void const* (MaterialParametersCollection::*VariableGetterFunctionPointer)(const String&) const;
+
 public:
 	String Name;
 	uint32 Offset;
 	uint32 Size;
+	VariableGetterFunctionPointer VariableGetterFunction;
+
+	void SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TYPE_DESC& typeDescription);
+	void const* Get(const MaterialParametersCollection& materialParametersCollection);
 };
 
 struct ShaderConstantBuffer

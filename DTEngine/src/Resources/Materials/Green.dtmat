@@ -8,5 +8,6 @@
 	"SrcBlend": "SrcAlpha",
 	"DestBlend": "InvSrcAlpha",
 	"Color": {"x": 0, "y": 1, "z": 0, "w": 1},
-	"Parameters": []
+	"Parameters": [
+	]
 }

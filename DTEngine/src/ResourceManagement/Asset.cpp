@@ -26,3 +26,8 @@ bool Asset::Initialize()
 {
 	return true;
 }
+
+void Asset::Shutdown()
+{
+
+}

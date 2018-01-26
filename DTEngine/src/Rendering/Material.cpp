@@ -10,7 +10,12 @@
 
 static const String DEFAULT_SHADER_PATH = DT_TEXT("Resources/Shaders/Color");
 
-Material::Material() : _shader(nullptr), _color(1.0f, 1.0f, 1.0f, 1.0f), _queue(OpaqueUpperLimit), _renderState(nullptr)
+Material::Material() : _shader(nullptr), _color(1.0f, 1.0f, 1.0f, 1.0f), _queue(OPAQUE_UPPER_LIMIT), _renderState(nullptr)
+{
+
+}
+
+Material::Material(const Material& other) : _shader(other._shader), _color(other._color), _queue(other._queue), _parametersCollection(other._parametersCollection), _renderState(nullptr), _renderStateParams(other._renderStateParams)
 {
 
 }
@@ -31,6 +36,8 @@ bool Material::Load(const String& path)
 	}
 
 	JSON materialData = JSON::parse(materialFile);
+	materialFile.close();
+
 	String shaderPath = materialData["Shader"];
 	_queue = materialData["Queue"];
 	CullMode cullMode = EnumInfo<CullMode>::FromString(materialData["Cull"]);
@@ -41,7 +48,11 @@ bool Material::Load(const String& path)
 	BlendMode destBlendMode = EnumInfo<BlendMode>::FromString(materialData["DestBlend"]);
 	_color = materialData["Color"];
 
-	materialFile.close();
+	JSON parametersData = materialData["Parameters"];
+	if(!_parametersCollection.LoadFromJSON(parametersData))
+	{
+		return false;
+	}
 
 	_shader = GetResourceManager().Get<Shader>(shaderPath);
 
@@ -85,7 +96,7 @@ bool Material::Save(const String& path)
 
 bool Material::Initialize()
 {
-	_queue = OpaqueUpperLimit;
+	_queue = OPAQUE_UPPER_LIMIT;
 	
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
 	bufferData.pSysMem = &_color;
@@ -109,7 +120,11 @@ bool Material::Initialize()
 		_shader = GetResourceManager().Get<Shader>(DEFAULT_SHADER_PATH);
 	}
 
-	_parametersCollection.SetColor(DT_TEXT("Color"), _color);
+	String colorName = DT_TEXT("Color");
+	if(_parametersCollection.GetVector4(colorName) == nullptr)
+	{
+		_parametersCollection.SetColor(colorName, _color);
+	}
 
 	return true;
 }
@@ -151,4 +166,9 @@ void Material::UpdatePerDrawCallBuffers(Graphics& graphics)
 	{
 		_shader->UpdatePerDrawCallBuffers(graphics, _parametersCollection);
 	}
+}
+
+SharedPtr<Material> Material::CreateInstance() const
+{
+	return GetResourceManager().GetCopy<Material>(*this);
 }

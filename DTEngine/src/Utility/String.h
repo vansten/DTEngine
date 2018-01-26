@@ -9,7 +9,7 @@ static String GetExtension(const String& path)
 	const size_t lastDotIndex = path.find_last_of('.');
 	if(lastDotIndex == -1)
 	{
-		return false;
+		return DT_TEXT("");
 	}
 
 	String extension = path.substr(lastDotIndex + 1);

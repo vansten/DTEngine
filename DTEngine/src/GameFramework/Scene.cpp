@@ -47,13 +47,19 @@ void Scene::Load()
 	ResourceManager& resourceManager = GetResourceManager();
 	
 	const DynamicArray<SharedPtr<Hexagon>>& hexagonPath = path.GetPath();
-	SharedPtr<Material> greenM = resourceManager.Get<Material>(DT_TEXT("Resources/Materials/Green.dtmat"));
+	SharedPtr<Material> materialInstance = nullptr;
+	if(hexagonPath.size() > 0)
+	{
+		materialInstance = hexagonPath[0]->GetOwner()->GetComponent<MeshRenderer>()->GetMaterial()->CreateInstance();
+		materialInstance->SetColor(DT_TEXT("Color"), XMFLOAT4(0.7f, 0.3f, 0.0f, 1.0f));
+	}
+
 	for(auto hexagon : hexagonPath)
 	{
 		SharedPtr<MeshRenderer> mr = hexagon->GetOwner()->GetComponent<MeshRenderer>();
 		if(mr)
 		{
-			mr->SetMaterial(greenM);
+			mr->SetMaterial(materialInstance);
 		}
 	}
 

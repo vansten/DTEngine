@@ -37,19 +37,19 @@ TODOs:
 -- Rename GameObject to Entity				|> ALL DONE
 -- Fix frustum culling						|> ALL DONE
 -- Default material 						|> ALL DONE
--- Setting shader parameters (reflection)	|> IN PROGRESS (TODO: RenderingIssues.txt)
+-- Setting shader parameters (reflection)	|> ALL DONE
+-- String									|> IN PROGRESS (TODO: String class, operations, ToString, FromString, fast comparision)
 -- OctTree (constructed from MeshRenderers (?), camera::render should check octtree to determine which objects should be rendered)
 -- Read a little bit about 2D rendering in DX11
--- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types?)
+-- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types? ShaderVariable handling)
 -- UI (delegates on click for buttons using std::function (Functions), elements created once and rendered, UIText and UIImage classes responsible for rendering, both deriving from UIRenderer (?), components, texts, shaders for texts and images, font loading)
 -- Debug console rendered by texts on GUI, toggled by ~ (VK_OEM_3) (maybe commands?), console attaches itself to Debug::OnLog, gathers also commands (and marks them to be visible), colors?
 -- Physics (simple raycasting with PhysX? simple colliders box, sphere, capsule, cone, quad (also for plane), cylinder, hexagon)
 -- MemoryManagers/Allocators (new and delete overrides, with lines and files parameters)
--- RTTI (simple, T::GetType(), T::_type, Type::Get(typeName).CreateInstance(line, file), use functions for GetRTTIRegister() whith static local variable in the function)
--- JSON serialization for objects
+-- RTTI (simple, T::GetType(), T::_type, Type::Get(typeName).CreateInstance(line, file), use functions for GetRTTIRegister() with static local variable in the function)
 -- Archive (Utility class, Archive* FileSystem::GetArchive(path)? Or simple static function Archive::Get(path)? For binary serialization)
 -- Serialization and deserialization for: Scene, Material, HexagonalGrid, GameObjects, Components (XML? JSON? Binary? Multiple? Archive class usage? Archive << operator? Archive.Begin(), Archive.End()? Objects responsible for loading/saving? Or Archive class is the one who knows how to serialize everything?)
--- Basic lighting (PhongBlinn? Lambert?)
+-- Basic lighting (PhongBlinn? Lambert? ShaderVariable arrays handling maybe?)
 -- Think about ComPtr from <wrl/client.h>
 -- Think about engine's DLL and connecting it to other projects where game will be written (maybe some sort of registering game derrived class? or registering game by passing it to the App constructor/initializer?)
 -- MATH library

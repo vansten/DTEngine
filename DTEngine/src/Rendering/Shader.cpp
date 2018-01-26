@@ -11,6 +11,64 @@
 #include "Rendering/MaterialParametersCollection.h"
 #include "Utility/String.h"
 
+void ShaderVariable::SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TYPE_DESC& typeDescription)
+{
+	VariableGetterFunction = &MaterialParametersCollection::Get;
+	if(typeDescription.Class == D3D_SVC_MATRIX_COLUMNS)
+	{
+		VariableGetterFunction = &MaterialParametersCollection::GetMatrix;
+	}
+	else if(typeDescription.Class == D3D_SVC_VECTOR)
+	{
+		uint32 numberOfElements = typeDescription.Columns == 1 ? typeDescription.Rows : typeDescription.Columns;
+		switch(numberOfElements)
+		{
+		case 1:
+			break;
+		case 2:
+			VariableGetterFunction = &MaterialParametersCollection::GetVector2;
+			break;
+		case 3:
+			VariableGetterFunction = &MaterialParametersCollection::GetVector3;
+			break;
+		case 4:
+			VariableGetterFunction = &MaterialParametersCollection::GetVector4;
+			break;
+		}
+	}
+	else if(typeDescription.Class == D3D_SVC_SCALAR)
+	{
+		switch(typeDescription.Type)
+		{
+		case D3D_SVT_BOOL:
+			break;
+		case D3D_SVT_DOUBLE:
+			break;
+		case D3D_SVT_FLOAT:
+			VariableGetterFunction = &MaterialParametersCollection::GetFloat;
+			break;
+		case D3D_SVT_INT:
+			VariableGetterFunction = &MaterialParametersCollection::GetInt;
+			break;
+		}
+	}
+	else if(typeDescription.Class == D3D_SVC_OBJECT)
+	{
+		DT_ASSERT(false, DT_TEXT("Unsupported shader variable type!"));
+	}
+}
+
+void const* ShaderVariable::Get(const MaterialParametersCollection& materialParametersCollection)
+{
+	if(VariableGetterFunction == nullptr)
+	{
+		return nullptr;
+	}
+
+	MaterialParametersCollection* rawPtr = const_cast<MaterialParametersCollection*>(&materialParametersCollection);
+	return (rawPtr->*VariableGetterFunction)(Name);
+}
+
 bool ShaderConstantBuffer::Initialize(Graphics& graphics)
 {
 	uint32 bufferSize = 0;
@@ -19,7 +77,7 @@ bool ShaderConstantBuffer::Initialize(Graphics& graphics)
 		bufferSize += variable->Size;
 	}
 
-	D3D11_SUBRESOURCE_DATA bufferData = {0};
+	const D3D11_SUBRESOURCE_DATA bufferData = {0};
 
 	D3D11_BUFFER_DESC bufferDesc = {0};
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -46,11 +104,17 @@ void ShaderConstantBuffer::Update(Graphics& graphics, const MaterialParametersCo
 
 	for(auto& variable : Variables)
 	{
-		const void* variableData = materialParametersCollection.Get(variable->Name);
+		void const* variableData = variable->Get(materialParametersCollection);
+		if(variableData == nullptr)
+		{
+			variableData = variable->Get(MaterialParametersCollection::GLOBAL);
+		}
+
 		if(variableData == nullptr)
 		{
 			continue;
 		}
+
 		void* destPtr = (char*)data + variable->Offset;
 		memcpy(destPtr, variableData, variable->Size);
 	}
@@ -115,7 +179,7 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 
 	// Create constant buffer
 	UniquePtr<ShaderConstantBuffer> constantBuffer = std::make_unique<ShaderConstantBuffer>();
-	std::string name = reflectedConstantBufferDesc.Name;
+	const std::string name = reflectedConstantBufferDesc.Name;
 	constantBuffer->Name = String(name.begin(), name.end());
 	constantBuffer->Index = reflectedResourceDesc.BindPoint;
 	if(Contains(constantBuffer->Name, DT_TEXT("PerFrame"), false))
@@ -140,12 +204,19 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 		result = reflectedVariable->GetDesc(&reflectedVariableDesc);
 		HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable description!")));
 
+		ID3D11ShaderReflectionType* reflectedVariableType = reflectedVariable->GetType();
+		D3D11_SHADER_TYPE_DESC reflectedVariableTypeDesc;
+		result = reflectedVariableType->GetDesc(&reflectedVariableTypeDesc);
+		HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable type description!")));
+
+		
 		// Create variable
 		UniquePtr<ShaderVariable> variable = std::make_unique<ShaderVariable>();
 		variable->Offset = reflectedVariableDesc.StartOffset;
-		std::string name = reflectedVariableDesc.Name;
+		const std::string name = reflectedVariableDesc.Name;
 		variable->Name = String(name.begin(), name.end());
 		variable->Size = reflectedVariableDesc.Size;
+		variable->SetGetterFunctionFromTypeDescription(reflectedVariableTypeDesc);
 
 		// Push variable to array
 		constantBuffer->Variables.push_back(std::move(variable));

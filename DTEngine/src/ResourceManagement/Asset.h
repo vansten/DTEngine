@@ -15,7 +15,7 @@ public:
 	virtual bool Save(const String& path);
 
 	virtual bool Initialize();
-	virtual void Shutdown() = 0;
+	virtual void Shutdown();
 
 	inline const String& GetPath() const { return _path; }
 };
