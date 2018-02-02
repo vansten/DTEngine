@@ -6,8 +6,8 @@
 
 #include "Debug/Debug.h"
 
-const float32 CameraControl::_xRotationMax = 89.99f;
-const float32 CameraControl::_xRotationMin = -89.99f;
+const float CameraControl::_xRotationMax = 89.99f;
+const float CameraControl::_xRotationMin = -89.99f;
 
 CameraControl::CameraControl(SharedPtr<Entity> owner) : Component(owner)
 {
@@ -145,14 +145,14 @@ void CameraControl::OnInitialize()
 	_isRMBPressed = false;
 }
 
-void CameraControl::OnUpdate(float32 deltaTime)
+void CameraControl::OnUpdate(float deltaTime)
 {
 	if (_isRMBPressed)
 	{
 		_timer += deltaTime;
 
 		const XMFLOAT3 direction = _owner->GetTransform().TransformDirection(_movementVector);
-		const float32 speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
+		const float speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 
 		XMFLOAT3 currentPosition = _owner->GetPosition();
 		currentPosition += direction * speedMulDeltaTime;

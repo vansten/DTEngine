@@ -21,7 +21,7 @@ bool TriangleMesh::Initialize()
 	_indicesCount = 3;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
 	vertices[0].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	vertices[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);

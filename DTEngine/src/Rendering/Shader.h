@@ -17,7 +17,7 @@ class Entity;
 class Graphics;
 class MaterialParametersCollection;
 
-enum class ConstantBufferType : uint8
+enum class ConstantBufferType : unsigned char
 {
 	PerFrame,
 	PerObject,
@@ -30,8 +30,8 @@ struct ShaderVariable
 
 public:
 	String Name;
-	uint32 Offset;
-	uint32 Size;
+	unsigned int Offset;
+	unsigned int Size;
 	VariableGetterFunctionPointer VariableGetterFunction;
 
 	void SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TYPE_DESC& typeDescription);
@@ -45,7 +45,7 @@ private:
 
 public:
 	String Name;
-	uint8 Index;
+	unsigned char Index;
 	ConstantBufferType BufferType;
 
 	DynamicArray<UniquePtr<ShaderVariable>> Variables;

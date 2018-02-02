@@ -64,7 +64,7 @@ void Component::OnOwnerTransformUpdated(const Transform& transform)
 
 }
 
-void Component::OnUpdate(float32 deltaTime)
+void Component::OnUpdate(float deltaTime)
 {
 
 }

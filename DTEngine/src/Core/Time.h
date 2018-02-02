@@ -7,9 +7,9 @@
 class Time
 {
 protected:
-	float32 _deltaTime;
-	float32 _timeScale;
-	float32 _timeSinceStartup;
+	float _deltaTime;
+	float _timeScale;
+	float _timeSinceStartup;
 
 public:
 	Time();
@@ -17,27 +17,27 @@ public:
 	virtual void Initialize() = 0;
 	virtual void Tick() = 0;
 
-	inline float32 GetTimeSinceStartup() const
+	inline float GetTimeSinceStartup() const
 	{
 		return _timeSinceStartup;
 	}
 
-	inline float32 GetUnscaledDeltaTime() const
+	inline float GetUnscaledDeltaTime() const
 	{
 		return _deltaTime;
 	}
 
-	inline float32 GetDeltaTime() const
+	inline float GetDeltaTime() const
 	{
 		return _deltaTime * _timeScale;
 	}
 
-	inline float32 GetTimeScale() const
+	inline float GetTimeScale() const
 	{
 		return _timeScale;
 	}
 
-	inline void SetTimeScale(float32 timeScale)
+	inline void SetTimeScale(float timeScale)
 	{
 		_timeScale = timeScale;
 	}

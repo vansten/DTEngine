@@ -6,7 +6,7 @@ class StaticMesh : public MeshBase
 {
 private:
 	std::vector<VertexType> _vertices;
-	std::vector<uint32> _indices;
+	std::vector<unsigned int> _indices;
 
 public:
 	StaticMesh();

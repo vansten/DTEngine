@@ -17,19 +17,19 @@ private:
 
 	public:
 		inline Plane() { }
-		inline Plane(float32 a, float32 b, float32 c, float32 d) 
+		inline Plane(float a, float b, float c, float d) 
 		{
 			XMFLOAT4 tmp(a, b, c, d);
 			_planeVector = XMLoadFloat4(&tmp);
 			_planeVector = XMPlaneNormalize(_planeVector);
 		}
 
-		inline float32 Dot(const XMFLOAT3& worldPoint) const
+		inline float Dot(const XMFLOAT3& worldPoint) const
 		{
 			return XMPlaneDotCoord(_planeVector, XMLoadFloat3(&worldPoint)).m128_f32[0];
 		}
 
-		inline float32 Dot(const XMVECTOR& worldVector) const
+		inline float Dot(const XMVECTOR& worldVector) const
 		{
 			return XMPlaneDotCoord(_planeVector, worldVector).m128_f32[0];
 		}
@@ -45,10 +45,10 @@ private:
 	XMMATRIX _viewMatrix;
 	XMMATRIX _projectionMatrix;
 
-	float32 _fov;
-	float32 _near;
-	float32 _far;
-	int16 _order;
+	float _fov;
+	float _near;
+	float _far;
+	short _order;
 
 public:
 	Camera(SharedPtr<Entity> owner);

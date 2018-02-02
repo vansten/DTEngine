@@ -1,11 +1,11 @@
 #include "Input.h"
 
-void Input::BindKeyDown(int32 keyCode, Event<bool>::Delegate::FunctionType function, int32 priority)
+void Input::BindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function, int priority)
 {
 	_keyDownEvents[keyCode].Bind(function, priority);
 }
 
-void Input::UnbindKeyDown(int32 keyCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function)
 {
 	if(_keyDownEvents.find(keyCode) != _keyDownEvents.end())
 	{
@@ -13,12 +13,12 @@ void Input::UnbindKeyDown(int32 keyCode, Event<bool>::Delegate::FunctionType fun
 	}
 }
 
-void Input::BindKeyUp(int32 keyCode, Event<bool>::Delegate::FunctionType function, int32 priority)
+void Input::BindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function, int priority)
 {
 	_keyUpEvents[keyCode].Bind(function, priority);
 }
 
-void Input::UnbindKeyUp(int32 keyCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function)
 {
 	if(_keyUpEvents.find(keyCode) != _keyUpEvents.end())
 	{
@@ -26,12 +26,12 @@ void Input::UnbindKeyUp(int32 keyCode, Event<bool>::Delegate::FunctionType funct
 	}
 }
 
-void Input::BindMouseDown(int32 mouseCode, Event<bool>::Delegate::FunctionType function, int32 priority)
+void Input::BindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function, int priority)
 {
 	_mouseDownEvents[mouseCode].Bind(function, priority);
 }
 
-void Input::UnbindMouseDown(int32 mouseCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function)
 {
 	if(_mouseDownEvents.find(mouseCode) != _mouseDownEvents.end())
 	{
@@ -39,12 +39,12 @@ void Input::UnbindMouseDown(int32 mouseCode, Event<bool>::Delegate::FunctionType
 	}
 }
 
-void Input::BindMouseUp(int32 mouseCode, Event<bool>::Delegate::FunctionType function, int32 priority)
+void Input::BindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function, int priority)
 {
 	_mouseUpEvents[mouseCode].Bind(function, priority);
 }
 
-void Input::UnbindMouseUp(int32 mouseCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function)
 {
 	if(_mouseUpEvents.find(mouseCode) != _mouseUpEvents.end())
 	{
@@ -52,7 +52,7 @@ void Input::UnbindMouseUp(int32 mouseCode, Event<bool>::Delegate::FunctionType f
 	}
 }
 
-void Input::OnKeyDown(int32 keyCode)
+void Input::OnKeyDown(int keyCode)
 {
 	if(_keyDownEvents.find(keyCode) == _keyDownEvents.end())
 	{
@@ -62,7 +62,7 @@ void Input::OnKeyDown(int32 keyCode)
 	_keyDownEvents[keyCode].ExecuteUntil([](bool value) { return value; });
 }
 
-void Input::OnKeyUp(int32 keyCode)
+void Input::OnKeyUp(int keyCode)
 {
 	if(_keyUpEvents.find(keyCode) == _keyUpEvents.end())
 	{
@@ -72,7 +72,7 @@ void Input::OnKeyUp(int32 keyCode)
 	_keyUpEvents[keyCode].ExecuteUntil([](bool value) { return value; });
 }
 
-void Input::OnMouseDown(int32 mouseCode)
+void Input::OnMouseDown(int mouseCode)
 {
 	if(_mouseDownEvents.find(mouseCode) == _mouseDownEvents.end())
 	{
@@ -82,7 +82,7 @@ void Input::OnMouseDown(int32 mouseCode)
 	_mouseDownEvents[mouseCode].ExecuteUntil([](bool value) { return value; });
 }
 
-void Input::OnMouseUp(int32 mouseCode)
+void Input::OnMouseUp(int mouseCode)
 {
 	if(_mouseUpEvents.find(mouseCode) == _mouseUpEvents.end())
 	{

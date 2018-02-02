@@ -7,7 +7,7 @@
 #else
 #endif
 
-void Window::SetNewSize(uint16 width, uint16 height)
+void Window::SetNewSize(unsigned short width, unsigned short height)
 {
 	if(_width == width && _height == height)
 	{
@@ -17,10 +17,10 @@ void Window::SetNewSize(uint16 width, uint16 height)
 
 	_width = width;
 	_height = height;
-	_aspectRatio = (float32)_width / (float32)_height;
+	_aspectRatio = (float)_width / (float)_height;
 }
 
-UniquePtr<Window> Window::Create(const String& title, uint16 width, uint16 height)
+UniquePtr<Window> Window::Create(const String& title, unsigned short width, unsigned short height)
 {
 	Window* newWindow = nullptr;
 #if DT_WINDOWS

@@ -25,9 +25,9 @@ StaticMesh::~StaticMesh()
 
 struct Face
 {
-	uint32 positionIndex;
-	uint32 uvIndex;
-	uint32 normalIndex;
+	unsigned int positionIndex;
+	unsigned int uvIndex;
+	unsigned int normalIndex;
 
 	inline bool operator==(const Face& other) const
 	{
@@ -49,7 +49,7 @@ void ProcessFace(Face& face, const String& faceDefinition)
 	String uvIndex;
 	String normalIndex;
 
-	uint32 i = 0;
+	unsigned int i = 0;
 	while(faceDefinition[i] != '/')
 	{
 		positionIndex += faceDefinition[i];
@@ -62,7 +62,7 @@ void ProcessFace(Face& face, const String& faceDefinition)
 		++i;
 	}
 	++i;
-	const uint32 length = (uint32)faceDefinition.size();
+	const unsigned int length = (unsigned int)faceDefinition.size();
 	while(faceDefinition[i] != '/' && i < length)
 	{
 		normalIndex += faceDefinition[i];
@@ -148,9 +148,9 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 
 	std::unordered_map<Face, std::list<VertexType>::iterator, FaceHasher> face2Vertex;
 
-	const uint32 facesCount = (uint32)faces.size();
-	uint32 k = 0;
-	for(uint32 i = 0; i < facesCount; ++i)
+	const unsigned int facesCount = (unsigned int)faces.size();
+	unsigned int k = 0;
+	for(unsigned int i = 0; i < facesCount; ++i)
 	{
 		auto found = face2Vertex.find(faces[i]);
 		if(found == face2Vertex.end())
@@ -170,12 +170,12 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 		else
 		{
 			auto index = std::distance(verticesList.begin(), found->second);
-			_indices.push_back((uint32)index);
+			_indices.push_back((unsigned int)index);
 		}
 	}
 
-	_verticesCount = (uint64)_vertices.size();
-	_indicesCount = (uint64)_indices.size();
+	_verticesCount = (unsigned int)_vertices.size();
+	_indicesCount = (unsigned int)_indices.size();
 
 	return true;
 }

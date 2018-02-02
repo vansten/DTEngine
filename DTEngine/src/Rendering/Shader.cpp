@@ -20,7 +20,7 @@ void ShaderVariable::SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TY
 	}
 	else if(typeDescription.Class == D3D_SVC_VECTOR)
 	{
-		uint32 numberOfElements = typeDescription.Columns == 1 ? typeDescription.Rows : typeDescription.Columns;
+		unsigned int numberOfElements = typeDescription.Columns == 1 ? typeDescription.Rows : typeDescription.Columns;
 		switch(numberOfElements)
 		{
 		case 1:
@@ -71,7 +71,7 @@ void const* ShaderVariable::Get(const MaterialParametersCollection& materialPara
 
 bool ShaderConstantBuffer::Initialize(Graphics& graphics)
 {
-	uint32 bufferSize = 0;
+	unsigned int bufferSize = 0;
 	for(auto& variable : Variables)
 	{
 		bufferSize += variable->Size;
@@ -148,7 +148,7 @@ bool Shader::GatherConstantBuffersInfo(ID3D10Blob* compiledShader)
 	reflectedShader->GetDesc(&reflectedShaderDesc);
 
 	// For each of bound resource (textures, samplers, constant buffers)
-	for(uint32 i = 0; i < reflectedShaderDesc.BoundResources; ++i)
+	for(unsigned int i = 0; i < reflectedShaderDesc.BoundResources; ++i)
 	{
 		D3D11_SHADER_INPUT_BIND_DESC reflectedBoundResourceDesc;
 		result = reflectedShader->GetResourceBindingDesc(i, &reflectedBoundResourceDesc);
@@ -196,7 +196,7 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 	}
 
 	// Create variables that given constant buffer contains
-	for(uint32 j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
+	for(unsigned int j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
 	{
 		// Get variable description
 		ID3D11ShaderReflectionVariable* reflectedVariable = reflectedConstantBuffer->GetVariableByIndex(j);
@@ -308,7 +308,7 @@ bool Shader::Initialize()
 	inputLayoutDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), _vertexShaderBuffer->GetBufferPointer(), (uint64)_vertexShaderBuffer->GetBufferSize(), &_inputLayout))
+	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), _vertexShaderBuffer->GetBufferPointer(), (size_t)_vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{
 		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create input layout"));
 		return false;

@@ -111,9 +111,9 @@ bool App::Initialize()
 void App::Loop()
 {
 	_isRunning = true;
-	float32 deltaTime = 1.0f / 60.0f;
-	float32 timer = 0.0f;
-	uint32 frames = 0;
+	float deltaTime = 1.0f / 60.0f;
+	float timer = 0.0f;
+	unsigned int frames = 0;
 
 	while(!MessageSystem::IsPendingQuit())
 	{
@@ -134,7 +134,7 @@ void App::Loop()
 
 		if(timer > 1.0f)
 		{
-			float32 fps = frames / timer;
+			float fps = frames / timer;
 			timer = 0.0f;
 			frames = 0;
 

@@ -22,7 +22,7 @@ public:
 	void Save();
 	void Unload();
 
-	void Update(float32 deltaTime);
+	void Update(float deltaTime);
 	void Render(Graphics& graphics);
 
 	SharedPtr<Entity> SpawnEntity(const String& name);

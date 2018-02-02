@@ -30,7 +30,7 @@ void Game::Shutdown()
 	}
 }
 
-void Game::Update(float32 deltaTime)
+void Game::Update(float deltaTime)
 {
 	_activeScene->Update(deltaTime);
 }

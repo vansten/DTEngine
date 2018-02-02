@@ -17,7 +17,7 @@ public:
 	virtual bool Initialize();
 	virtual void Shutdown();
 
-	virtual void Update(float32 deltaTime);
+	virtual void Update(float deltaTime);
 	virtual void Render(Graphics& graphics);
 
 	const UniquePtr<Scene>& GetActiveScene() const { return _activeScene; }

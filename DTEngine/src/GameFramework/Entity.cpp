@@ -94,7 +94,7 @@ void Entity::PreSave()
 	}
 }
 
-void Entity::Update(float32 deltaTime)
+void Entity::Update(float deltaTime)
 {
 	for (auto component : _componentsToRemove)
 	{

@@ -61,7 +61,7 @@ public:
 	void PostLoad();
 	void PreSave();
 
-	void Update(float32 deltaTime);
+	void Update(float deltaTime);
 
 	void Render(Graphics& graphics);
 
@@ -88,8 +88,8 @@ public:
 	inline void SetScale(const XMFLOAT3& scale) { _transform.SetScale(scale); }
 
 	inline const DynamicArray<SharedPtr<Entity>>& GetChildren() const { return _children; }
-	inline uint64 GetChildrenCount() const { return (uint64)_children.size(); }
-	inline SharedPtr<Entity> GetChildAt(uint64 index) const
+	inline size_t GetChildrenCount() const { return (size_t)_children.size(); }
+	inline SharedPtr<Entity> GetChildAt(size_t index) const
 	{
 		if(_children.size() == 0 || index > _children.size())
 		{

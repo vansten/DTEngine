@@ -130,18 +130,18 @@ bool MaterialParametersCollection::LoadFromJSON(const JSON& jsonData)
 				{
 					if(value.is_number_float())
 					{
-						float32 v = value;
+						float v = value;
 						SetFloat(name, v);
 					}
 					else if(value.is_number_integer())
 					{
-						int32 v = value;
+						int v = value;
 						SetInt(name, v);
 					}
 					else if(value.is_number_unsigned())
 					{
-						uint32 v = value;
-						SetInt(name, (int32)v);
+						unsigned int v = value;
+						SetInt(name, (int)v);
 					}
 				}
 				else if(value.is_string())
@@ -152,7 +152,7 @@ bool MaterialParametersCollection::LoadFromJSON(const JSON& jsonData)
 				}
 				else if(value.is_object())
 				{
-					uint64 size = (uint64)value.size();
+					size_t size = (size_t)value.size();
 					if(size == 4)
 					{
 						XMFLOAT4 v = value;

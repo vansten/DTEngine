@@ -30,7 +30,7 @@ Graphics::Graphics() : _swapChain(nullptr), _device(nullptr), _deviceContext(nul
 
 }
 
-bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& denominator)
+bool Graphics::GetRefreshRate(unsigned int windowHeight, unsigned int& numerator, unsigned int& denominator)
 {
 	// Get factory, adapter, output, modes and display modes list
 	IDXGIFactory* factory;
@@ -45,7 +45,7 @@ bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& de
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	HR(result);
 
-	uint32 numModes;
+	unsigned int numModes;
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
 	HR(result);
 
@@ -59,7 +59,7 @@ bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& de
 	HR(result);
 
 	// Check whether display mode height is equal to desired window height and get its refresh rate
-	for(uint32 i = 0; i < numModes; ++i)
+	for(unsigned int i = 0; i < numModes; ++i)
 	{
 		if(displayModeList[i].Height == windowHeight)
 		{
@@ -85,11 +85,11 @@ bool Graphics::GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& de
 
 bool Graphics::InitializeWindowDependentResources(const Window& window)
 {
-	uint32 numerator;
-	uint32 denominator;
+	unsigned int numerator;
+	unsigned int denominator;
 
-	const uint32 windowWidth = (uint32)window.GetWidth();
-	const uint32 windowHeight = (uint32)window.GetHeight();
+	const unsigned int windowWidth = (unsigned int)window.GetWidth();
+	const unsigned int windowHeight = (unsigned int)window.GetHeight();
 
 	if(!GetRefreshRate(windowHeight, numerator, denominator))
 	{
@@ -188,8 +188,8 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 
 	// Create viewport
 	D3D11_VIEWPORT viewport = {0};
-	viewport.Width = (float32)windowWidth;
-	viewport.Height = (float32)windowHeight;
+	viewport.Width = (float)windowWidth;
+	viewport.Height = (float)windowHeight;
 	viewport.MaxDepth = 1.0f;
 
 	_deviceContext->RSSetViewports(1, &viewport);
@@ -217,7 +217,7 @@ bool Graphics::Initialize(bool vsync)
 
 	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
-	uint32 deviceFlag = 0;
+	unsigned int deviceFlag = 0;
 
 #if DT_DEBUG
 	deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
@@ -279,8 +279,8 @@ void Graphics::OnResize()
 		return;
 	}
 
-	uint16 width = GetMainWindow().GetWidth();
-	uint16 height = GetMainWindow().GetHeight();
+	unsigned short width = GetMainWindow().GetWidth();
+	unsigned short height = GetMainWindow().GetHeight();
 	GetDebug().Printf(LogVerbosity::Log, CHANNEL_GRAPHICS, DT_TEXT("Resizing... New size is %i X %i"), width, height);
 
 	ReleaseWindowDependentResources();
@@ -347,7 +347,7 @@ bool Graphics::CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** p
 	return true;
 }
 
-bool Graphics::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, uint8 inputLayoutDescSize, void* shaderBufferPointer, uint64 shaderBufferSize, ID3D11InputLayout** inputLayout)
+bool Graphics::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, unsigned char inputLayoutDescSize, void* shaderBufferPointer, size_t shaderBufferSize, ID3D11InputLayout** inputLayout)
 {
 	if (!inputLayoutDesc || !inputLayout || !_device || !shaderBufferPointer || inputLayoutDescSize == 0 || shaderBufferSize == 0)
 	{
@@ -378,7 +378,7 @@ void Graphics::Unmap(ID3D11Resource* resource)
 	_deviceContext->Unmap(resource, 0);
 }
 
-void Graphics::SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D11Buffer** buffers)
+void Graphics::SetVSConstantBuffers(unsigned int bufferSlot, unsigned int bufferCount, ID3D11Buffer** buffers)
 {
 	_deviceContext->VSSetConstantBuffers(bufferSlot, bufferCount, buffers);
 }
@@ -411,7 +411,7 @@ void Graphics::SetMaterial(Material* material)
 	}
 }
 
-void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, uint32 indicesCount, uint32 stride, uint32 offset)
+void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, unsigned int indicesCount, unsigned int stride, unsigned int offset)
 {
 	_deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	_deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);

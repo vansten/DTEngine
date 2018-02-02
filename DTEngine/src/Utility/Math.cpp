@@ -6,7 +6,7 @@ XMVECTOR QuaternionBetweenVectors(XMVECTOR from, XMVECTOR to)
 {
 	from = XMVector3Normalize(from);
 	to = XMVector3Normalize(to);
-	float32 d = XMVector3Dot(from, to).m128_f32[0];
+	float d = XMVector3Dot(from, to).m128_f32[0];
 
 	if(d >= 1.0f)
 	{
@@ -22,15 +22,15 @@ XMVECTOR QuaternionBetweenVectors(XMVECTOR from, XMVECTOR to)
 			axis = XMVector3Cross(axis, from);
 		}
 
-		const float32 halfAngle = 0.5f * XM_PI;
-		const float32 sinAngle = sinf(halfAngle);
+		const float halfAngle = 0.5f * XM_PI;
+		const float sinAngle = sinf(halfAngle);
 		XMVECTOR quaternion = XMVectorSet(axis.m128_f32[0] * sinAngle, axis.m128_f32[1] * sinAngle, axis.m128_f32[2] * sinAngle, cosf(halfAngle));
 
 		return XMQuaternionNormalize(quaternion);
 	}
 
-	const float32 s = sqrtf((1.0f + d) * 2.0f);
-	const float32 invs = 1.0f / s;
+	const float s = sqrtf((1.0f + d) * 2.0f);
+	const float invs = 1.0f / s;
 	XMVECTOR c = XMVector3Cross(from, to);
 	XMVectorMultiply(c, XMVectorSet(invs, invs, invs, invs));
 
@@ -43,11 +43,11 @@ XMFLOAT3 QuaternionToEuler(XMVECTOR quaternion)
 	quaternion = XMQuaternionNormalize(quaternion);
 	XMFLOAT4 q;
 	XMStoreFloat4(&q, quaternion);
-	const float32 sqw = q.w*q.w;
-	const float32 sqx = q.x*q.x;
-	const float32 sqy = q.y*q.y;
-	const float32 sqz = q.z*q.z;
-	const float32 test = 2.0f * (q.y*q.w - q.x*q.z);
+	const float sqw = q.w*q.w;
+	const float sqx = q.x*q.x;
+	const float sqy = q.y*q.y;
+	const float sqz = q.z*q.z;
+	const float test = 2.0f * (q.y*q.w - q.x*q.z);
 
 	XMFLOAT3 euler;
 

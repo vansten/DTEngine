@@ -17,28 +17,28 @@ PlaneMesh::~PlaneMesh()
 
 bool PlaneMesh::Initialize()
 {
-	const uint32 size = 16;
+	const unsigned int size = 16;
 	_verticesCount = (size + 1) * (size + 1);
 	_indicesCount = size * size * 6;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
-	for(uint32 i = 0, y = 0; y <= size; y++)
+	for(unsigned int i = 0, y = 0; y <= size; y++)
 	{
-		const float32 yF = -0.5f + (float32)y / size;
-		for(uint32 x = 0; x <= size; x++, i++)
+		const float yF = -0.5f + (float)y / size;
+		for(unsigned int x = 0; x <= size; x++, i++)
 		{
-			const float32 xF = -0.5f + (float32)x / size;
+			const float xF = -0.5f + (float)x / size;
 			vertices[i].Position = XMFLOAT3(xF, yF, 0);
 			vertices[i].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 			vertices[i].UV = XMFLOAT2(xF + 0.5f, yF + 0.5f);
 		}
 	}
 
-	for(uint32 ti = 0, vi = 0, y = 0; y < size; y++, vi++)
+	for(unsigned int ti = 0, vi = 0, y = 0; y < size; y++, vi++)
 	{
-		for(uint32 x = 0; x < size; x++, ti += 6, vi++)
+		for(unsigned int x = 0; x < size; x++, ti += 6, vi++)
 		{
 			indices[ti] = vi; 
 			indices[ti + 1] = vi + size + 1;

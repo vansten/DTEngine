@@ -6,20 +6,20 @@
 class CameraControl : public Component
 {
 private:
-	static const float32 _xRotationMax;
-	static const float32 _xRotationMin;
+	static const float _xRotationMax;
+	static const float _xRotationMin;
 
 private:
-	float32 _movementSpeed;
-	float32 _shiftMultiplier;
-	float32 _mouseSensitivity;
+	float _movementSpeed;
+	float _shiftMultiplier;
+	float _mouseSensitivity;
 
 	XMFLOAT3 _movementVector;
 	XMINT2 _previousMousePosition;
 
 	bool _isRMBPressed;
 
-	float32 _timer;
+	float _timer;
 
 public:
 	CameraControl(SharedPtr<Entity> owner);
@@ -47,5 +47,5 @@ protected:
 
 public:
 	virtual void OnInitialize() override;
-	virtual void OnUpdate(float32 deltaTime) override;
+	virtual void OnUpdate(float deltaTime) override;
 };

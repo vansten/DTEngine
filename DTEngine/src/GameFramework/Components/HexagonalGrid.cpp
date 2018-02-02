@@ -5,7 +5,7 @@
 #include "ResourceManagement/ResourceManager.h"
 #include "MeshRenderer.h"
 
-AxialCoordinates HexagonalGridUtility::AxialDirections[(uint64)HexagonDirection::_COUNT]
+AxialCoordinates HexagonalGridUtility::AxialDirections[(size_t)HexagonDirection::_COUNT]
 {
 	AxialCoordinates(0, 1),
 	AxialCoordinates(1, 0),
@@ -15,7 +15,7 @@ AxialCoordinates HexagonalGridUtility::AxialDirections[(uint64)HexagonDirection:
 	AxialCoordinates(-1, 0)
 };
 
-AxialCoordinates::AxialCoordinates(int32 x, int32 y) : X(x), Y(y)
+AxialCoordinates::AxialCoordinates(int x, int y) : X(x), Y(y)
 {
 
 }
@@ -30,13 +30,13 @@ AxialCoordinates::AxialCoordinates(const CubeCoordinates& cubeCoordinates) : X(c
 
 }
 
-int32 AxialCoordinates::Distance(const AxialCoordinates& other) const
+int AxialCoordinates::Distance(const AxialCoordinates& other) const
 {
 	// Calculate distance using cube coordinates
 	return CubeCoordinates(*this).Distance(CubeCoordinates(other));
 }
 
-CubeCoordinates::CubeCoordinates(int32 x, int32 y, int32 z) : X(x), Y(y), Z(z)
+CubeCoordinates::CubeCoordinates(int x, int y, int z) : X(x), Y(y), Z(z)
 {
 
 }
@@ -51,7 +51,7 @@ CubeCoordinates::CubeCoordinates(const AxialCoordinates& axialCoordinates) : X(a
 
 }
 
-int32 CubeCoordinates::Distance(CubeCoordinates& other) const
+int CubeCoordinates::Distance(CubeCoordinates& other) const
 {
 	// Calculate distance as half of the differences sum
 	return (abs(X - other.X) + abs(Y - other.Y) + abs(Z - other.Z)) / 2;
@@ -146,7 +146,7 @@ SharedPtr<Hexagon> HexagonalGrid::GetNeighboor(SharedPtr<Hexagon> hexagon, Hexag
 	}
 
 	// Get axial coordinates of the possible neighboor as hexagon coordinates plus direction
-	AxialCoordinates neighboorCoordinates = hexagon->GetCoordinates() + HexagonalGridUtility::AxialDirections[(uint64)direction];
+	AxialCoordinates neighboorCoordinates = hexagon->GetCoordinates() + HexagonalGridUtility::AxialDirections[(size_t)direction];
 	return GetHexagonAt(neighboorCoordinates);
 }
 
@@ -165,15 +165,15 @@ SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const AxialCoordinates& axialCoor
 
 SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const XMFLOAT3& worldPosition) const
 {
-	const float32 hexagonWidth = 2.0f * _hexagonSize;
-	const float32 hexagonHeight = sqrt(3.0f) * _hexagonSize;
+	const float hexagonWidth = 2.0f * _hexagonSize;
+	const float hexagonHeight = sqrt(3.0f) * _hexagonSize;
 
 	const XMFLOAT3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
 	const XMFLOAT3 yDirection(0.0f, 0.0f, hexagonHeight);
 	
 	// Calculate axial coordinates using axial x and y direction and world position of a hexagon
-	const int32 w = (int32)round(worldPosition.x / xDirection.x);
-	const int32 h = (int32)round((worldPosition.z - xDirection.z * worldPosition.x / xDirection.x) / yDirection.z);
+	const int w = (int)round(worldPosition.x / xDirection.x);
+	const int h = (int)round((worldPosition.z - xDirection.z * worldPosition.x / xDirection.x) / yDirection.z);
 
 	// Return hexagon at calculated axial coordinates
 	return GetHexagonAt(AxialCoordinates(w, h));
@@ -184,13 +184,13 @@ struct HexagonalPathNode
 {
 protected:
 	std::shared_ptr<Hexagon> _hexagon;
-	int32 _cost;
+	int _cost;
 
 public:
-	HexagonalPathNode(std::shared_ptr<Hexagon> hex, int32 cost) : _hexagon(hex), _cost(cost) { }
+	HexagonalPathNode(std::shared_ptr<Hexagon> hex, int cost) : _hexagon(hex), _cost(cost) { }
 
 	inline std::shared_ptr<Hexagon> GetHexagon() const { return _hexagon; }
-	inline int32 GetCost() const { return _cost; }
+	inline int GetCost() const { return _cost; }
 
 	inline bool operator>(const HexagonalPathNode& other) const
 	{
@@ -273,7 +273,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 	return true;
 }
 
-SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<Entity> gridOwner)
+SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, unsigned int height, float hexagonSize, SharedPtr<Entity> gridOwner)
 {
 	// If grid owner doesn't exist or width, height or hexagonSize are less or equal than 0
 	if (!gridOwner || width <= 0 || height <= 0 || hexagonSize <= 0.0f)
@@ -285,16 +285,16 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 	SharedPtr<HexagonalGrid> gridComponent = gridOwner->AddComponent<HexagonalGrid>();
 
 	// Calculate half width and half height to properly position hexagons
-	const int32 halfW = (int32)(width * 0.5f);
-	const int32 halfH = (int32)(height * 0.5f);
+	const int halfW = (int)(width * 0.5f);
+	const int halfH = (int)(height * 0.5f);
 
 	ResourceManager& resourceManager = GetResourceManager();
 	
 	// Load hexagon mesh and default material
 	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Get<HexagonMesh>();
 
-	const float32 hexagonWidth = 2.0f * hexagonSize * 0.5f;
-	const float32 hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
+	const float hexagonWidth = 2.0f * hexagonSize * 0.5f;
+	const float hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
 
 	const XMFLOAT3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
 	const XMFLOAT3 yDirection(0.0f, 0.0f, hexagonHeight);
@@ -306,9 +306,9 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(uint32 width, uint32 h
 
 	Game& game = GetGame();
 
-	for(int32 w = 0; w < (int32)width; ++w)
+	for(int w = 0; w < (int)width; ++w)
 	{
-		for(int32 h = 0; h < (int32)height; ++h)
+		for(int h = 0; h < (int)height; ++h)
 		{
 			const AxialCoordinates coordinates(w - halfW, h - halfH);
 

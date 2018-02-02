@@ -116,8 +116,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_SIZE:
 		{
-			const uint16 newWidth = LOWORD(lParam);
-			const uint16 newHeight = HIWORD(lParam);
+			const unsigned short newWidth = LOWORD(lParam);
+			const unsigned short newHeight = HIWORD(lParam);
 
 			GetMainWindow().SetNewSize(newWidth, newHeight);
 
@@ -152,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				const bool wasUp = !(lParam & (1 << 30));
 				if(wasUp)
 				{
-					GetInput().OnKeyDown((int32)wParam);
+					GetInput().OnKeyDown((int)wParam);
 				}
 			}
 			break;
@@ -166,7 +166,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				const bool wasDown = lParam & (1 << 30);
 				if(wasDown)
 				{
-					GetInput().OnKeyUp((int32)wParam);
+					GetInput().OnKeyUp((int)wParam);
 				}
 			}
 			break;

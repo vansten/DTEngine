@@ -21,15 +21,15 @@ enum class HexagonDirection
 struct AxialCoordinates
 {
 public:
-	int32 X;
-	int32 Y;
+	int X;
+	int Y;
 
 public:
-	AxialCoordinates(int32 x = 0, int32 y = 0);
+	AxialCoordinates(int x = 0, int y = 0);
 	AxialCoordinates(const AxialCoordinates& other);
 	AxialCoordinates(const CubeCoordinates& cubeCoordinates);
 
-	int32 Distance(const AxialCoordinates& other) const;
+	int Distance(const AxialCoordinates& other) const;
 
 	inline bool operator==(const AxialCoordinates& other) const
 	{
@@ -69,16 +69,16 @@ struct AxialCoordinatesHasher
 struct CubeCoordinates
 {
 public:
-	int32 X;
-	int32 Y;
-	int32 Z;
+	int X;
+	int Y;
+	int Z;
 
 public:
-	CubeCoordinates(int32 x = 0, int32 y = 0, int32 z = 0);
+	CubeCoordinates(int x = 0, int y = 0, int z = 0);
 	CubeCoordinates(const CubeCoordinates& other);
 	CubeCoordinates(const AxialCoordinates& axialCoordinates);
 
-	int32 Distance(CubeCoordinates& other) const;
+	int Distance(CubeCoordinates& other) const;
 
 	inline bool operator==(const CubeCoordinates& other) const
 	{
@@ -112,7 +112,7 @@ protected:
 
 public:
 	// Returns distance from this hexagon to the other
-	inline int32 Distance(SharedPtr<Hexagon> other)
+	inline int Distance(SharedPtr<Hexagon> other)
 	{
 		if(!other)
 		{
@@ -188,9 +188,9 @@ public:
 
 protected:
 	Dictionary<const AxialCoordinates, SharedPtr<Hexagon>, AxialCoordinatesHasher> _hexagonalMap;
-	float32 _hexagonSize;
-	uint32 _width;
-	uint32 _height;
+	float _hexagonSize;
+	unsigned int _width;
+	unsigned int _height;
 
 public:
 	HexagonalGrid(SharedPtr<Entity> owner);
@@ -219,12 +219,12 @@ public:
 class HexagonalGridUtility
 {
 public:
-	static AxialCoordinates AxialDirections[(uint64)HexagonDirection::_COUNT];
+	static AxialCoordinates AxialDirections[(size_t)HexagonDirection::_COUNT];
 
 public:
 	// Constructs hexagonal grid with given width and height from hexagons with given size (hexagonSize)
 	// Attaches created grid to gridOwner object
 	// Returns created grid (there is no need to attach this grid to an object after these functions returns)
 	// Return nullptr if grid creation wasn't successful (i.e. gridOwner was nullptr, width, height or hexagonSize was less or equal to 0)
-	static SharedPtr<HexagonalGrid> CreateGrid(uint32 width, uint32 height, float32 hexagonSize, SharedPtr<Entity> gridOwner);
+	static SharedPtr<HexagonalGrid> CreateGrid(unsigned int width, unsigned int height, float hexagonSize, SharedPtr<Entity> gridOwner);
 };

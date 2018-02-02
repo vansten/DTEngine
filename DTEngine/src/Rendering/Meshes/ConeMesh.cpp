@@ -17,13 +17,13 @@ ConeMesh::~ConeMesh()
 
 bool ConeMesh::Initialize()
 {
-	const uint32 baseTriangles = 30;
+	const unsigned int baseTriangles = 30;
 	_verticesCount = baseTriangles + 2;
 	// Each triangle in base is 3 indices plus 3 for connecting edge of the base to top center
 	_indicesCount = baseTriangles * 6;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
 	vertices[baseTriangles].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	vertices[baseTriangles].Normal = XMFLOAT3(0.0f, -1.0f, 0.0f);
@@ -33,12 +33,12 @@ bool ConeMesh::Initialize()
 	vertices[baseTriangles + 1].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	vertices[baseTriangles + 1].UV = XMFLOAT2(0.0f, 1.0f);
 
-	const float32 angleDelta = 360.0f / baseTriangles;
-	for(uint32 i = 0; i < baseTriangles; ++i)
+	const float angleDelta = 360.0f / baseTriangles;
+	for(unsigned int i = 0; i < baseTriangles; ++i)
 	{
-		const float32 angleRad = XMConvertToRadians(angleDelta * i);
-		const float32 cosAngle = cos(angleRad) * 0.5f;
-		const float32 sinAngle = sin(angleRad) * 0.5f;
+		const float angleRad = XMConvertToRadians(angleDelta * i);
+		const float cosAngle = cos(angleRad) * 0.5f;
+		const float sinAngle = sin(angleRad) * 0.5f;
 		vertices[i].Position = XMFLOAT3(cosAngle, 0.0f, sinAngle);
 		vertices[i].Normal = XMFLOAT3(cosAngle, -1.0f, sinAngle);
 		Normalize(vertices[i].Normal);

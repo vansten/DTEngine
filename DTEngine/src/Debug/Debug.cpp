@@ -15,7 +15,7 @@ const String CHANNEL_CAMERA = DT_TEXT("Camera");
 const String CHANNEL_GAMEOBJECT = DT_TEXT("GameObject");
 const String CHANNEL_GENERAL = DT_TEXT("General");
 
-DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale, XMFLOAT4 color, float32 lifetime) : _mesh(mesh), _lifetime(lifetime)
+DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale, XMFLOAT4 color, float lifetime) : _mesh(mesh), _lifetime(lifetime)
 {
 	const XMFLOAT3 radianRotation = XMFLOAT3(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)); 
 	_worldMatrix = XMMatrixScalingFromVector(XMLoadFloat3(&scale)) *
@@ -28,7 +28,7 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position
 	_material->SetColor(color);
 }
 
-DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation, XMFLOAT3 scale, XMFLOAT4 color, float32 lifetime) : _mesh(mesh), _lifetime(lifetime)
+DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation, XMFLOAT3 scale, XMFLOAT4 color, float lifetime) : _mesh(mesh), _lifetime(lifetime)
 {
 	_worldMatrix = XMMatrixScalingFromVector(XMLoadFloat3(&scale)) *
 		rotation *
@@ -80,10 +80,10 @@ DebugDrawGeometry& DebugDrawGeometry::operator=(const DebugDrawGeometry& other)
 	return *this;
 }
 
-void Debug::UpdateDraws(float32 deltaTime)
+void Debug::UpdateDraws(float deltaTime)
 {
-	const int64 drawsCount = (int64)_draws.size();
-	for(int64 i = drawsCount - 1; i >= 0; --i)
+	const int drawsCount = (int)_draws.size();
+	for(int i = drawsCount - 1; i >= 0; --i)
 	{
 		_draws[i]._lifetime -= deltaTime;
 		if(_draws[i]._lifetime <= 0.0f)
@@ -123,7 +123,7 @@ void Debug::Shutdown()
 	_logsPerChannel.clear();
 }
 
-void Debug::Update(float32 deltaTime)
+void Debug::Update(float deltaTime)
 {
 #if DT_DEBUG
 	UpdateDraws(deltaTime);
@@ -187,21 +187,21 @@ void Debug::SetChannelVisibility(const String& name, bool visibility)
 #endif
 }
 
-void Debug::DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation, XMFLOAT4 color, float32 lifetime)
+void Debug::DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation, XMFLOAT4 color, float lifetime)
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(_cube, center, rotation, size, color, lifetime)));
 #endif
 }
 
-void Debug::DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color, float32 lifetime)
+void Debug::DrawSphere(XMFLOAT3 center, float radius, XMFLOAT4 color, float lifetime)
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(_sphere, center, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime)));
 #endif
 }
 
-void Debug::DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color, float32 thickness, float32 lifetime)
+void Debug::DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color, float thickness, float lifetime)
 {
 #if DT_DEBUG
 	XMFLOAT3 direction = end - start;

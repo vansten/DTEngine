@@ -17,8 +17,8 @@ private:
 	Map<String, XMFLOAT4> _vector4Parameters;
 	Map<String, XMFLOAT3> _vector3Parameters;
 	Map<String, XMFLOAT2> _vector2Parameters;
-	Map<String, float32> _floatParameters;
-	Map<String, int32> _intParameters;
+	Map<String, float> _floatParameters;
+	Map<String, int> _intParameters;
 
 private:
 	void const* GetMatrix(const String& name) const;
@@ -33,12 +33,12 @@ private:
 public:
 	bool LoadFromJSON(const JSON& jsonData);
 
-	inline void SetFloat(const String& name, float32 value)
+	inline void SetFloat(const String& name, float value)
 	{
 		_floatParameters[name] = value;
 	}
 
-	inline void SetInt(const String& name, int32 value)
+	inline void SetInt(const String& name, int value)
 	{
 		_intParameters[name] = value;
 	}

@@ -17,31 +17,31 @@ SphereMesh::~SphereMesh()
 
 bool SphereMesh::Initialize()
 {
-	const float32 radius = 0.5f;
-	const uint32 rings = 12;
-	const uint32 sectors = 12;
+	const float radius = 0.5f;
+	const unsigned int rings = 12;
+	const unsigned int sectors = 12;
 
-	const float32 R = 1.0f / (float32)(rings - 1);
-	const float32 S = 1.0f / (float32)(sectors - 1);
+	const float R = 1.0f / (float)(rings - 1);
+	const float S = 1.0f / (float)(sectors - 1);
 
 	_verticesCount = rings * sectors;	
 	_indicesCount = rings * sectors * 6;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
-	uint32 i = 0;
-	uint32 j = 0;
-	for(uint32 r = 0; r < rings; ++r)
+	unsigned int i = 0;
+	unsigned int j = 0;
+	for(unsigned int r = 0; r < rings; ++r)
 	{
-		const float32 sinR = sin(XM_PI * r * R);
-		const float32 sinRMinusPiDiv2 = sin(-XM_PIDIV2 + XM_PI * r * R);
+		const float sinR = sin(XM_PI * r * R);
+		const float sinRMinusPiDiv2 = sin(-XM_PIDIV2 + XM_PI * r * R);
 
-		for(uint32 s = 0; s < sectors; ++s, ++i, j += 6)
+		for(unsigned int s = 0; s < sectors; ++s, ++i, j += 6)
 		{
-			const float32 y = sinRMinusPiDiv2 * radius;
-			const float32 x = cos(XM_2PI * s * S) * sinR * radius;
-			const float32 z = sin(XM_2PI * s * S) * sinR * radius;
+			const float y = sinRMinusPiDiv2 * radius;
+			const float x = cos(XM_2PI * s * S) * sinR * radius;
+			const float z = sin(XM_2PI * s * S) * sinR * radius;
 
 			vertices[i].Position = XMFLOAT3(x, y, z);
 			vertices[i].Normal = XMFLOAT3(x, y, z);

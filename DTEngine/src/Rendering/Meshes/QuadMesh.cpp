@@ -21,7 +21,7 @@ bool QuadMesh::Initialize()
 	_indicesCount = 6;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
 	vertices[0].Position = XMFLOAT3(-0.5f, -0.5f, 0.0f);
 	vertices[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);

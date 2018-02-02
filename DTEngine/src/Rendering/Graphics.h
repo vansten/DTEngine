@@ -53,7 +53,7 @@ public:
 	Graphics();
 
 private:
-	bool GetRefreshRate(uint32 windowHeight, uint32& numerator, uint32& denominator);
+	bool GetRefreshRate(unsigned int windowHeight, unsigned int& numerator, unsigned int& denominator);
 
 	bool InitializeWindowDependentResources(const Window& window);
 	void ReleaseWindowDependentResources();
@@ -73,15 +73,15 @@ public:
 	bool CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUBRESOURCE_DATA& bufferData, ID3D11Buffer** bufferPtr);
 	bool CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader** vertexShader);
 	bool CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** pixelShader);
-	bool CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, uint8 inputLayoutDescSize, void* shaderBufferPointer, uint64 shaderBufferSize, ID3D11InputLayout** inputLayout);
+	bool CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, unsigned char inputLayoutDescSize, void* shaderBufferPointer, size_t shaderBufferSize, ID3D11InputLayout** inputLayout);
 
 	void* Map(ID3D11Resource* resource, D3D11_MAP mapFlag = D3D11_MAP_WRITE_DISCARD);
 	void Unmap(ID3D11Resource* resource);
-	void SetVSConstantBuffers(uint32 bufferSlot, uint32 bufferCount, ID3D11Buffer** buffers);
+	void SetVSConstantBuffers(unsigned int bufferSlot, unsigned int bufferCount, ID3D11Buffer** buffers);
 
 	void SetObject(Entity* entity);
 	void SetMaterial(Material* material);
-	void DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, uint32 indicesCount, uint32 stride, uint32 offset);
+	void DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, unsigned int indicesCount, unsigned int stride, unsigned int offset);
 
 	bool CreateRenderState(UniquePtr<RenderState>& renderState);
 	bool CreateRenderState(UniquePtr<RenderState>& renderState, const RenderStateParams& renderStateParams);

@@ -21,7 +21,7 @@ bool CubeMesh::Initialize()
 	_indicesCount = 36;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
 	vertices[0].Position = XMFLOAT3(-0.5f, -0.5f, -0.5f);
 	vertices[0].Normal = XMFLOAT3(-1.0f, -1.0f, -1.0f);
@@ -55,7 +55,7 @@ bool CubeMesh::Initialize()
 	vertices[7].Normal = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	vertices[7].UV = XMFLOAT2(1.0f, 1.0f);
 
-	for(uint32 i = 0; i < 8; ++i)
+	for(unsigned int i = 0; i < 8; ++i)
 	{
 		Normalize(vertices[i].Normal);
 	}

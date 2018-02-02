@@ -17,15 +17,15 @@ enum class RenderQueue
 class Material : public Asset
 {
 private:
-	static const uint16 OPAQUE_UPPER_LIMIT = 1000;
-	static const uint16 TRANSPARENT_UPPER_LIMIT = 2000;
+	static const unsigned short OPAQUE_UPPER_LIMIT = 1000;
+	static const unsigned short TRANSPARENT_UPPER_LIMIT = 2000;
 
 private:
 	UniquePtr<RenderState> _renderState;
 	SharedPtr<Shader> _shader;
 	XMFLOAT4 _color;
 
-	uint16 _queue;
+	unsigned short _queue;
 	RenderStateParams _renderStateParams;
 
 	MaterialParametersCollection _parametersCollection;

@@ -24,7 +24,7 @@ private:
 public:
 	void CalculateMinMax(const DynamicArray<XMFLOAT3>& positions);
 	template<typename T>
-	void CalculateMinMax(const T* dataArray, uint32 dataCount, Function<const XMFLOAT3&(const T&)> positionGetter);
+	void CalculateMinMax(const T* dataArray, unsigned int dataCount, Function<const XMFLOAT3&(const T&)> positionGetter);
 
 	inline XMFLOAT3 GetMin() const
 	{
@@ -77,12 +77,12 @@ public:
 };
 
 template<typename T>
-inline void BoundingBox::CalculateMinMax(const T* dataArray, uint32 dataCount, Function<const XMFLOAT3&(const T&)> positionGetter)
+inline void BoundingBox::CalculateMinMax(const T* dataArray, unsigned int dataCount, Function<const XMFLOAT3&(const T&)> positionGetter)
 {
 	XMFLOAT3 minPosition(FLT_MAX, FLT_MAX, FLT_MAX);
 	XMFLOAT3 maxPosition(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	for(uint32 i = 0; i < dataCount; ++i)
+	for(unsigned int i = 0; i < dataCount; ++i)
 	{
 		minPosition = Min(minPosition, positionGetter(dataArray[i]));
 		maxPosition = Max(maxPosition, positionGetter(dataArray[i]));

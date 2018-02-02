@@ -49,7 +49,7 @@ public:
 	virtual void PreSave();
 
 	virtual void OnOwnerTransformUpdated(const Transform& transform);
-	virtual void OnUpdate(float32 deltaTime);
+	virtual void OnUpdate(float deltaTime);
 	virtual void OnRender(Graphics& graphics);
 
 	virtual void OnEnableChanged(bool enabled);

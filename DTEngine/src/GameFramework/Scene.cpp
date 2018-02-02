@@ -108,7 +108,7 @@ void Scene::Unload()
 	_newEntities.clear();
 }
 
-void Scene::Update(float32 deltaTime)
+void Scene::Update(float deltaTime)
 {
 	for (auto go : _newEntities)
 	{

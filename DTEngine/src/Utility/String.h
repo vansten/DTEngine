@@ -14,7 +14,7 @@ static String GetExtension(const String& path)
 
 	String extension = path.substr(lastDotIndex + 1);
 	const size_t length = extension.length();
-	for(uint64 i = 0; i < length; ++i)
+	for(size_t i = 0; i < length; ++i)
 	{
 		extension[i] = tolower(extension[i]);
 	}

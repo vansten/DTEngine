@@ -17,26 +17,26 @@ CylinderMesh::~CylinderMesh()
 
 bool CylinderMesh::Initialize()
 {
-	const uint32 baseTriangles = 30;
+	const unsigned int baseTriangles = 30;
 	_verticesCount = (baseTriangles + 1) * 2;
 	// 3 for each triangle in bottom base, 3 for each triangle in top base, 6 for each side quad
 	_indicesCount = baseTriangles * 12;
 
 	VertexType* vertices = new VertexType[_verticesCount];
-	uint32* indices = new uint32[_indicesCount];
+	unsigned int* indices = new unsigned int[_indicesCount];
 
 	// Bottom center
 	vertices[baseTriangles].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	// Top center
 	vertices[baseTriangles * 2 + 1].Position = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-	const float32 angleDelta = 360.0f / baseTriangles;
+	const float angleDelta = 360.0f / baseTriangles;
 
-	for(uint32 i = 0; i < baseTriangles; ++i)
+	for(unsigned int i = 0; i < baseTriangles; ++i)
 	{
-		const float32 angleRad = XMConvertToRadians(angleDelta * i);
-		const float32 cosAngle = cos(angleRad) * 0.5f;
-		const float32 sinAngle = sin(angleRad) * 0.5f;
+		const float angleRad = XMConvertToRadians(angleDelta * i);
+		const float cosAngle = cos(angleRad) * 0.5f;
+		const float sinAngle = sin(angleRad) * 0.5f;
 		vertices[i].Position = XMFLOAT3(cosAngle, 0.0f, sinAngle);
 		vertices[i].Normal = XMFLOAT3(0.0f, -1.0f, 0.0f);
 		vertices[i].UV = XMFLOAT2((cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);

@@ -68,11 +68,11 @@ private:
 	UniquePtr<Material> _material;
 	XMMATRIX _worldMatrix;
 
-	float32 _lifetime;
+	float _lifetime;
 
 public:
-	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1, 1, 1, 1), float32 lifetime = 0.0f);
-	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation = XMMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = 0.0f);
+	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1, 1, 1, 1), float lifetime = 0.0f);
+	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation = XMMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = 0.0f);
 	DebugDrawGeometry(DebugDrawGeometry&& other);
 	~DebugDrawGeometry();
 
@@ -97,14 +97,14 @@ public:
 	Event<void, const Channel&> OnChannelVisibilityChanged;
 
 private:
-	void UpdateDraws(float32 deltaTime);
+	void UpdateDraws(float deltaTime);
 
 public:
 	bool Initialize();
 	bool InitializeDraws();
 	void Shutdown();
 
-	void Update(float32 deltaTime);
+	void Update(float deltaTime);
 
 	void Print(LogVerbosity verbosity, const String& channel, const String& message);
 	void Printf(LogVerbosity verbosity, const String& channel, const Char* const format, ...);
@@ -112,9 +112,9 @@ public:
 	void RegisterChannel(const String& name);
 	void SetChannelVisibility(const String& name, bool visibility);
 
-	void DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
-	void DrawSphere(XMFLOAT3 center, float32 radius, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 lifetime = -1.0f);
-	void DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float32 thickness = 1.0f, float32 lifetime = -1.0f);
+	void DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawSphere(XMFLOAT3 center, float radius, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float thickness = 1.0f, float lifetime = -1.0f);
 
 	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const { return _draws; }
 };

@@ -20,8 +20,8 @@ public:
 protected:
 	ID3D11Buffer* _vertexBuffer;
 	ID3D11Buffer* _indexBuffer;
-	uint32 _verticesCount;
-	uint32 _indicesCount;
+	unsigned int _verticesCount;
+	unsigned int _indicesCount;
 
 	BoundingBox _boundingBox;
 
@@ -31,15 +31,15 @@ public:
 	virtual ~MeshBase();
 
 protected:
-	bool CreateBuffers(VertexType* vertices, uint32* indices);
+	bool CreateBuffers(VertexType* vertices, unsigned int* indices);
 
 public:
 	virtual void Shutdown() override;
 
 	inline ID3D11Buffer* GetVertexBuffer() const { return _vertexBuffer; }
 	inline ID3D11Buffer* GetIndexBuffer() const { return _indexBuffer; }
-	inline uint32 GetIndicesCount() const { return _indicesCount; }
-	inline uint32 GetVertexTypeSize() const { return sizeof(VertexType); }
+	inline unsigned int GetIndicesCount() const { return _indicesCount; }
+	inline unsigned int GetVertexTypeSize() const { return sizeof(VertexType); }
 
 	inline const BoundingBox& GetBoundingBox() const { return _boundingBox; }
 };

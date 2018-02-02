@@ -30,7 +30,7 @@ Camera::~Camera()
 void Camera::Resize()
 {
 	Window& window = GetMainWindow();
-	const float32 aspectRatio = window.GetAspectRatio();
+	const float aspectRatio = window.GetAspectRatio();
 	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
 
 	ConstructFrustum();
@@ -236,7 +236,7 @@ void Camera::RenderSky(Graphics& graphics)
 
 bool Camera::IsInsideFrustum(const XMFLOAT3& worldPoint) const
 {
-	for(uint8 i = 0; i < 6; ++i)
+	for(unsigned char i = 0; i < 6; ++i)
 	{
 		// Check if worldPoint is outside a frustum ith plane
 		if(_frustum[i].Dot(worldPoint) < 0.0f)
@@ -251,7 +251,7 @@ bool Camera::IsInsideFrustum(const XMFLOAT3& worldPoint) const
 
 bool Camera::IsInsideFrustum(const XMVECTOR & worldPoint) const
 {
-	for(uint8 i = 0; i < 6; ++i)
+	for(unsigned char i = 0; i < 6; ++i)
 	{
 		// Check if worldPoint is outside a frustum ith plane
 		if(_frustum[i].Dot(worldPoint) < 0.0f)
@@ -272,7 +272,7 @@ bool Camera::IsInsideFrustum(const BoundingBox& boundingBox) const
 bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const
 {
 	const DynamicArray<XMVECTOR>& corners = boundingBox.GetCorners();
-	for(uint8 i = 0; i < 6; ++i)
+	for(unsigned char i = 0; i < 6; ++i)
 	{
 		bool liesBehind = true;
 		for(auto& corner : corners)
@@ -316,8 +316,8 @@ XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 	DT_ASSERT(window.GetHeight() * window.GetWidth() != 0, "");
 
 	XMFLOAT3 viewPosition;
-	viewPosition.x = window.GetAspectRatio() * (float32)screenPoint.x / window.GetWidth();
-	viewPosition.y = (float32)screenPoint.y / window.GetHeight();
+	viewPosition.x = window.GetAspectRatio() * (float)screenPoint.x / window.GetWidth();
+	viewPosition.y = (float)screenPoint.y / window.GetHeight();
 	viewPosition.z = 0.0f;
 
 	const XMMATRIX viewInversed = XMMatrixInverse(&XMMatrixDeterminant(_viewMatrix), _viewMatrix);
@@ -341,8 +341,8 @@ XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
 	XMFLOAT3 viewPosition;
 	XMStoreFloat3(&viewPosition, viewVector);
 	XMINT2 screenPosition;
-	screenPosition.x = (uint32)(viewPosition.x * window.GetWidth() / window.GetAspectRatio());
-	screenPosition.y = (uint32)(viewPosition.y * window.GetHeight());
+	screenPosition.x = (unsigned int)(viewPosition.x * window.GetWidth() / window.GetAspectRatio());
+	screenPosition.y = (unsigned int)(viewPosition.y * window.GetHeight());
 
 	return screenPosition;
 }

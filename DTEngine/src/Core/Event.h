@@ -13,16 +13,16 @@ private:
 		friend class Event<ReturnType, Args...>;
 
 	protected:
-		int32 _priority;
+		int _priority;
 
 	public:
-		DelegateBase(int32 priority) : _priority(priority) { }
+		DelegateBase(int priority) : _priority(priority) { }
 		virtual ~DelegateBase()	{ }
 
 		virtual ReturnType Execute(Args... args) const = 0;
 		inline virtual bool IsBound() const = 0;
 
-		inline int32 GetPriority() const { return _priority; }
+		inline int GetPriority() const { return _priority; }
 		
 		static bool Compare(const UniquePtr<DelegateBase>& first, const UniquePtr<DelegateBase>& second)
 		{
@@ -47,7 +47,7 @@ public:
 		FunctionType _function;
 
 	public:
-		Delegate(FunctionType function, int32 priority) : DelegateBase(priority), _function(function) { }
+		Delegate(FunctionType function, int priority) : DelegateBase(priority), _function(function) { }
 
 		virtual ReturnType Execute(Args... args) const override
 		{
@@ -78,7 +78,7 @@ public:
 		WeakPtr<Class> _object;
 
 	public:
-		ClassDelegate(SharedPtr<Class> object, ClassFunctionType function, int32 priority) : DelegateBase(priority), _object(object), _function(function) { }
+		ClassDelegate(SharedPtr<Class> object, ClassFunctionType function, int priority) : DelegateBase(priority), _object(object), _function(function) { }
 
 		virtual ReturnType Execute(Args... args) const override
 		{
@@ -110,7 +110,7 @@ private:
 
 public:
 	template<typename FunctionType = Delegate::FunctionType>
-	void Bind(FunctionType function, int32 priority = 0)
+	void Bind(FunctionType function, int priority = 0)
 	{
 		_delegates.push_back(UniquePtr<DelegateBase>(new Delegate(function, priority)));
 		SortDelegates();
@@ -138,7 +138,7 @@ public:
 	}
 
 	template<typename Class, typename FunctionType = ClassDelegate<Class>::ClassFunctionType>
-	void Bind(FunctionType function, SharedPtr<Class> object, int32 priority = 0)
+	void Bind(FunctionType function, SharedPtr<Class> object, int priority = 0)
 	{
 		_delegates.push_back(UniquePtr<DelegateBase>(new ClassDelegate<Class>(object, function, priority)));
 		SortDelegates();
