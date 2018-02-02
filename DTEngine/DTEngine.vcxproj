@@ -237,6 +237,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\GameFramework\Transform.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Core\Window.cpp" />
+    <ClCompile Include="src\Physics\Physics.cpp" />
     <ClCompile Include="src\Rendering\Graphics.cpp" />
     <ClCompile Include="src\Rendering\Material.cpp" />
     <ClCompile Include="src\Rendering\MaterialParametersCollection.cpp" />
@@ -279,6 +280,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\GameFramework\Entity.h" />
     <ClInclude Include="src\GameFramework\Scene.h" />
     <ClInclude Include="src\GameFramework\Transform.h" />
+    <ClInclude Include="src\Physics\Physics.h" />
     <ClInclude Include="src\Rendering\Graphics.h" />
     <ClInclude Include="src\Rendering\Material.h" />
     <ClInclude Include="src\Rendering\MaterialParametersCollection.h" />

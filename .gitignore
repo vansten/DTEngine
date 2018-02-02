@@ -6,3 +6,5 @@
 !**/ThirdParty/Release/*
 !**/ThirdParty/**/*.dll
 !**/ThirdParty/**/*.lib
+!**/ThirdParty/**/*.pdb
+!**/ThirdParty/**/*.map
