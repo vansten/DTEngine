@@ -102,8 +102,6 @@ bool CameraControl::ONRMBReleased()
 {
 	_isRMBPressed = false;
 
-	GetDebug().DrawLine(_owner->GetPosition(), XMFLOAT3(), XMFLOAT4(0.5f, 1.0f, 0.5f, 1.0f), 0.2f, 10.0f);
-	
 	return false;
 }
 
