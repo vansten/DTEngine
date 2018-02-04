@@ -3,7 +3,7 @@
 #include "Rendering/Graphics.h"
 #include "Rendering/MeshBase.h"
 #include "Rendering/Material.h"
-#include "ResourceManagement/ResourceManager.h"
+#include "ResourceManagement/Resources.h"
 #include "Rendering/Meshes/CubeMesh.h"
 #include "Rendering/Meshes/SphereMesh.h"
 
@@ -14,6 +14,8 @@ const String CHANNEL_INPUT = DT_TEXT("Input");
 const String CHANNEL_CAMERA = DT_TEXT("Camera");
 const String CHANNEL_GAMEOBJECT = DT_TEXT("GameObject");
 const String CHANNEL_GENERAL = DT_TEXT("General");
+
+Debug gDebug;
 
 DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale, XMFLOAT4 color, float lifetime) : _mesh(mesh), _lifetime(lifetime)
 {
@@ -111,8 +113,8 @@ bool Debug::Initialize()
 bool Debug::InitializeDraws()
 {
 #if DT_DEBUG
-	_cube = GetResourceManager().Get<CubeMesh>();
-	_sphere = GetResourceManager().Get<SphereMesh>();
+	_cube = gResources.Get<CubeMesh>();
+	_sphere = gResources.Get<SphereMesh>();
 #endif
 	return true;
 }

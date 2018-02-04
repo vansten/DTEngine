@@ -6,7 +6,6 @@
 
 #include "Components/CameraControl.h"
 #include "Components/MeshRenderer.h"
-#include "ResourceManagement/ResourceManager.h"
 #include "Components/HexagonalGrid.h"
 
 Scene::Scene(const String& scenePath) : _scenePath(scenePath)
@@ -44,8 +43,6 @@ void Scene::Load()
 	HexagonalGridPath path;
 	grid->CalculatePath(h1, h2, path);
 
-	ResourceManager& resourceManager = GetResourceManager();
-	
 	const DynamicArray<SharedPtr<Hexagon>>& hexagonPath = path.GetPath();
 	SharedPtr<Material> materialInstance = nullptr;
 	if(hexagonPath.size() > 0)
@@ -70,7 +67,7 @@ void Scene::Load()
 
 	if (!Camera::GetMainCamera())
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
 	}
 
 	//TODO: Put this something like FileSystem::Close(archive);

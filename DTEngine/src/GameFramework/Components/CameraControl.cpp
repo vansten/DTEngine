@@ -94,7 +94,7 @@ bool CameraControl::OnRMBPressed()
 {
 	_timer = 0.0f;
 	_isRMBPressed = true;
-	_previousMousePosition = GetInput().GetMousePosition();
+	_previousMousePosition = gInput.GetMousePosition();
 	return false;
 }
 
@@ -107,11 +107,11 @@ bool CameraControl::ONRMBReleased()
 
 bool CameraControl::OnLMBReleased()
 {
-	XMINT2 mousePosition = GetInput().GetMousePosition();
+	XMINT2 mousePosition = gInput.GetMousePosition();
 	XMFLOAT3 worldPosition = Camera::GetMainCamera()->ConvertScreenToWorldPoint(mousePosition);
 	XMINT2 backToScreen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(worldPosition);
 
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("%i %i %.2f %.2f %.2f %i %i"), mousePosition.x, mousePosition.y, worldPosition.x, worldPosition.y, worldPosition.z, backToScreen.x, backToScreen.y);
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("%i %i %.2f %.2f %.2f %i %i"), mousePosition.x, mousePosition.y, worldPosition.x, worldPosition.y, worldPosition.z, backToScreen.x, backToScreen.y);
 	
 	// TODO: Cast a ray through scene and pick hexagon if found
 	return false;
@@ -119,7 +119,7 @@ bool CameraControl::OnLMBReleased()
 
 void CameraControl::OnInitialize()
 {
-	Input& input = GetInput();
+	Input& input = gInput;
 
 	input.BindKeyDown('W', &CameraControl::OnWPressed, SharedFromThis());
 	input.BindKeyUp('W', &CameraControl::OnWReleased, SharedFromThis());
@@ -156,7 +156,7 @@ void CameraControl::OnUpdate(float deltaTime)
 		currentPosition += direction * speedMulDeltaTime;
 		_owner->SetPosition(currentPosition);
 
-		const XMINT2 mousePosition = GetInput().GetMousePosition();
+		const XMINT2 mousePosition = gInput.GetMousePosition();
 		XMINT2 mouseDeltaPosition = mousePosition - _previousMousePosition;
 
 		XMFLOAT3 currentRotation = _owner->GetRotation();

@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class ConeMesh : public MeshBase
+class ConeMesh final : public MeshBase
 {
 public:
 	ConeMesh();

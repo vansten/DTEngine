@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class CapsuleMesh : public MeshBase
+class CapsuleMesh final : public MeshBase
 {
 public:
 	CapsuleMesh();

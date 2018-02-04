@@ -4,13 +4,13 @@
 
 class Window;
 
-class MessageSystem
+class MessageSystem final
 {
 protected:
 	static bool _pendingQuit;
 
 public:
-	static void GatherMessages(const UniquePtr<Window>& window);
+	static void GatherMessages();
 
 	static inline void PostQuit()
 	{

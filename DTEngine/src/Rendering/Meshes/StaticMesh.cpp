@@ -182,7 +182,7 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 
 bool StaticMesh::LoadFromFBX(const String& path)
 {
-	GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Importing FBX files is not supported yet"));
+	gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Importing FBX files is not supported yet"));
 	return false;
 }
 
@@ -200,7 +200,7 @@ bool StaticMesh::Load(const String& path)
 		return LoadFromFBX(path);
 	}
 
-	GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to load static mesh from path (%s). Reason: Unknown extension (%s)"), path.c_str(), extension.c_str());
+	gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to load static mesh from path (%s). Reason: Unknown extension (%s)"), path.c_str(), extension.c_str());
 	return false;
 }
 

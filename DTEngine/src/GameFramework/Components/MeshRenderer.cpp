@@ -4,14 +4,13 @@
 #include "GameFramework/Entity.h"
 #include "Rendering/MeshBase.h"
 #include "Rendering/Material.h"
-#include "ResourceManagement/ResourceManager.h"
+#include "ResourceManagement/Resources.h"
 
 DynamicArray<SharedPtr<MeshRenderer>> MeshRenderer::_allRenderers;
 
 MeshRenderer::MeshRenderer(SharedPtr<Entity> owner) : Component(owner), _mesh(nullptr), _material(nullptr)
 {
-	ResourceManager& resourceManager = GetResourceManager();
-	_material = resourceManager.Get<Material>();
+	_material = gResources.Get<Material>();
 }
 
 MeshRenderer::MeshRenderer(const MeshRenderer& other) : Component(other), _mesh(other._mesh), _material(other._material)
@@ -27,7 +26,7 @@ void MeshRenderer::RegisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
 	auto& found = std::find(_allRenderers.begin(), _allRenderers.end(), meshRenderer);
 	if(found != _allRenderers.end())
 	{
-		GetDebug().Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Renderer of object %s already registered!"), meshRenderer->GetOwner()->GetName().c_str());
+		gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Renderer of object %s already registered!"), meshRenderer->GetOwner()->GetName().c_str());
 		return;
 	}
 	_allRenderers.push_back(meshRenderer);
@@ -67,15 +66,15 @@ void MeshRenderer::OnRender(Graphics& graphics)
 {
 	if(!_mesh)
 	{
-		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without mesh set. Aborting"));
+		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without mesh set. Aborting"));
 		return;
 	}
 
 	if(!_material)
 	{
-		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without material set. Aborting"));
+		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without material set. Aborting"));
 #if DT_DEBUG
-		graphics.SetMaterial(GetResourceManager().GetDefaultMaterial());
+		graphics.SetMaterial(gResources.GetDefaultMaterial());
 		graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
 #endif
 		return;

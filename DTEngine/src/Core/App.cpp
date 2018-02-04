@@ -9,11 +9,11 @@
 
 #include "Rendering/Graphics.h"
 
-#include "ResourceManagement/ResourceManager.h"
+#include "ResourceManagement/Resources.h"
 
 #include "GameFramework/Game.h"
 
-App::App() : _mainWindow(nullptr), _resourceManager(nullptr), _graphics(nullptr), _globalTime(nullptr), _game(nullptr)
+App::App()
 {
 
 }
@@ -23,85 +23,53 @@ App::~App()
 
 }
 
-bool App::Initialize()
+bool App::Initialize(UniquePtr<Game>&& game)
 {
 	_isRunning = false;
 
-	_debug = UniquePtr<Debug>(new Debug());
-	if(!_debug->Initialize())
+	if(!gDebug.Initialize())
 	{
 		return false;
 	}
 
-	_mainWindow = Window::Create(DT_TEXT("DT Engine"), 1024, 768);
-
-	if(!_mainWindow)
+	if(!gWindow.Open(DT_TEXT("DT Engine"), 1024, 768))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create window"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot open window"));
 		return false;
 	}
 
-	if(!_mainWindow->Open())
+	if(!gWindow.Show())
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot open window"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot show window"));
 		return false;
 	}
 
-	if(!_mainWindow->Show())
+	if(!gGraphics.Initialize(true))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot show window"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize window"));
 		return false;
 	}
 
-	_graphics = UniquePtr<Graphics>(new Graphics());
-	if(!_graphics)
+	if(!gResources.Initialize())
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create graphics"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize resource manager"));
 		return false;
 	}
 
-	if(!_graphics->Initialize(true))
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize window"));
-		return false;
-	}
+	gDebug.InitializeDraws();
 
-	_resourceManager = UniquePtr<ResourceManager>(new ResourceManager());
-	if(!_resourceManager)
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create resource manager"));
-		return false;
-	}
+	gTime.Initialize();
 
-	if(!_resourceManager->Initialize())
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize resource manager"));
-		return false;
-	}
-
-	_debug->InitializeDraws();
-
-	_input = UniquePtr<Input>(new Input());
-
-	_globalTime = Time::Create();
-	if(!_globalTime)
-	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create time"));
-		return false;
-	}
-
-	_globalTime->Initialize();
-
-	_game = UniquePtr<Game>(new Game());
+	_game = std::move(game);
 	if(!_game)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create game"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create game"));
 		return false;
 	}
 
 	if(!_game->Initialize())
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize game"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize game"));
 		return false;
 	}
 
@@ -117,18 +85,18 @@ void App::Loop()
 
 	while(!MessageSystem::IsPendingQuit())
 	{
-		MessageSystem::GatherMessages(_mainWindow);
+		MessageSystem::GatherMessages();
 
-		_debug->Update(deltaTime);
+		gDebug.Update(deltaTime);
 
 		// Physics::Resolve();
 
 		_game->Update(deltaTime);
 
-		_game->Render(*_graphics);
+		_game->Render(gGraphics);
 
-		_globalTime->Tick();
-		deltaTime = _globalTime->GetDeltaTime();
+		gTime.Tick();
+		deltaTime = gTime.GetDeltaTime();
 		timer += deltaTime;
 		frames += 1;
 
@@ -138,7 +106,7 @@ void App::Loop()
 			timer = 0.0f;
 			frames = 0;
 
-			GetDebug().Printf(LogVerbosity::Log, CHANNEL_GENERAL, DT_TEXT("Current FPS: %.3f"), fps);
+			gDebug.Printf(LogVerbosity::Log, CHANNEL_GENERAL, DT_TEXT("Current FPS: %.3f"), fps);
 		}
 	}
 
@@ -152,36 +120,19 @@ void App::Shutdown()
 		_game->Shutdown();
 	}
 
-	if(_graphics)
-	{
-		_graphics->Shutdown();
-	}
+	gGraphics.Shutdown();
+	gResources.Shutdown();
+	
+	gWindow.Hide();
+	gWindow.Close();
 
-	if(_resourceManager)
-	{
-		_resourceManager->Shutdown();
-	}
-
-	if(_mainWindow)
-	{
-		_mainWindow->Hide();
-		_mainWindow->Close();
-	}
-
-	if(_debug)
-	{
-		_debug->Shutdown();
-	}
-
-	if(_input)
-	{
-		_input->Shutdown();
-	}
+	gDebug.Shutdown();
+	gInput.Shutdown();
 }
 
-int App::Run()
+int App::Run(UniquePtr<Game>&& game)
 {
-	if(!Initialize())
+	if(!Initialize(std::forward<UniquePtr<Game>>(game)))
 	{
 		return APP_INITIALIZATION_FAILED;
 	}

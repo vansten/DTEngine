@@ -1,4 +1,5 @@
 #include "Core/App.h"
+#include "GameFramework/Game.h"
 
 #if DT_DEBUG
 #include "vld.h"
@@ -12,7 +13,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		const UniquePtr<App>& app = App::GetInstance();
 		if(app)
 		{
-			int exitCode = app->Run();
+			UniquePtr<Game> game = std::make_unique<Game>();
+			int exitCode = app->Run(std::move(game));
 			App::FreeInstance();
 
 			return exitCode;

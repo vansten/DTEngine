@@ -18,7 +18,7 @@ enum class HexagonDirection
 };
 
 // Stores axial coordinates for hexagonal map
-struct AxialCoordinates
+struct AxialCoordinates final
 {
 public:
 	int X;
@@ -57,7 +57,7 @@ public:
 };
 
 // Helper struct for hashing axial coordinates so unordered_map can be used with AxialCoordinates struct
-struct AxialCoordinatesHasher
+struct AxialCoordinatesHasher final
 {
 	inline std::size_t operator()(const AxialCoordinates& key) const
 	{
@@ -66,7 +66,7 @@ struct AxialCoordinatesHasher
 };
 
 // Stores cube coordinates for hexagonal map
-struct CubeCoordinates
+struct CubeCoordinates final
 {
 public:
 	int X;
@@ -94,7 +94,7 @@ public:
 // Class representing hexagon
 // It's a component so it can be added to a game object
 // Can be holding a game object pointer (i.e. building/unit standing on the hexagon)
-class Hexagon : public Component
+class Hexagon final : public Component
 {
 protected:
 	AxialCoordinates _coordinates;
@@ -138,7 +138,7 @@ public:
 
 // Struct containing path calculated by HexagonalGrid
 // Stores data about path through hexagons as well as world positions path
-struct HexagonalGridPath
+struct HexagonalGridPath final
 {
 	friend class HexagonalGrid;
 
@@ -179,7 +179,7 @@ public:
 // Component responsible for storing hexagonal grid.
 // Provides methods for getting hexagons at some coordinates (both axial and world)
 // as well as getting neighboor of a hexagon in given direction
-class HexagonalGrid : public Component
+class HexagonalGrid final : public Component
 {
 	friend class HexagonalGridUtility;
 
@@ -216,7 +216,7 @@ public:
 	bool CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate = nullptr) const;
 };
 
-class HexagonalGridUtility
+class HexagonalGridUtility final
 {
 public:
 	static AxialCoordinates AxialDirections[(size_t)HexagonDirection::_COUNT];

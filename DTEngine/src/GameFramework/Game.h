@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/App.h"
 #include "Core/Platform.h"
 #include "Rendering/Graphics.h"
 

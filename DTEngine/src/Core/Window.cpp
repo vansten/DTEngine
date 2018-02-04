@@ -1,11 +1,102 @@
 #include "Window.h"
 
-#if DT_WINDOWS
+#include "App.h"
+#include "MessageSystem.h"
+#include "Input.h"
+#include "Debug/Debug.h"
+#include "Rendering/Graphics.h"
 
-#include "Win32/WindowWin32.h"
+Window gWindow;
 
-#else
-#endif
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+bool Window::Open(const String& title, unsigned short width, unsigned short height)
+{
+	_title = title;
+	_width = width;
+	_height = height;
+	_aspectRatio = (float)width / (float)height;
+
+	// Window class registration
+	WNDCLASSEX wndClassEx;
+
+	wndClassEx.cbSize = sizeof(WNDCLASSEX);
+	wndClassEx.style = CS_HREDRAW | CS_VREDRAW;
+	wndClassEx.lpfnWndProc = WndProc;
+	wndClassEx.cbClsExtra = 0;
+	wndClassEx.cbWndExtra = 0;
+	wndClassEx.hInstance = GetModuleHandle(NULL);
+	wndClassEx.hIcon = (HICON)LoadIcon(wndClassEx.hInstance, IDI_APPLICATION);
+	wndClassEx.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wndClassEx.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wndClassEx.lpszMenuName = NULL;
+	wndClassEx.lpszClassName = DT_TEXT("DTEngineClass");
+	wndClassEx.hIconSm = wndClassEx.hIcon;
+
+	if(!RegisterClassEx(&wndClassEx))
+	{
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot register window class"));
+
+		return false;
+	}
+
+	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+
+	RECT desiredClientRect;
+	desiredClientRect.left = 0;
+	desiredClientRect.right = _width;
+	desiredClientRect.top = 0;
+	desiredClientRect.bottom = _height;
+
+	AdjustWindowRect(&desiredClientRect, windowStyle, false);
+
+	// Create window and store handle
+	_hWnd = CreateWindowEx(
+		WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE,
+		wndClassEx.lpszClassName,
+		_title.c_str(),
+		windowStyle,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		desiredClientRect.right - desiredClientRect.left,
+		desiredClientRect.bottom - desiredClientRect.top,
+		0,
+		0,
+		wndClassEx.hInstance,
+		0
+	);
+
+	if(_hWnd == INVALID_HANDLE_VALUE)
+	{
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create HWND"));
+
+		return false;
+	}
+
+	return true;
+}
+
+bool Window::Show()
+{
+	ShowWindow(_hWnd, SW_SHOW);
+
+	return IsWindowVisible(_hWnd);
+}
+
+bool Window::Hide()
+{
+	ShowWindow(_hWnd, SW_HIDE);
+
+	return !IsWindowVisible(_hWnd);
+}
+
+bool Window::Close()
+{
+	Hide();
+	DestroyWindow(_hWnd);
+
+	return !IsWindow(_hWnd);
+}
 
 void Window::SetNewSize(unsigned short width, unsigned short height)
 {
@@ -20,18 +111,150 @@ void Window::SetNewSize(unsigned short width, unsigned short height)
 	_aspectRatio = (float)_width / (float)_height;
 }
 
-UniquePtr<Window> Window::Create(const String& title, unsigned short width, unsigned short height)
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	Window* newWindow = nullptr;
-#if DT_WINDOWS
+	// Helper bool to catch only size msg in EXITSIZEMMOVE and ENTERSIZEMOVE
+	static bool wasResizing = false;
 
-	newWindow = new WindowWin32(title, width, height);
+	switch(msg)
+	{
+	case WM_ACTIVATE:
+		{
+			POINT point;
+			GetCursorPos(&point);
+			if(App::GetInstance()->IsRunning())
+			{
+				gInput.SetMousePosition(XMINT2(point.x, point.y));
+			}
+			break;
+		}
+	case WM_QUIT:
+	case WM_DESTROY:
+	case WM_CLOSE:
+		{
+			MessageSystem::PostQuit();
+			break;
+		}
+	case WM_SIZE:
+		{
+			const unsigned short newWidth = LOWORD(lParam);
+			const unsigned short newHeight = HIWORD(lParam);
 
-#else
+			gWindow.SetNewSize(newWidth, newHeight);
 
-	newWindow = nullptr;
+			if(App::GetInstance()->IsRunning())
+			{
+				wasResizing = true;
+				gGraphics.OnResize();
+			}
 
-#endif
+			break;
+		}
+	case WM_ENTERSIZEMOVE:
+		{
+			gGraphics.BeginResize();
+			break;
+		}
+	case WM_EXITSIZEMOVE:
+		{
+			if(wasResizing)
+			{
+				wasResizing = false;
+				gGraphics.EndResize();
+			}
+			break;
+		}
+	case WM_KEYDOWN:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
+				// So in Down event I need to check if previous state of key was 'up' (not 'down')
+				const bool wasUp = !(lParam & (1 << 30));
+				if(wasUp)
+				{
+					gInput.OnKeyDown((int)wParam);
+				}
+			}
+			break;
+		}
+	case WM_KEYUP:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
+				// So in Up event I need to check if previous state of key was 'down'
+				const bool wasDown = lParam & (1 << 30);
+				if(wasDown)
+				{
+					gInput.OnKeyUp((int)wParam);
+				}
+			}
+			break;
+		}
+	case WM_MOUSEMOVE:
+	case WM_NCMOUSEMOVE:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				const int xPos = GET_X_LPARAM(lParam);
+				const int yPos = GET_Y_LPARAM(lParam);
 
-	return UniquePtr<Window>(newWindow);
+				gInput.SetMousePosition(XMINT2(xPos, yPos));
+			}
+			break;
+		}
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				// Down events can be handled in one case statement
+				// Bitwise AND cause wParam can be something like MK_LBUTTON | MK_MBUTTON | ...
+				if((wParam & MK_LBUTTON) != 0)
+				{
+					gInput.OnMouseDown(VK_LBUTTON);
+				}
+				if((wParam & MK_RBUTTON) != 0)
+				{
+					gInput.OnMouseDown(VK_RBUTTON);
+				}
+				if((wParam & MK_MBUTTON) != 0)
+				{
+					gInput.OnMouseDown(VK_MBUTTON);
+				}
+			}
+
+			break;
+		}
+		// Up events cannot be (unfortunately) handled in one case statement as Down events...
+	case WM_LBUTTONUP:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				gInput.OnMouseUp(VK_LBUTTON);
+			}
+			break;
+		}
+	case WM_RBUTTONUP:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				gInput.OnMouseUp(VK_RBUTTON);
+			}
+			break;
+		}
+	case WM_MBUTTONUP:
+		{
+			if(App::GetInstance()->IsRunning())
+			{
+				gInput.OnMouseUp(VK_MBUTTON);
+			}
+			break;
+		}
+	}
+
+	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

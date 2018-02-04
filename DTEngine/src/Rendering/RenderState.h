@@ -117,7 +117,7 @@ DECLARE_ENUM_NAMES(CompareFunction)
 		{DT_TEXT("Always"), CompareFunction::Always}
 };
 
-struct RenderStateParams
+struct RenderStateParams final
 {
 	friend struct RenderState;
 
@@ -168,7 +168,7 @@ public:
 	}
 };
 
-struct RenderState
+struct RenderState final
 {
 	friend class Graphics;
 

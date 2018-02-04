@@ -2,7 +2,7 @@
 
 #include "GameFramework/Entity.h"
 #include "GameFramework/Game.h"
-#include "ResourceManagement/ResourceManager.h"
+#include "ResourceManagement/Resources.h"
 #include "MeshRenderer.h"
 
 AxialCoordinates HexagonalGridUtility::AxialDirections[(size_t)HexagonDirection::_COUNT]
@@ -141,7 +141,7 @@ SharedPtr<Hexagon> HexagonalGrid::GetNeighboor(SharedPtr<Hexagon> hexagon, Hexag
 {
 	if (direction == HexagonDirection::_COUNT || hexagon == nullptr)
 	{
-		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GENERAL, DT_TEXT("Cannot get neighboor. Either direction is invalid or hexagon argument is nullptr"));
+		gDebug.Print(LogVerbosity::Warning, CHANNEL_GENERAL, DT_TEXT("Cannot get neighboor. Either direction is invalid or hexagon argument is nullptr"));
 		return nullptr;
 	}
 
@@ -203,7 +203,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 	// If start or target are nullptr then return false (can't find path when at least one of the path ends doesn't exist)
 	if(start == nullptr || target == nullptr)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("CalculatePath failed. Reason: either start or target doesn't exist"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("CalculatePath failed. Reason: either start or target doesn't exist"));
 		return false;
 	}
 
@@ -278,7 +278,7 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, un
 	// If grid owner doesn't exist or width, height or hexagonSize are less or equal than 0
 	if (!gridOwner || width <= 0 || height <= 0 || hexagonSize <= 0.0f)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("Cannot create grid. Reason: either gridOwner is nullptr or width is less than 0 or height is less than 0 or hexagonSize is less than 0"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("Cannot create grid. Reason: either gridOwner is nullptr or width is less than 0 or height is less than 0 or hexagonSize is less than 0"));
 		return nullptr;
 	}
 
@@ -288,7 +288,7 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, un
 	const int halfW = (int)(width * 0.5f);
 	const int halfH = (int)(height * 0.5f);
 
-	ResourceManager& resourceManager = GetResourceManager();
+	Resources& resourceManager = gResources;
 	
 	// Load hexagon mesh and default material
 	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Get<HexagonMesh>();

@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class StaticMesh : public MeshBase
+class StaticMesh final : public MeshBase
 {
 private:
 	std::vector<VertexType> _vertices;

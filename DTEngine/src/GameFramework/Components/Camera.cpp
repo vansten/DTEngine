@@ -29,13 +29,12 @@ Camera::~Camera()
 
 void Camera::Resize()
 {
-	Window& window = GetMainWindow();
-	const float aspectRatio = window.GetAspectRatio();
+	const float aspectRatio = gWindow.GetAspectRatio();
 	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
 
 	ConstructFrustum();
 
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("Resizing camera for object: %s"), GetOwner()->GetName().c_str());
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("Resizing camera for object: %s"), GetOwner()->GetName().c_str());
 }
 
 void Camera::DetermineVisibleRenderers(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& visibleRenderers)
@@ -219,7 +218,7 @@ void Camera::RenderDebug(Graphics& graphics)
 	graphics.SetObject(nullptr);
 	
 	// Draw all debug draws
-	const DynamicArray<DebugDrawGeometry>& debugDraws = GetDebug().GetDraws();
+	const DynamicArray<DebugDrawGeometry>& debugDraws = gDebug.GetDraws();
 	for(auto& draw : debugDraws)
 	{
 		draw.Render(graphics);
@@ -311,13 +310,11 @@ XMFLOAT3 Camera::ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const
 // Pass XMINT2 in range [(0, screenWidth), (0, screenHeight)]
 XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 {
-	Window& window = GetMainWindow();
-
-	DT_ASSERT(window.GetHeight() * window.GetWidth() != 0, "");
+	DT_ASSERT(gWindow.GetHeight() * gWindow.GetWidth() != 0, "");
 
 	XMFLOAT3 viewPosition;
-	viewPosition.x = window.GetAspectRatio() * (float)screenPoint.x / window.GetWidth();
-	viewPosition.y = (float)screenPoint.y / window.GetHeight();
+	viewPosition.x = gWindow.GetAspectRatio() * (float)screenPoint.x / gWindow.GetWidth();
+	viewPosition.y = (float)screenPoint.y / gWindow.GetHeight();
 	viewPosition.z = 0.0f;
 
 	const XMMATRIX viewInversed = XMMatrixInverse(&XMMatrixDeterminant(_viewMatrix), _viewMatrix);
@@ -334,15 +331,14 @@ XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 // It's caused by floating point precision and converting from float to int
 XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
 {
-	Window& window = GetMainWindow();
-	DT_ASSERT(window.GetAspectRatio() != 0, "");
+	DT_ASSERT(gWindow.GetAspectRatio() != 0, "");
 
 	const XMVECTOR viewVector = XMVector3TransformCoord(XMLoadFloat3(&worldPoint), _viewMatrix);
 	XMFLOAT3 viewPosition;
 	XMStoreFloat3(&viewPosition, viewVector);
 	XMINT2 screenPosition;
-	screenPosition.x = (unsigned int)(viewPosition.x * window.GetWidth() / window.GetAspectRatio());
-	screenPosition.y = (unsigned int)(viewPosition.y * window.GetHeight());
+	screenPosition.x = (unsigned int)(viewPosition.x * gWindow.GetWidth() / gWindow.GetAspectRatio());
+	screenPosition.y = (unsigned int)(viewPosition.y * gWindow.GetHeight());
 
 	return screenPosition;
 }

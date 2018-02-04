@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class PlaneMesh : public MeshBase
+class PlaneMesh final : public MeshBase
 {
 public:
 	PlaneMesh();

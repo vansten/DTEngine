@@ -10,7 +10,7 @@
 #include "Rendering/Graphics.h"
 #include "Transform.h"
 
-class Entity : public EnableSharedFromThis<Entity>
+class Entity final : public EnableSharedFromThis<Entity>
 {
 private:
 	String _name;

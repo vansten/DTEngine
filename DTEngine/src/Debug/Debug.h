@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/App.h"
 #include "Core/Event.h"
 #include "Core/Platform.h"
 #include "Utility/EnumUtility.h"
@@ -26,7 +25,7 @@ DECLARE_ENUM_NAMES(LogVerbosity)
 	{ DT_TEXT("Warning"), LogVerbosity::Warning }
 };
 
-struct Channel
+struct Channel final
 {
 public:
 	String Name;
@@ -42,7 +41,7 @@ public:
 	}
 };
 
-struct ChannelHasher
+struct ChannelHasher final
 {
 	inline std::size_t operator()(const Channel& key) const
 	{
@@ -50,7 +49,7 @@ struct ChannelHasher
 	}
 };
 
-struct Log
+struct Log final
 {
 public:
 	LogVerbosity Verbosity;
@@ -59,7 +58,7 @@ public:
 	Log(LogVerbosity verbosity, const String& message) : Verbosity(verbosity), Message(message) { }
 };
 
-struct DebugDrawGeometry
+struct DebugDrawGeometry final
 {
 	friend class Debug;
 
@@ -81,7 +80,7 @@ public:
 	DebugDrawGeometry& operator=(const DebugDrawGeometry& other);
 };
 
-class Debug
+class Debug final
 {
 private:
 	Dictionary<String, Channel> _channels;
@@ -126,3 +125,5 @@ extern const String CHANNEL_INPUT;
 extern const String CHANNEL_CAMERA;
 extern const String CHANNEL_GAMEOBJECT;
 extern const String CHANNEL_GENERAL;
+
+extern Debug gDebug;

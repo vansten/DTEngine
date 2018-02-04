@@ -56,7 +56,7 @@ public:
 	void Update(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection);
 };
 
-class Shader : public Asset
+class Shader final : public Asset
 {
 public:
 	struct PerFrameBuffer

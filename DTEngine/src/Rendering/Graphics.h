@@ -7,7 +7,6 @@
 
 #include <d3d11.h>
 
-#include "Core/App.h"
 #include "Core/Platform.h"
 #include "Utility/Math.h"
 #include "Utility/EnumUtility.h"
@@ -19,7 +18,7 @@ class Material;
 class MeshRenderer;
 class Entity;
 
-class Graphics
+class Graphics final
 {
 public:
 	class CommonRenderStates
@@ -88,6 +87,8 @@ public:
 	void SetRenderState(const RenderState& renderState);
 	void SetRenderState(const UniquePtr<RenderState>& renderState);
 };
+
+extern Graphics gGraphics;
 
 #define RELEASE_COM(comObject)	\
 if(comObject)					\

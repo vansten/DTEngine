@@ -224,8 +224,6 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\Core\MessageSystem.cpp" />
     <ClCompile Include="src\Core\Platform.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
-    <ClCompile Include="src\Core\Win32\TimeWin32.cpp" />
-    <ClCompile Include="src\Core\Win32\WindowWin32.cpp" />
     <ClCompile Include="src\Debug\Debug.cpp" />
     <ClCompile Include="src\GameFramework\Component.cpp" />
     <ClCompile Include="src\GameFramework\Components\Camera.cpp" />
@@ -255,7 +253,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\Rendering\RenderState.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
     <ClCompile Include="src\ResourceManagement\Asset.cpp" />
-    <ClCompile Include="src\ResourceManagement\ResourceManager.cpp" />
+    <ClCompile Include="src\ResourceManagement\Resources.cpp" />
     <ClCompile Include="src\GameFramework\Components\HexagonalGrid.cpp" />
     <ClCompile Include="src\Utility\BoundingBox.cpp" />
     <ClCompile Include="src\Utility\Math.cpp" />
@@ -268,8 +266,6 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\Core\MessageSystem.h" />
     <ClInclude Include="src\Core\Platform.h" />
     <ClInclude Include="src\Core\Time.h" />
-    <ClInclude Include="src\Core\Win32\TimeWin32.h" />
-    <ClInclude Include="src\Core\Win32\WindowWin32.h" />
     <ClInclude Include="src\Core\Window.h" />
     <ClInclude Include="src\Debug\Debug.h" />
     <ClInclude Include="src\GameFramework\Component.h" />
@@ -298,10 +294,11 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\Rendering\RenderState.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
     <ClInclude Include="src\ResourceManagement\Asset.h" />
-    <ClInclude Include="src\ResourceManagement\ResourceManager.h" />
+    <ClInclude Include="src\ResourceManagement\Resources.h" />
     <ClInclude Include="src\GameFramework\Components\HexagonalGrid.h" />
     <ClInclude Include="src\Utility\BoundingBox.h" />
     <ClInclude Include="src\Utility\EnumUtility.h" />
+    <ClInclude Include="src\Utility\GeometryUtils.h" />
     <ClInclude Include="src\Utility\JSON.h" />
     <ClInclude Include="src\Utility\Math.h" />
     <ClInclude Include="src\Utility\String.h" />

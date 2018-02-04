@@ -1,29 +1,27 @@
 #include "Time.h"
 
-#if DT_WINDOWS
-
-#include "Win32/TimeWin32.h"
-
-#else
-
-
-
-#endif
+Time gTime;
 
 Time::Time() : _deltaTime(0.0f), _timeSinceStartup(0.0f), _timeScale(1.0f)
 {
 
 }
 
-UniquePtr<Time> Time::Create()
+void Time::Initialize()
 {
-#if DT_WINDOWS
-
-	return UniquePtr<Time>(new TimeWin32());
-
-#else
-
-	return nullptr;
-	
-#endif
+	QueryPerformanceFrequency(&_frequency);
+	QueryPerformanceCounter(&_previousTime);
 }
+
+void Time::Tick()
+{
+	LARGE_INTEGER currentTime;
+	QueryPerformanceCounter(&currentTime);
+
+	_deltaTime = ((currentTime.QuadPart - _previousTime.QuadPart) * 1000.0f) / _frequency.QuadPart;
+	_deltaTime *= 0.001f;
+	_timeSinceStartup += _deltaTime;
+
+	_previousTime = currentTime;
+}
+

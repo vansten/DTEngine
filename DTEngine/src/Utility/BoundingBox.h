@@ -3,7 +3,7 @@
 #include "Core/Platform.h"
 #include "Math.h"
 
-struct BoundingBox
+struct BoundingBox final
 {
 private:
 	XMVECTOR _min;

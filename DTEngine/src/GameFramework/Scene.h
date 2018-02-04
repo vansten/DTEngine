@@ -6,7 +6,7 @@
 
 class Camera;
 
-class Scene
+class Scene final
 {
 protected:
 	String _scenePath;

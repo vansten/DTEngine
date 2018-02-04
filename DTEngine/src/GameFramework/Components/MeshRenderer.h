@@ -6,7 +6,7 @@
 
 enum class RenderQueue;
 
-class MeshRenderer : public Component
+class MeshRenderer final : public Component
 {
 private:
 	static DynamicArray<SharedPtr<MeshRenderer>> _allRenderers;

@@ -12,7 +12,7 @@ bool Game::Initialize()
 	_activeScene = UniquePtr<Scene>(new Scene(DT_TEXT("Untitled")));
 	if (!_activeScene)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to create default scene"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Failed to create default scene"));
 		return false;
 	}
 

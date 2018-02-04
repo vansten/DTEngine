@@ -3,7 +3,7 @@
 #include "Core/Platform.h"
 #include "Utility/Math.h"
 
-struct Transform 
+struct Transform final
 {
 	friend class Entity;
 

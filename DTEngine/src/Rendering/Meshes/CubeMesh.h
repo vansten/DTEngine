@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class CubeMesh : public MeshBase
+class CubeMesh final : public MeshBase
 {
 public:
 	CubeMesh();

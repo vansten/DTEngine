@@ -4,18 +4,21 @@
 #include "Platform.h"
 #include "Utility/UniqueSingleton.h"
 
-class Time
+class Time final
 {
-protected:
+private:
 	float _deltaTime;
 	float _timeScale;
 	float _timeSinceStartup;
 
+	LARGE_INTEGER _frequency;
+	LARGE_INTEGER _previousTime;
+
 public:
 	Time();
 
-	virtual void Initialize() = 0;
-	virtual void Tick() = 0;
+	virtual void Initialize();
+	virtual void Tick();
 
 	inline float GetTimeSinceStartup() const
 	{
@@ -41,7 +44,6 @@ public:
 	{
 		_timeScale = timeScale;
 	}
-
-public:
-	static UniquePtr<Time> Create();
 };
+
+extern Time gTime;

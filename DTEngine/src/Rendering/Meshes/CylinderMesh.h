@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class CylinderMesh : public MeshBase
+class CylinderMesh final : public MeshBase
 {
 public:
 	CylinderMesh();

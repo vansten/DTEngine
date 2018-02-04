@@ -3,7 +3,7 @@
 #include "GameFramework/Component.h"
 #include "Utility/Math.h"
 
-class CameraControl : public Component
+class CameraControl final : public Component
 {
 private:
 	static const float _xRotationMax;

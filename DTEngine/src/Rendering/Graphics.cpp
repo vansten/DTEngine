@@ -1,6 +1,6 @@
 #include "Graphics.h"
 
-#include "Core/Win32/WindowWin32.h"
+#include "Core/Window.h"
 
 #include "Debug/Debug.h"
 
@@ -10,6 +10,8 @@
 
 #include "MeshBase.h"
 #include "Material.h"
+
+Graphics gGraphics;
 
 RenderState Graphics::CommonRenderStates::WireframeRenderState(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::One, BlendMode::Zero, CompareFunction::Always));
 RenderState Graphics::CommonRenderStates::DefaultRenderState(RenderStateParams(CullMode::Back, FillMode::Solid, ZWrite::On, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Less));
@@ -93,7 +95,7 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 
 	if(!GetRefreshRate(windowHeight, numerator, denominator))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot retrieve refresh rate"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot retrieve refresh rate"));
 		return false;
 	}
 
@@ -118,8 +120,7 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	const WindowWin32& windowWin32 = (const WindowWin32&)window;
-	swapChainDesc.OutputWindow = windowWin32.GetHWND();
+	swapChainDesc.OutputWindow = gWindow.GetHWND();
 
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
@@ -227,9 +228,9 @@ bool Graphics::Initialize(bool vsync)
 
 	HR(result);
 
-	if(!InitializeWindowDependentResources(GetMainWindow()))
+	if(!InitializeWindowDependentResources(gWindow))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize window size dependent resources"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize window size dependent resources"));
 		return false;
 	}
 
@@ -279,12 +280,12 @@ void Graphics::OnResize()
 		return;
 	}
 
-	unsigned short width = GetMainWindow().GetWidth();
-	unsigned short height = GetMainWindow().GetHeight();
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_GRAPHICS, DT_TEXT("Resizing... New size is %i X %i"), width, height);
+	unsigned short width = gWindow.GetWidth();
+	unsigned short height = gWindow.GetHeight();
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_GRAPHICS, DT_TEXT("Resizing... New size is %i X %i"), width, height);
 
 	ReleaseWindowDependentResources();
-	InitializeWindowDependentResources(GetMainWindow());
+	InitializeWindowDependentResources(gWindow);
 
 	Camera::OnResize();
 }
@@ -299,7 +300,7 @@ bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, ID3D11Buffer** 
 {
 	if(!bufferPtr || !_device)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
 		return false;
 	}
 
@@ -312,7 +313,7 @@ bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUB
 {
 	if (!bufferPtr || !_device)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
 		return false;
 	}
 
@@ -325,7 +326,7 @@ bool Graphics::CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader**
 {
 	if (!shaderBuffer || !vertexShader || !_device)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader. Either shaderBuffer, vertexShader or device is nullptr"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader. Either shaderBuffer, vertexShader or device is nullptr"));
 		return false;
 	}
 
@@ -338,7 +339,7 @@ bool Graphics::CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** p
 {
 	if (!shaderBuffer || !pixelShader || !_device)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader. Either shaderBuffer, pixelShader or device is nullptr"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader. Either shaderBuffer, pixelShader or device is nullptr"));
 		return false;
 	}
 
@@ -365,7 +366,7 @@ void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag)
 	HRESULT result = _deviceContext->Map(resource, 0, mapFlag, 0, &mappedResource);
 	if(FAILED(result))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to map resources"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to map resources"));
 		Unmap(resource);
 		return nullptr;
 	}
@@ -423,7 +424,7 @@ bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState)
 {
 	if(renderState != nullptr)
 	{
-		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
+		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
 	}
 
 	renderState.reset(new RenderState());
@@ -435,7 +436,7 @@ bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState, const Rend
 {
 	if(renderState != nullptr)
 	{
-		GetDebug().Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
+		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
 	}
 
 	renderState.reset(new RenderState(renderStateParams));

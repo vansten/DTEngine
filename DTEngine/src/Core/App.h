@@ -7,26 +7,14 @@
 #include "Core/Platform.h"
 #include "Utility/UniqueSingleton.h"
 
-class Window;
-class Time;
 class Game;
-class Graphics;
-class ResourceManager;
-class Input;
-class Debug;
 
-class App : public UniqueSingleton<App>
+class App final : public UniqueSingleton<App>
 {
 	friend class UniqueSingleton<App>;
 
 protected:
-	UniquePtr<Window> _mainWindow;
-	UniquePtr<Time> _globalTime;
 	UniquePtr<Game> _game;
-	UniquePtr<Graphics> _graphics;
-	UniquePtr<ResourceManager> _resourceManager;
-	UniquePtr<Input> _input;
-	UniquePtr<Debug> _debug;
 
 	bool _isRunning;
 
@@ -37,92 +25,26 @@ public:
 	~App();
 
 protected:
-	bool Initialize();
+	bool Initialize(UniquePtr<Game>&& game);
 	void Loop();
 	void Shutdown();
 
 public:
-	int Run();
+	int Run(UniquePtr<Game>&& game);
 
 	inline bool IsRunning() const
 	{
 		return _isRunning;
 	}
 
-	inline Window& GetWindow()
+	inline Game& GetGame() const
 	{
-		DT_ASSERT(_mainWindow, "");
-		return *_mainWindow;
-	}
-
-	inline Time& GetGlobalTime()
-	{
-		DT_ASSERT(_globalTime, "");
-		return *_globalTime;
-	}
-
-	inline Game& GetGame()
-	{
-		DT_ASSERT(_game, "");
+		DT_ASSERT(_game, DT_TEXT("Cannot dereference null game pointer"));
 		return *_game;
 	}
-
-	inline Graphics& GetGraphics()
-	{
-		DT_ASSERT(_graphics, "");
-		return *_graphics;
-	}
-
-	inline ResourceManager& GetResourceManager() 
-	{
-		DT_ASSERT(_resourceManager, "");
-		return *_resourceManager; 
-	}
-
-	inline Input& GetInput()
-	{
-		DT_ASSERT(_input, "");
-		return *_input;
-	}
-
-	inline Debug& GetDebug()
-	{
-		DT_ASSERT(_debug, "");
-		return *_debug;
-	}
 };
-
-inline Window& GetMainWindow()
-{
-	return App::GetInstance()->GetWindow();
-}
-
-inline Time& GetGlobalTime()
-{
-	return App::GetInstance()->GetGlobalTime();
-}
 
 inline Game& GetGame()
 {
 	return App::GetInstance()->GetGame();
-}
-
-inline Graphics& GetGraphics()
-{
-	return App::GetInstance()->GetGraphics();
-}
-
-inline ResourceManager& GetResourceManager()
-{
-	return App::GetInstance()->GetResourceManager();
-}
-
-inline Input& GetInput()
-{
-	return App::GetInstance()->GetInput();
-}
-
-inline Debug& GetDebug()
-{
-	return App::GetInstance()->GetDebug();
 }

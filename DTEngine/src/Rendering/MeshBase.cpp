@@ -18,7 +18,7 @@ MeshBase::~MeshBase()
 
 bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 {
-	Graphics& graphics = GetGraphics();
+	Graphics& graphics = gGraphics;
 
 	D3D11_BUFFER_DESC bufferDesc = { 0 };
 	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
@@ -35,7 +35,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 	bool result = graphics.CreateBuffer(bufferDesc, bufferData, &_vertexBuffer);
 	if (!result)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex buffer"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex buffer"));
 		return false;
 	}
 
@@ -51,7 +51,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 	result = graphics.CreateBuffer(bufferDesc, bufferData, &_indexBuffer);
 	if(!result)
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create index buffer"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create index buffer"));
 	}
 
 	// Calculate bounding box

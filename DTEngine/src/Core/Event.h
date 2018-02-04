@@ -3,7 +3,7 @@
 #include "Core/Platform.h"
 
 template<typename ReturnType, typename ...Args>
-class Event
+class Event final
 {
 private:
 	typedef bool(*Predicate)(ReturnType);
@@ -36,7 +36,7 @@ private:
 	};
 
 public:
-	class Delegate : public DelegateBase
+	class Delegate final : public DelegateBase
 	{
 		friend class Event<ReturnType, Args...>;
 
@@ -66,7 +66,7 @@ public:
 	};
 
 	template<typename Class>
-	class ClassDelegate : public DelegateBase
+	class ClassDelegate final : public DelegateBase
 	{
 		friend class Event<ReturnType, Args...>;
 

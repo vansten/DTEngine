@@ -5,7 +5,7 @@
 #include "GameFramework/Entity.h"
 #include "GameFramework/Components/Camera.h"
 #include "Graphics.h"
-#include "ResourceManagement/ResourceManager.h"
+#include "ResourceManagement/Resources.h"
 #include "Utility/JSON.h"
 
 static const String DEFAULT_SHADER_PATH = DT_TEXT("Resources/Shaders/Color");
@@ -54,7 +54,7 @@ bool Material::Load(const String& path)
 		return false;
 	}
 
-	_shader = GetResourceManager().Get<Shader>(shaderPath);
+	_shader = gResources.Get<Shader>(shaderPath);
 
 	_renderStateParams = RenderStateParams(cullMode, fillMode, zWrite, srcBlendMode, destBlendMode, zTest);
 
@@ -107,17 +107,17 @@ bool Material::Initialize()
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	Graphics& graphics = GetGraphics();
+	Graphics& graphics = gGraphics;
 	
 	if(!graphics.CreateRenderState(_renderState, _renderStateParams))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
 		return false;
 	}
 
 	if(!_shader)
 	{
-		_shader = GetResourceManager().Get<Shader>(DEFAULT_SHADER_PATH);
+		_shader = gResources.Get<Shader>(DEFAULT_SHADER_PATH);
 	}
 
 	String colorName = DT_TEXT("Color");
@@ -170,5 +170,5 @@ void Material::UpdatePerDrawCallBuffers(Graphics& graphics)
 
 SharedPtr<Material> Material::CreateInstance() const
 {
-	return GetResourceManager().GetCopy<Material>(*this);
+	return gResources.GetCopy<Material>(*this);
 }

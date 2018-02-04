@@ -141,7 +141,7 @@ bool Shader::GatherConstantBuffersInfo(ID3D10Blob* compiledShader)
 
 	ID3D11ShaderReflection* reflectedShader = nullptr;
 	HRESULT result = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflectedShader);
-	HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot reflect shader!")));
+	HR_REACTION(result, gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot reflect shader!")));
 
 	// Get shader description
 	D3D11_SHADER_DESC reflectedShaderDesc;
@@ -175,7 +175,7 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 {
 	D3D11_SHADER_BUFFER_DESC reflectedConstantBufferDesc;
 	HRESULT result = reflectedConstantBuffer->GetDesc(&reflectedConstantBufferDesc);
-	HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain constant buffer description!")));
+	HR_REACTION(result, gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain constant buffer description!")));
 
 	// Create constant buffer
 	UniquePtr<ShaderConstantBuffer> constantBuffer = std::make_unique<ShaderConstantBuffer>();
@@ -202,12 +202,12 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 		ID3D11ShaderReflectionVariable* reflectedVariable = reflectedConstantBuffer->GetVariableByIndex(j);
 		D3D11_SHADER_VARIABLE_DESC reflectedVariableDesc;
 		result = reflectedVariable->GetDesc(&reflectedVariableDesc);
-		HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable description!")));
+		HR_REACTION(result, gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable description!")));
 
 		ID3D11ShaderReflectionType* reflectedVariableType = reflectedVariable->GetType();
 		D3D11_SHADER_TYPE_DESC reflectedVariableTypeDesc;
 		result = reflectedVariableType->GetDesc(&reflectedVariableTypeDesc);
-		HR_REACTION(result, GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable type description!")));
+		HR_REACTION(result, gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable type description!")));
 
 		
 		// Create variable
@@ -234,7 +234,7 @@ bool Shader::Load(const String& path)
 
 	const String vsFileName = path + DT_TEXT("VS.hlsl");
 	const String psFileName = path + DT_TEXT("PS.hlsl");
-	Graphics& graphics = GetGraphics();
+	Graphics& graphics = gGraphics;
 
 	HRESULT result = D3DCompileFromFile(vsFileName.c_str(), nullptr, nullptr, "main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &_vertexShaderBuffer, nullptr);
 	HR(result);
@@ -252,28 +252,28 @@ bool Shader::Initialize()
 		return false;
 	}
 
-	Graphics& graphics = GetGraphics();
+	Graphics& graphics = gGraphics;
 	
 	if(!graphics.CreateVertexShader(_vertexShaderBuffer, &_vertexShader))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader"));
 		return false;
 	}
 	if(!graphics.CreatePixelShader(_pixelShaderBuffer, &_pixelShader))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create pixel shader"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create pixel shader"));
 		return false;
 	}
 
 	if(!GatherConstantBuffersInfo(_vertexShaderBuffer))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
 		return false;
 	}
 
 	if(!GatherConstantBuffersInfo(_pixelShaderBuffer))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
 		return false;
 	}
 
@@ -283,7 +283,7 @@ bool Shader::Initialize()
 		{
 			if(!constantBuffer->Initialize(graphics))
 			{
-				GetDebug().Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), constantBuffer->Name.c_str());
+				gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), constantBuffer->Name.c_str());
 				return false;
 			}
 		}
@@ -310,7 +310,7 @@ bool Shader::Initialize()
 
 	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), _vertexShaderBuffer->GetBufferPointer(), (size_t)_vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{
-		GetDebug().Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create input layout"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create input layout"));
 		return false;
 	}
 

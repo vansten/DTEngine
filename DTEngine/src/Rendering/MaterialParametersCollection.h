@@ -4,7 +4,7 @@
 #include "Utility/Math.h"
 #include "Utility/JSON.h"
 
-class MaterialParametersCollection
+class MaterialParametersCollection final
 {
 	friend class Material;
 	friend struct ShaderVariable;

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "App.h"
 #include "Platform.h"
 #include "Utility/Math.h"
 #include "Event.h"
 
-class Input
+class Input final
 {
 protected:
 	XMINT2 _mousePosition;
@@ -55,6 +54,8 @@ public:
 
 	void Shutdown();
 };
+
+extern Input gInput;
 
 template<typename Class, typename FunctionType>
 inline void Input::BindKeyDown(int keyCode, FunctionType function, SharedPtr<Class> object, int priority)

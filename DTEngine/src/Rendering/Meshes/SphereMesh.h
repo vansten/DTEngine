@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class SphereMesh : public MeshBase
+class SphereMesh final : public MeshBase
 {
 public:
 	SphereMesh();

@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class HexagonMesh : public MeshBase
+class HexagonMesh final : public MeshBase
 {
 public:
 	HexagonMesh();

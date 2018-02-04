@@ -14,7 +14,7 @@ enum class RenderQueue
 	Overlay
 };
 
-class Material : public Asset
+class Material final : public Asset
 {
 private:
 	static const unsigned short OPAQUE_UPPER_LIMIT = 1000;

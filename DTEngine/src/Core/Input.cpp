@@ -1,5 +1,7 @@
 #include "Input.h"
 
+Input gInput;
+
 void Input::BindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function, int priority)
 {
 	_keyDownEvents[keyCode].Bind(function, priority);

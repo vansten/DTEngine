@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/App.h"
 #include "Debug/Debug.h"
 
 #include "Rendering/Material.h"
@@ -24,14 +23,14 @@ class Shader;
 class MeshBase;
 class Material;
 
-class ResourceManager
+class Resources final
 {
 protected:
 	Map<String, SharedPtr<Asset>> _assetsMap;
 	UniquePtr<Material> _missingMaterial;
 
 public:
-	ResourceManager();
+	Resources();
 
 	bool Initialize();
 	void Shutdown();
@@ -46,8 +45,10 @@ public:
 	SharedPtr<T> GetCopy(const T& original);
 };
 
+extern Resources gResources;
+
 template<typename T>
-SharedPtr<T> ResourceManager::Get()
+SharedPtr<T> Resources::Get()
 {
 	String path = DT_TEXT("Hidden");
 	std::string typeNameStr = typeid(T).name();
@@ -62,12 +63,12 @@ SharedPtr<T> ResourceManager::Get()
 	bool result =  nAsset->Initialize();
 	if(!result)
 	{
-		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s"), typeName.c_str());
+		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s"), typeName.c_str());
 		nAsset->Shutdown();
 		return SharedPtr<T>(nullptr);
 	}
 
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s"), typeName.c_str());
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s"), typeName.c_str());
 
 	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
 
@@ -75,7 +76,7 @@ SharedPtr<T> ResourceManager::Get()
 }
 
 template<typename T>
-SharedPtr<T> ResourceManager::Get(const String& path)
+SharedPtr<T> Resources::Get(const String& path)
 {
 	if(_assetsMap.find(path) != _assetsMap.end())
 	{
@@ -88,22 +89,22 @@ SharedPtr<T> ResourceManager::Get(const String& path)
 	bool result = nAsset->Load(path);
 	if(!result)
 	{
-		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot load %s at path: %s"), typeName.c_str(), path.c_str());
+		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot load %s at path: %s"), typeName.c_str(), path.c_str());
 		nAsset->Shutdown();
 		return SharedPtr<T>(nullptr);
 	}
 
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Loaded asset of type %s at path: %s"), typeName.c_str(), path.c_str());
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Loaded asset of type %s at path: %s"), typeName.c_str(), path.c_str());
 
 	result = nAsset->Initialize();
 	if(!result)
 	{
-		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s at path: %s"), typeName.c_str(), path.c_str());
+		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s at path: %s"), typeName.c_str(), path.c_str());
 		nAsset->Shutdown();
 		return SharedPtr<T>(nullptr);
 	}
 
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s at path: %s"), typeName.c_str(), path.c_str());
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset of type %s at path: %s"), typeName.c_str(), path.c_str());
 
 	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
 
@@ -111,7 +112,7 @@ SharedPtr<T> ResourceManager::Get(const String& path)
 }
 
 template<typename T>
-inline SharedPtr<T> ResourceManager::GetCopy(const T& original)
+inline SharedPtr<T> Resources::GetCopy(const T& original)
 {
 	SharedPtr<T> nAsset(new T(original));
 	std::string typeNameStr = typeid(T).name();
@@ -121,12 +122,12 @@ inline SharedPtr<T> ResourceManager::GetCopy(const T& original)
 	bool result = nAsset->Initialize();
 	if(!result)
 	{
-		GetDebug().Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize copy of a %s"), typeName.c_str());
+		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize copy of a %s"), typeName.c_str());
 		nAsset->Shutdown();
 		return SharedPtr<T>(nullptr);
 	}
 
-	GetDebug().Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset copy of type %s"), typeName.c_str());
+	gDebug.Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Initialized asset copy of type %s"), typeName.c_str());
 
 	_assetsMap.insert(Pair<String, SharedPtr<Asset>>(path, nAsset));
 

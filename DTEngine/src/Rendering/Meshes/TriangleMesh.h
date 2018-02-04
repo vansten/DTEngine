@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class TriangleMesh : public MeshBase
+class TriangleMesh final : public MeshBase
 {
 public:
 	TriangleMesh();

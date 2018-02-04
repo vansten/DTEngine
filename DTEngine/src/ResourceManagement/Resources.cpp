@@ -1,10 +1,12 @@
-#include "ResourceManager.h"
+#include "Resources.h"
 
-ResourceManager::ResourceManager()
+Resources gResources;
+
+Resources::Resources()
 {
 }
 
-bool ResourceManager::Initialize()
+bool Resources::Initialize()
 {
 	_missingMaterial = std::make_unique<Material>();
 	_missingMaterial->SetColor(XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
@@ -15,7 +17,7 @@ bool ResourceManager::Initialize()
 	return true;
 }
 
-void ResourceManager::Shutdown()
+void Resources::Shutdown()
 {
 	if(_missingMaterial)
 	{
@@ -33,7 +35,7 @@ void ResourceManager::Shutdown()
 	_assetsMap.clear();
 }
 
-Material* ResourceManager::GetDefaultMaterial() const
+Material* Resources::GetDefaultMaterial() const
 {
 	return _missingMaterial.get();
 }

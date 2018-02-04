@@ -30,7 +30,7 @@
 
 #endif
 
-class Physics
+class Physics final
 {
 
 };

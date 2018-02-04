@@ -2,7 +2,7 @@
 
 #include "Rendering/MeshBase.h"
 
-class QuadMesh : public MeshBase
+class QuadMesh final : public MeshBase
 {
 public:
 	QuadMesh();

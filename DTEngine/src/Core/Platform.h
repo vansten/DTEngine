@@ -137,14 +137,11 @@ using Map = std::map<Key, Value>;
 
 #else
 
-using String = std::string;
+	using String = std::string;
 
 	#define DT_TEXT(string) string
 
 #endif
-
-#define STRING(s) DT_TEXT(#s)
-#define CONCATENATE(x1, x2) x1##x2
 
 #if defined(DEBUG) || defined(_DEBUG)
 
