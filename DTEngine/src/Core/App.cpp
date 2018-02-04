@@ -5,13 +5,11 @@
 #include "Time.h"
 #include "Input.h"
 
-#include "Debug/Debug.h"
-
-#include "Rendering/Graphics.h"
-
-#include "ResourceManagement/Resources.h"
-
 #include "GameFramework/Game.h"
+#include "Debug/Debug.h"
+#include "Physics/Physics.h"
+#include "Rendering/Graphics.h"
+#include "ResourceManagement/Resources.h"
 
 App::App()
 {
@@ -47,6 +45,12 @@ bool App::Initialize(UniquePtr<Game>&& game)
 	if(!gGraphics.Initialize(true))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize window"));
+		return false;
+	}
+
+	if(!gPhysics.Initialize())
+	{
+		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize physics"));
 		return false;
 	}
 
@@ -89,7 +93,7 @@ void App::Loop()
 
 		gDebug.Update(deltaTime);
 
-		// Physics::Resolve();
+		gPhysics.Simulate(deltaTime);
 
 		_game->Update(deltaTime);
 
@@ -119,6 +123,8 @@ void App::Shutdown()
 	{
 		_game->Shutdown();
 	}
+
+	gPhysics.Shutdown();
 
 	gGraphics.Shutdown();
 	gResources.Shutdown();

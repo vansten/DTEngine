@@ -38,7 +38,7 @@ TODOs:
 -- Fix frustum culling						|> ALL DONE
 -- Default material 						|> ALL DONE
 -- Setting shader parameters (reflection)	|> ALL DONE
--- Physics (simple raycasting with PhysX? simple colliders box, sphere, capsule, cone, quad (also for plane), cylinder, hexagon)
+-- Physics									|> IN PROGRESS (TODO: read about PxScene, PxGeometry, PxShape, PxRigidbody, PxActor etc.; Think about physics architecture in DTEngine (colliders, rigidbodies, etc.); SceneQueries; Simulation filtering (layers?); hexagonal geometry; raycasting in CameraControl)
 -- Read a little bit about 2D rendering in DX11
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types? ShaderVariable handling)
 -- UI (delegates on click for buttons using std::function (Functions), elements created once and rendered, UIText and UIImage classes responsible for rendering, both deriving from UIRenderer (?), components, texts, shaders for texts and images, font loading)
