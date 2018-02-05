@@ -49,16 +49,6 @@ void Component::Save(Archive& archive)
 
 }
 
-void Component::PostLoad()
-{
-
-}
-
-void Component::PreSave()
-{
-
-}
-
 void Component::OnOwnerTransformUpdated(const Transform& transform)
 {
 

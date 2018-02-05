@@ -54,12 +54,19 @@ public:
 public:
 	SharedPtr<Entity> Copy() const;
 
+	// Called on:
+	// 1) Scene::Load, after all entities are constructed AND loaded
+	// 2) Scene::SpawnEntity, after entity is contructed (or copy-constructed)
+	// References should be used carefully (referenced entities/components may not be properly initialized on this step)
 	void Initialize();
+	// Called on:
+	// 1) Scene::Unload
+	// 2) Scene::DestroyEntity()
 	void Shutdown();
+	// Called on Scene::Load, after entity is constructed
 	void Load(Archive& archive);
+	// Called on Scene::Save
 	void Save(Archive& archive);
-	void PostLoad();
-	void PreSave();
 
 	void Update(float deltaTime);
 
@@ -139,7 +146,6 @@ inline SharedPtr<T> Entity::AddComponent()
 
 	// Initialize new component when created (do not defer this)
 	newComponent->OnInitialize();
-	newComponent->PostLoad();
 	return newComponent;
 }
 

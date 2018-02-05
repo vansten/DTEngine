@@ -22,10 +22,15 @@ void Scene::Load()
 	Archive archive;	//TODO: Replace with something like FileSystem::GetArchive(_scenePath);
 	UNREFERENCED_PARAMETER(archive);
 
-	// TODO: for bytes in archive
-	// if bytes tells that it's gameObject
-	// GameObject* go = new GameObject(readName);
-	// go->Load(archive);
+	// for entities in readBytes
+	//		Entity* entity = new Entity(name)
+	//		_entities.push_back(entity);
+	//		entity->Load(archive)
+
+	for(const auto& e : _entities)
+	{
+		e->Initialize();
+	}
 
 	SharedPtr<Entity> gridEntity = SpawnEntity(DT_TEXT("Grid"));
 	SharedPtr<Entity> cameraEntity = SpawnEntity(DT_TEXT("Camera"));
@@ -60,11 +65,6 @@ void Scene::Load()
 		}
 	}
 
-	for(auto go : _entities)
-	{
-		go->PostLoad();
-	}
-
 	if (!Camera::GetMainCamera())
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
@@ -78,14 +78,12 @@ void Scene::Save()
 	Archive archive;	//TODO: Replace with something like FileSystem::GetArchive(_scenePath);
 	UNREFERENCED_PARAMETER(archive);
 	
-	for(auto go : _entities)
-	{
-		go->PreSave();
-	}
-
 	// TODO: archive->Clear();
-	// foreach GameObject go in _gameObjects
-	// go->Save(archive);
+	
+	for(const auto& e : _entities)
+	{
+		e->Save(archive);
+	}
 
 	//TODO: Put this something like FileSystem::Close(archive);
 }
@@ -164,12 +162,7 @@ SharedPtr<Entity> Scene::SpawnEntity(const String& name)
 
 SharedPtr<Entity> Scene::SpawnEntity(SharedPtr<Entity> original)
 {
-	SharedPtr<Entity> entity = original->Copy();
-
-	_newEntities.push_back(entity);
-	entity->Initialize();
-
-	return entity;
+	return SpawnEntity(original, original->GetName() + DT_TEXT(" (copy)"));
 }
 
 SharedPtr<Entity> Scene::SpawnEntity(SharedPtr<Entity> original, const String& name)

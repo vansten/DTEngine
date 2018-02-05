@@ -51,7 +51,6 @@ protected:
 public:
 	virtual void OnInitialize() override;
 	virtual void OnShutdown() override;
-	virtual void PostLoad() override;
 
 	virtual void OnOwnerTransformUpdated(const Transform& transform) override;
 

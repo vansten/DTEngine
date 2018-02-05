@@ -38,15 +38,19 @@ protected:
 	virtual SharedPtr<Component> Copy(SharedPtr<Entity> newOwner) const;
 
 public:
+	// Called on:
+	// 1) Entity::Initialize, after all components are constructed 
+	//		(Entity::Initialize is called after loading all entities and its components if called from Scene::Load)
+	// 2) Entity::AddComponent, after component is constructed
+	// References should be used carefully (referenced entities/components may not be properly initialized on this step)
 	virtual void OnInitialize();
+	// Called on Entity::Shutdown
 	virtual void OnShutdown();
 
 	virtual void OnOwnerEnableChanged(bool enabled);
 
 	virtual void Load(Archive& archive);
 	virtual void Save(Archive& archive);
-	virtual void PostLoad();
-	virtual void PreSave();
 
 	virtual void OnOwnerTransformUpdated(const Transform& transform);
 	virtual void OnUpdate(float deltaTime);

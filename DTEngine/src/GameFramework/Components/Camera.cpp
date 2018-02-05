@@ -12,7 +12,7 @@
 WeakPtr<Camera> Camera::_main;
 DynamicArray<SharedPtr<Camera>> Camera::_allCameras;
 
-Camera::Camera(SharedPtr<Entity> owner) : Component(owner)
+Camera::Camera(SharedPtr<Entity> owner) : Component(owner), _fov(60.0f), _near(0.01f), _far(1000.0f), _order(0)
 {
 
 }
@@ -110,6 +110,11 @@ void Camera::RegisterCamera(SharedPtr<Camera> camera)
 {
 	_allCameras.push_back(camera);
 
+	if(!_main.lock())
+	{
+		_main = camera;
+	}
+
 	static auto sortPredicate = [](const WeakPtr<Camera>& cam1, const WeakPtr<Camera>& cam2)
 	{
 		SharedPtr<Camera> cam1Shared = cam1.lock();
@@ -149,16 +154,11 @@ void Camera::OnInitialize()
 {
 	Component::OnInitialize();
 
-	if(!_main.lock())
-	{
-		_main = SharedFromThis();
-	}
+	Resize();
 
-	_fov = 60.0f;
-	_near = 0.01f;
-	_far = 30.0f;
+	OnOwnerTransformUpdated(_owner->GetTransform());
 
-	_order = 0;
+	RegisterCamera(SharedFromThis());
 }
 
 void Camera::OnShutdown()
@@ -167,15 +167,6 @@ void Camera::OnShutdown()
 
 	SharedPtr<Camera> cam = SharedFromThis();
 	UnregisterCamera(SharedFromThis());
-}
-
-void Camera::PostLoad()
-{
-	Resize();
-
-	OnOwnerTransformUpdated(_owner->GetTransform());
-
-	RegisterCamera(SharedFromThis());
 }
 
 void Camera::OnOwnerTransformUpdated(const Transform& transform)

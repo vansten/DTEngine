@@ -32,10 +32,10 @@ SharedPtr<Entity> Entity::Copy() const
 
 	Game& game = GetGame();
 
-	for(auto child : _children)
+	for(const auto& child : _children)
 	{
 		SharedPtr<Entity> newChildEntity = game.GetActiveScene()->SpawnEntity(child);
-		newChildEntity->SetParent(SharedFromThis());
+		newChildEntity->SetParent(copy);
 	}
 
 	return copy;
@@ -64,6 +64,10 @@ void Entity::Shutdown()
 
 void Entity::Load(Archive& archive)
 {
+	// for components in readByts
+	//		Component* c = new ComponentType(SharedFromThis());
+	//		_components.push_back(c);
+
 	for (auto component : _components)
 	{
 		component->Load(archive);
@@ -75,22 +79,6 @@ void Entity::Save(Archive& archive)
 	for (auto component : _components)
 	{
 		component->Save(archive);
-	}
-}
-
-void Entity::PostLoad()
-{
-	for (auto component : _components)
-	{
-		component->PostLoad();
-	}
-}
-
-void Entity::PreSave()
-{
-	for (auto component : _components)
-	{
-		component->PreSave();
 	}
 }
 
