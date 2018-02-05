@@ -47,7 +47,7 @@ public:
 	
 	inline const BoundingBox& GetBoundingBox() const
 	{
-		assert(_mesh);
+		DT_ASSERT(_mesh, DT_TEXT("Cannot obtain bounding box from a mesh renderer without a mesh"));
 		return _mesh->GetBoundingBox();
 	}
 

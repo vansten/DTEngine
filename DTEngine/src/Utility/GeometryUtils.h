@@ -8,8 +8,7 @@ private:
 	XMVECTOR _planeVector;
 
 public:
-	inline Plane()
-	{}
+	inline Plane() : _planeVector() { }
 	inline Plane(float a, float b, float c, float d)
 	{
 		XMFLOAT4 tmp(a, b, c, d);

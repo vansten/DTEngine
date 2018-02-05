@@ -78,6 +78,7 @@ bool Material::Save(const String& path)
 	{
 		materialData["Shader"] = DEFAULT_SHADER_PATH;
 	}
+
 	materialData["Queue"] = _queue;
 	materialData["Cull"] = EnumInfo<CullMode>::ToString(_renderStateParams.GetCullMode());
 	materialData["Fill"] = EnumInfo<FillMode>::ToString(_renderStateParams.GetFillMode());
@@ -131,7 +132,7 @@ bool Material::Initialize()
 
 void Material::Shutdown()
 {
-	if(_renderState != nullptr)
+	if(_renderState)
 	{
 		_renderState->Shutdown();
 		_renderState = nullptr;

@@ -141,6 +141,17 @@ void Camera::UnregisterCamera(SharedPtr<Camera> camera)
 	{
 		_allCameras.erase(found);
 	}
+
+	// If unregistering current main camera
+	if(_main.lock() == camera)
+	{
+		_main.reset();
+
+		if(_allCameras.size() > 0)
+		{
+			_main = _allCameras[0];
+		}
+	}
 }
 
 SharedPtr<Component> Camera::Copy(SharedPtr<Entity> newOwner) const
@@ -203,7 +214,8 @@ void Camera::Render(Graphics& graphics, const DynamicArray<SharedPtr<MeshRendere
 
 void Camera::RenderDebug(Graphics& graphics)
 {
-	// Remember current render state
+#if DT_DEBUG
+	
 	// Set render state to debug wireframe
 	graphics.SetRenderState(Graphics::CommonRenderStates::WireframeRenderState);
 	graphics.SetObject(nullptr);
@@ -215,8 +227,7 @@ void Camera::RenderDebug(Graphics& graphics)
 		draw.Render(graphics);
 	}
 
-	// Reset render state
-	graphics.SetRenderState(Graphics::CommonRenderStates::DefaultRenderState);
+#endif
 }
 
 void Camera::RenderSky(Graphics& graphics)
@@ -239,7 +250,7 @@ bool Camera::IsInsideFrustum(const XMFLOAT3& worldPoint) const
 	return true;
 }
 
-bool Camera::IsInsideFrustum(const XMVECTOR & worldPoint) const
+bool Camera::IsInsideFrustum(const XMVECTOR& worldPoint) const
 {
 	for(unsigned char i = 0; i < 6; ++i)
 	{
@@ -285,7 +296,6 @@ bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& mod
 	return true;
 }
 
-// Converts from world coordinates to view (camera) space coordinates
 XMFLOAT3 Camera::ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const
 {
 	XMVECTOR worldVector = XMLoadFloat3(&worldPoint);
@@ -296,9 +306,6 @@ XMFLOAT3 Camera::ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const
 	return viewSpacePoint;
 }
 
-// Converts from screen coordinates to world coordinates
-// Returns a point on near camera plane with world coordinate matching passed screen coordinates
-// Pass XMINT2 in range [(0, screenWidth), (0, screenHeight)]
 XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 {
 	DT_ASSERT(gWindow.GetHeight() * gWindow.GetWidth() != 0, "");
@@ -315,11 +322,6 @@ XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
 	return worldPosition;
 }
 
-// Converts from world coordinates to screen coordinates
-// Returns screen coordinates in range [(0, screenWidth), (0, screenHeight)]
-// Remember! When calling ConvertScreenToWorldPoint and ConvertWorldToScreenPoint right after
-// There might be 1 pixel offset in each of the coordinates
-// It's caused by floating point precision and converting from float to int
 XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
 {
 	DT_ASSERT(gWindow.GetAspectRatio() != 0, "");

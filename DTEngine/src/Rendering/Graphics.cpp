@@ -422,7 +422,7 @@ void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer
 
 bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState)
 {
-	if(renderState != nullptr)
+	if(renderState)
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
 	}
@@ -434,7 +434,7 @@ bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState)
 
 bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState, const RenderStateParams& renderStateParams)
 {
-	if(renderState != nullptr)
+	if(renderState)
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
 	}
@@ -452,9 +452,9 @@ void Graphics::SetRenderState(const RenderState& renderState)
 
 void Graphics::SetRenderState(const UniquePtr<RenderState>& renderState)
 {
-	if(renderState != nullptr)
+	if(renderState)
 	{
-		const RenderState& renderStateRef = *renderState;
-		SetRenderState(renderStateRef);
+		_deviceContext->OMSetDepthStencilState(renderState->_depthStencilState, 1);
+		_deviceContext->RSSetState(renderState->_rasterizerState);
 	}
 }

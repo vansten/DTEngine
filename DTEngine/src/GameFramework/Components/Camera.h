@@ -70,8 +70,19 @@ public:
 	// NOTE: this function variant assumes that boundingBox has corners in model/object space
 	bool IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const;
 
+	// Converts from world coordinates to view (camera) space coordinates
 	XMFLOAT3 ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const;
+
+	// Converts from screen coordinates to world coordinates
+	// Returns a point on near camera plane with world coordinate matching passed screen coordinates
+	// Pass XMINT2 in range [(0, screenWidth), (0, screenHeight)]
 	XMFLOAT3 ConvertScreenToWorldPoint(const XMINT2& screenPoint) const;
+
+	// Converts from world coordinates to screen coordinates
+	// Returns screen coordinates in range [(0, screenWidth), (0, screenHeight)]
+	// Remember! When calling ConvertScreenToWorldPoint and ConvertWorldToScreenPoint right after
+	// There might be 1 pixel offset in each of the coordinates
+	// It's caused by floating point precision and converting from float to int
 	XMINT2 ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const;
 
 	inline const XMMATRIX& GetViewMatrix() const
@@ -87,22 +98,7 @@ public:
 public:
 	inline static SharedPtr<Camera> GetMainCamera()
 	{
-		SharedPtr<Camera> mainShared = _main.lock();
-		if(mainShared)
-		{
-			return mainShared;
-		}
-
-		for(auto& camera : _allCameras)
-		{
-			if(camera)
-			{
-				_main = camera;
-				return camera;
-			}
-		}
-
-		return nullptr;
+		return _main.lock();
 	}
 
 	inline static const DynamicArray<SharedPtr<Camera>>& GetAllCameras()

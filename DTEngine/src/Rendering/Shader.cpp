@@ -60,7 +60,7 @@ void ShaderVariable::SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TY
 
 void const* ShaderVariable::Get(const MaterialParametersCollection& materialParametersCollection)
 {
-	if(VariableGetterFunction == nullptr)
+	if(!VariableGetterFunction)
 	{
 		return nullptr;
 	}
@@ -134,7 +134,7 @@ Shader::~Shader()
 
 bool Shader::GatherConstantBuffersInfo(ID3D10Blob* compiledShader)
 {
-	if(compiledShader == nullptr)
+	if(!compiledShader)
 	{
 		return false;
 	}

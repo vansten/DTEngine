@@ -65,11 +65,6 @@ void Scene::Load()
 		}
 	}
 
-	if (!Camera::GetMainCamera())
-	{
-		gDebug.Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
-	}
-
 	//TODO: Put this something like FileSystem::Close(archive);
 }
 
@@ -122,6 +117,12 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render(Graphics& graphics)
 {
+	if(!Camera::GetMainCamera())
+	{
+		gDebug.Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
+		return;
+	}
+	
 	const DynamicArray<SharedPtr<Camera>>& cameras = Camera::GetAllCameras();
 	for(auto camera : cameras)
 	{
@@ -134,10 +135,7 @@ void Scene::Render(Graphics& graphics)
 	SharedPtr<Camera> main = Camera::GetMainCamera();
 	if(main)
 	{
-#if DT_DEBUG
 		main->RenderDebug(graphics);
-#endif
-
 		main->RenderSky(graphics);
 	}
 

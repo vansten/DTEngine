@@ -123,7 +123,7 @@ public:
 		{
 			const DelegateBase* const db = del.get();
 			const Delegate* const d = dynamic_cast<const Delegate* const>(db);
-			if(!db || !d)
+			if(!d)
 			{
 				return false;
 			}
@@ -151,7 +151,7 @@ public:
 		{
 			const DelegateBase* const db = del.get();
 			const ClassDelegate<Class>* const cd = dynamic_cast<const ClassDelegate<Class>* const>(db);
-			if(!db || !cd)
+			if(!cd)
 			{
 				return false;
 			}

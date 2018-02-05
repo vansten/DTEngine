@@ -179,10 +179,8 @@ private:
 	ID3D11RasterizerState* _rasterizerState;
 
 private:
-	inline RenderState(const RenderStateParams& renderStateParams) : _params(renderStateParams), _depthStencilState(nullptr), _rasterizerState(nullptr)
-	{}
-	inline RenderState() : _depthStencilState(nullptr), _rasterizerState(nullptr)
-	{}
+	inline RenderState(const RenderStateParams& renderStateParams) : _params(renderStateParams), _depthStencilState(nullptr), _rasterizerState(nullptr) { }
+	inline RenderState() : _depthStencilState(nullptr), _rasterizerState(nullptr) { }
 	inline RenderState(const RenderState& other) = delete;
 	inline RenderState(RenderState&& other) = delete;
 

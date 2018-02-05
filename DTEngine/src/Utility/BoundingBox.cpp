@@ -19,7 +19,7 @@ void BoundingBox::CalculateCorners()
 	// multipliers[4] -> (0, 1, 0, 0)
 	// multipliers[5] -> (1, 0, 1, 1)
 	// sum -> (1, 1, 1, 1)
-	static XMVECTOR multipliers[16] =
+	static const XMVECTOR MULTIPLIERS[16] =
 	{
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),
 		XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 1.0f, 1.0f),
@@ -34,8 +34,8 @@ void BoundingBox::CalculateCorners()
 	for(unsigned char i = 0; i < 8; ++i)
 	{
 		// Get min and max multiplier
-		const XMVECTOR& minMultiplier = multipliers[2 * i];
-		const XMVECTOR& maxMultiplier = multipliers[2 * i + 1];
+		const XMVECTOR& minMultiplier = MULTIPLIERS[2 * i];
+		const XMVECTOR& maxMultiplier = MULTIPLIERS[2 * i + 1];
 
 		// Calculate min and max part
 		XMVECTOR minPart = XMVectorMultiply(_min, minMultiplier);

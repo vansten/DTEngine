@@ -71,37 +71,37 @@ void const* MaterialParametersCollection::GetInt(const String& name) const
 void const* MaterialParametersCollection::Get(const String& name) const
 {
 	void const* ptr = GetMatrix(name);
-	if(ptr != nullptr)
+	if(ptr)
 	{
 		return ptr;
 	}
 
 	ptr = GetVector4(name);
-	if(ptr != nullptr)
+	if(ptr)
 	{
 		return ptr;
 	}
 
 	ptr = GetVector3(name);
-	if(ptr != nullptr)
+	if(ptr)
 	{
 		return ptr;
 	}
 
 	ptr = GetVector2(name);
-	if(ptr != nullptr)
+	if(ptr)
 	{
 		return ptr;
 	}
 
 	ptr = GetFloat(name);
-	if(ptr != nullptr)
+	if(ptr)
 	{
 		return ptr;
 	}
 
 	ptr = GetInt(name);
-	if(ptr != nullptr)
+	if(ptr)
 	{
 		return ptr;
 	}

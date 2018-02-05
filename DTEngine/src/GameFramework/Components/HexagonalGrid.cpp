@@ -201,7 +201,7 @@ public:
 bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate) const
 {
 	// If start or target are nullptr then return false (can't find path when at least one of the path ends doesn't exist)
-	if(start == nullptr || target == nullptr)
+	if(!start || !target)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("CalculatePath failed. Reason: either start or target doesn't exist"));
 		return false;
@@ -237,7 +237,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 			{
 				// If there is no predicate telling whether hexagon is "walkable" or the predicate returns true which means that hexagon is "walkable"
 				// Process that hexagon
-				if(canWalkPredicate == nullptr || canWalkPredicate(neighboor))
+				if(!canWalkPredicate || canWalkPredicate(neighboor))
 				{
 					cameFrom.insert({neighboor, hex});
 					if(neighboor == target)
@@ -260,7 +260,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 
 	// Reconstruct path from cameFrom map
 	SharedPtr<Hexagon> current = target;
-	while(current != nullptr)
+	while(current)
 	{
 		outPath.AddHexagonToPath(current);
 		current = cameFrom[current];

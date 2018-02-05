@@ -9,9 +9,10 @@ void Input::BindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType functio
 
 void Input::UnbindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function)
 {
-	if(_keyDownEvents.find(keyCode) != _keyDownEvents.end())
+	const auto& keyDownEvent = _keyDownEvents.find(keyCode);
+	if(keyDownEvent != _keyDownEvents.end())
 	{
-		_keyDownEvents[keyCode].Unbind(function);
+		keyDownEvent->second.Unbind(function);
 	}
 }
 
@@ -22,9 +23,10 @@ void Input::BindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function,
 
 void Input::UnbindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function)
 {
-	if(_keyUpEvents.find(keyCode) != _keyUpEvents.end())
+	const auto& keyUpEvent = _keyUpEvents.find(keyCode);
+	if(keyUpEvent != _keyUpEvents.end())
 	{
-		_keyUpEvents[keyCode].Unbind(function);
+		keyUpEvent->second.Unbind(function);
 	}
 }
 
@@ -35,9 +37,10 @@ void Input::BindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType fun
 
 void Input::UnbindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function)
 {
-	if(_mouseDownEvents.find(mouseCode) != _mouseDownEvents.end())
+	const auto& mouseDownEvent = _mouseDownEvents.find(mouseCode);
+	if(mouseDownEvent != _mouseDownEvents.end())
 	{
-		_mouseDownEvents[mouseCode].Unbind(function);
+		mouseDownEvent->second.Unbind(function);
 	}
 }
 
@@ -48,50 +51,48 @@ void Input::BindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType funct
 
 void Input::UnbindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function)
 {
-	if(_mouseUpEvents.find(mouseCode) != _mouseUpEvents.end())
+	const auto& mouseUpEvent = _mouseUpEvents.find(mouseCode);
+	if(mouseUpEvent != _mouseUpEvents.end())
 	{
-		_mouseUpEvents[mouseCode].Unbind(function);
+		mouseUpEvent->second.Unbind(function);
 	}
 }
 
 void Input::OnKeyDown(int keyCode)
 {
-	if(_keyDownEvents.find(keyCode) == _keyDownEvents.end())
+	const auto& keyDownEvent = _keyDownEvents.find(keyCode);
+	if(keyDownEvent != _keyDownEvents.end())
 	{
-		return;
+		keyDownEvent->second.ExecuteUntil([](bool value) { return value; });
 	}
 
-	_keyDownEvents[keyCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::OnKeyUp(int keyCode)
 {
-	if(_keyUpEvents.find(keyCode) == _keyUpEvents.end())
+	const auto& keyUpEvent = _keyUpEvents.find(keyCode);
+	if(keyUpEvent != _keyUpEvents.end())
 	{
-		return;
+		keyUpEvent->second.ExecuteUntil([](bool value) { return value; });
 	}
-
-	_keyUpEvents[keyCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::OnMouseDown(int mouseCode)
 {
-	if(_mouseDownEvents.find(mouseCode) == _mouseDownEvents.end())
+	const auto& mouseDownEvent = _mouseDownEvents.find(mouseCode);
+	if(mouseDownEvent != _mouseDownEvents.end())
 	{
-		return;
+		mouseDownEvent->second.ExecuteUntil([](bool value) { return value; });
 	}
-
-	_mouseDownEvents[mouseCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::OnMouseUp(int mouseCode)
 {
-	if(_mouseUpEvents.find(mouseCode) == _mouseUpEvents.end())
+	const auto& mouseUpEvent = _mouseUpEvents.find(mouseCode);
+	if(mouseUpEvent != _mouseUpEvents.end())
 	{
-		return;
+		mouseUpEvent->second.ExecuteUntil([](bool value) { return value; });
 	}
-
-	_mouseUpEvents[mouseCode].ExecuteUntil([](bool value) { return value; });
 }
 
 void Input::SetMousePosition(const XMINT2& newMousePosition)

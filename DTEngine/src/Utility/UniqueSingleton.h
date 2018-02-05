@@ -11,7 +11,7 @@ protected:
 public:
 	static const UniquePtr<T>& GetInstance()
 	{
-		if(_instance == nullptr)
+		if(!_instance)
 		{
 			_instance = UniquePtr<T>(new T());
 		}
