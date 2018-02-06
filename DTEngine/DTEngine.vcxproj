@@ -297,7 +297,8 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\ResourceManagement\Resources.h" />
     <ClInclude Include="src\GameFramework\Components\HexagonalGrid.h" />
     <ClInclude Include="src\Utility\BoundingBox.h" />
-    <ClInclude Include="src\Utility\EnumUtility.h" />
+    <ClInclude Include="src\Utility\EnumFlags.h" />
+    <ClInclude Include="src\Utility\EnumInfo.h" />
     <ClInclude Include="src\Utility\GeometryUtils.h" />
     <ClInclude Include="src\Utility\JSON.h" />
     <ClInclude Include="src\Utility\Math.h" />

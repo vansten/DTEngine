@@ -2,7 +2,7 @@
 
 #include <d3d11.h>
 
-#include "Utility/EnumUtility.h"
+#include "Utility/EnumInfo.h"
 
 enum class CullMode
 {

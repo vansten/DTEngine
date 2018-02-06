@@ -2,7 +2,7 @@
 
 #include "Core/Event.h"
 #include "Core/Platform.h"
-#include "Utility/EnumUtility.h"
+#include "Utility/EnumInfo.h"
 #include "Utility/Math.h"
 
 class Graphics;

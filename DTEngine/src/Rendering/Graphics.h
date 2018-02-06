@@ -9,7 +9,6 @@
 
 #include "Core/Platform.h"
 #include "Utility/Math.h"
-#include "Utility/EnumUtility.h"
 #include "RenderState.h"
 
 class Window;

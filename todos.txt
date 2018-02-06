@@ -38,6 +38,7 @@ TODOs:
 -- Fix frustum culling						|> ALL DONE
 -- Default material 						|> ALL DONE
 -- Setting shader parameters (reflection)	|> ALL DONE
+-- MATH library (Quaternion with conversion to/from euler at least)
 -- Physics									|> IN PROGRESS (TODO: read about PxScene, PxGeometry, PxShape, PxRigidbody, PxActor etc.; Think about physics architecture in DTEngine (colliders, rigidbodies, etc.); SceneQueries; Simulation filtering (layers?); hexagonal geometry; raycasting in CameraControl)
 -- Think about some way of setting main camera
 -- Read a little bit about 2D rendering in DX11
@@ -53,7 +54,6 @@ TODOs:
 -- Basic lighting (PhongBlinn? Lambert? ShaderVariable arrays handling maybe?)
 -- Think about ComPtr from <wrl/client.h>
 -- Think about engine's DLL and connecting it to other projects where game will be written (maybe some sort of registering game derrived class? or registering game by passing it to the App constructor/initializer?)
--- MATH library
 -- Debug drawing: custom mesh
 -- Debug drawing: cone
 -- 3D object texturing (do not forget about updating shader reflection to easily provide access like material->Set("MainTexture", mainTexturePtr))
