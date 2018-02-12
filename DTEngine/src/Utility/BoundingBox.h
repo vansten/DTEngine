@@ -6,64 +6,49 @@
 struct BoundingBox final
 {
 private:
-	XMVECTOR _min;
-	XMVECTOR _max;
+	Vector3 _min;
+	Vector3 _max;
 
-	DynamicArray<XMVECTOR> _corners;
+	DynamicArray<Vector3> _corners;
 
 public:
 	inline BoundingBox() { }
-	BoundingBox(const XMFLOAT3& min, const XMFLOAT3& max);
-	BoundingBox(const DynamicArray<XMFLOAT3>& positions);
+	BoundingBox(const Vector3& min, const Vector3& max);
+	BoundingBox(const DynamicArray<Vector3>& positions);
 
 private:
 	void CalculateCorners();
 
-	void SetMinMax(XMFLOAT3 min, XMFLOAT3 max);
+	void SetMinMax(Vector3 min, Vector3 max);
 
 public:
-	void CalculateMinMax(const DynamicArray<XMFLOAT3>& positions);
+	void CalculateMinMax(const DynamicArray<Vector3>& positions);
 	template<typename T>
-	void CalculateMinMax(const T* dataArray, unsigned int dataCount, Function<const XMFLOAT3&(const T&)> positionGetter);
+	void CalculateMinMax(const T* dataArray, unsigned int dataCount, Function<const Vector3&(const T&)> positionGetter);
 
-	inline XMFLOAT3 GetMin() const
+	inline Vector3 GetMin() const
 	{
-		XMFLOAT3 min;
-		XMStoreFloat3(&min, _min);
-		return min;
+		return _min;
 	}
 
-	inline XMFLOAT3 GetMax() const
+	inline Vector3 GetMax() const
 	{
-		XMFLOAT3 max;
-		XMStoreFloat3(&max, _max);
-		return max;
+		return _max;
 	}
 
-	inline const DynamicArray<XMVECTOR>& GetCorners() const
+	inline const DynamicArray<Vector3>& GetCorners() const
 	{
 		return _corners;
 	}
 
-	inline XMFLOAT3 GetCenter() const
+	inline Vector3 GetCenter() const
 	{
-		static const XMVECTOR halfVector = XMVectorSet(0.5f, 0.5f, 0.5f, 0.5f);
-		XMVECTOR centerVector = XMVectorAdd(_min, _max);
-		centerVector = XMVectorMultiply(centerVector, halfVector);
-		XMFLOAT3 center;
-		XMStoreFloat3(&center, centerVector);
-		return center;
+		return (_min + _max) * 0.5f;
 	}
 
-	inline XMFLOAT3 GetHalfExtents() const
+	inline Vector3 GetHalfExtents() const
 	{
-		static const XMVECTOR halfVector = XMVectorSet(0.5f, 0.5f, 0.5f, 0.5f);
-		XMVECTOR centerVector = XMVectorAdd(_min, _max);
-		centerVector = XMVectorMultiply(centerVector, halfVector);
-		XMVECTOR halfExtentsVector = XMVectorSubtract(_max, centerVector);
-		XMFLOAT3 halfExtents;
-		XMStoreFloat3(&halfExtents, halfExtentsVector);
-		return halfExtents;
+		return _max - GetCenter();
 	}
 
 	inline BoundingBox& operator=(const BoundingBox& other)
@@ -77,15 +62,15 @@ public:
 };
 
 template<typename T>
-inline void BoundingBox::CalculateMinMax(const T* dataArray, unsigned int dataCount, Function<const XMFLOAT3&(const T&)> positionGetter)
+inline void BoundingBox::CalculateMinMax(const T* dataArray, unsigned int dataCount, Function<const Vector3&(const T&)> positionGetter)
 {
-	XMFLOAT3 minPosition(FLT_MAX, FLT_MAX, FLT_MAX);
-	XMFLOAT3 maxPosition(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	Vector3 minPosition(FLT_MAX, FLT_MAX, FLT_MAX);
+	Vector3 maxPosition(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 	for(unsigned int i = 0; i < dataCount; ++i)
 	{
-		minPosition = Min(minPosition, positionGetter(dataArray[i]));
-		maxPosition = Max(maxPosition, positionGetter(dataArray[i]));
+		minPosition = Vector3::Min(minPosition, positionGetter(dataArray[i]));
+		maxPosition = Vector3::Max(maxPosition, positionGetter(dataArray[i]));
 	}
 
 	SetMinMax(minPosition, maxPosition);

@@ -23,7 +23,7 @@ private:
 private:
 	UniquePtr<RenderState> _renderState;
 	SharedPtr<Shader> _shader;
-	XMFLOAT4 _color;
+	Vector4 _color;
 
 	unsigned short _queue;
 	RenderStateParams _renderStateParams;
@@ -61,8 +61,8 @@ public:
 		return RenderQueue::Overlay;
 	}
 
-	inline const XMFLOAT4& GetColor() const { return _color; }
-	inline void SetColor(const XMFLOAT4& newColor) 
+	inline const Vector4& GetColor() const { return _color; }
+	inline void SetColor(const Vector4& newColor)
 	{
 		_color = newColor;
 		SetColor(DT_TEXT("Color"), _color);
@@ -85,27 +85,22 @@ public:
 		_parametersCollection.SetInt(name, value);
 	}
 
-	inline void SetVector(const String& name, const XMFLOAT2& vector)
+	inline void SetVector(const String& name, const Vector2& vector)
 	{
 		_parametersCollection.SetVector(name, vector);
 	}
 
-	inline void SetVector(const String& name, const XMFLOAT3& vector)
-	{
-		_parametersCollection.SetVector(name, vector);
-	}
-
-	inline void SetVector(const String& name, const XMFLOAT4& vector)
+	inline void SetVector(const String& name, const Vector3& vector)
 	{
 		_parametersCollection.SetVector(name, vector);
 	}
 	
-	inline void SetColor(const String& name, const XMFLOAT4& color)
+	inline void SetColor(const String& name, const Vector4& color)
 	{
 		_parametersCollection.SetColor(name, color);
 	}
 
-	inline void SetMatrix(const String& name, const XMMATRIX& matrix)
+	inline void SetMatrix(const String& name, const Matrix& matrix)
 	{
 		_parametersCollection.SetMatrix(name, matrix);
 	}
@@ -121,27 +116,22 @@ public:
 		MaterialParametersCollection::GLOBAL.SetInt(name, value);
 	}
 
-	inline static void SetGlobalVector(const String& name, const XMFLOAT2& vector)
+	inline static void SetGlobalVector(const String& name, const Vector2& vector)
 	{
 		MaterialParametersCollection::GLOBAL.SetVector(name, vector);
 	}
 
-	inline static void SetGlobalVector(const String& name, const XMFLOAT3& vector)
+	inline static void SetGlobalVector(const String& name, const Vector3& vector)
 	{
 		MaterialParametersCollection::GLOBAL.SetVector(name, vector);
 	}
 
-	inline static void SetGlobalVector(const String& name, const XMFLOAT4& vector)
-	{
-		MaterialParametersCollection::GLOBAL.SetVector(name, vector);
-	}
-
-	inline static void SetGlobalColor(const String& name, const XMFLOAT4& color)
+	inline static void SetGlobalColor(const String& name, const Vector4& color)
 	{
 		MaterialParametersCollection::GLOBAL.SetColor(name, color);
 	}
 
-	inline static void SetGlobalMatrix(const String& name, const XMMATRIX& matrix)
+	inline static void SetGlobalMatrix(const String& name, const Matrix& matrix)
 	{
 		MaterialParametersCollection::GLOBAL.SetMatrix(name, matrix);
 	}

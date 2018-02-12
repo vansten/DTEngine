@@ -55,7 +55,7 @@ bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 	}
 
 	// Calculate bounding box
-	static const auto positionGetter = [](const VertexType& vertex) -> const XMFLOAT3& { return vertex.Position; };
+	static const auto positionGetter = [](const VertexType& vertex) -> const Vector3& { return vertex.Position; };
 	_boundingBox.CalculateMinMax<VertexType>(vertices, _verticesCount, positionGetter);
 
 	return result;

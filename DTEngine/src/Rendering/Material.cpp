@@ -99,15 +99,6 @@ bool Material::Initialize()
 {
 	_queue = OPAQUE_UPPER_LIMIT;
 	
-	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
-	bufferData.pSysMem = &_color;
-
-	D3D11_BUFFER_DESC bufferDesc = { 0 };
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.ByteWidth = sizeof(XMFLOAT4);
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
 	Graphics& graphics = gGraphics;
 	
 	if(!graphics.CreateRenderState(_renderState, _renderStateParams))
@@ -144,8 +135,8 @@ void Material::UpdatePerFrameBuffers(Graphics& graphics)
 	static const String WORLD_TO_VIEW_MATRIX_NAME = DT_TEXT("World2ViewMatrix");
 	static const String VIEW_TO_PROJECTION_MATRIX_NAME = DT_TEXT("View2ProjectionMatrix");
 
-	SetMatrix(WORLD_TO_VIEW_MATRIX_NAME, XMMatrixTranspose(Camera::GetMainCamera()->GetViewMatrix()));
-	SetMatrix(VIEW_TO_PROJECTION_MATRIX_NAME, XMMatrixTranspose(Camera::GetMainCamera()->GetProjectionMatrix()));
+	SetMatrix(WORLD_TO_VIEW_MATRIX_NAME, Camera::GetMainCamera()->GetViewMatrix());
+	SetMatrix(VIEW_TO_PROJECTION_MATRIX_NAME, Camera::GetMainCamera()->GetProjectionMatrix());
 
 	if(_shader)
 	{

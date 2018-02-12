@@ -13,10 +13,10 @@ public:
 	static MaterialParametersCollection GLOBAL;
 
 private:
-	Map<String, XMMATRIX> _matrixParameters;
-	Map<String, XMFLOAT4> _vector4Parameters;
-	Map<String, XMFLOAT3> _vector3Parameters;
-	Map<String, XMFLOAT2> _vector2Parameters;
+	Map<String, Matrix> _matrixParameters;
+	Map<String, Vector4> _vector4Parameters;
+	Map<String, Vector3> _vector3Parameters;
+	Map<String, Vector2> _vector2Parameters;
 	Map<String, float> _floatParameters;
 	Map<String, int> _intParameters;
 
@@ -43,27 +43,22 @@ public:
 		_intParameters[name] = value;
 	}
 
-	inline void SetVector(const String& name, const XMFLOAT2& vector)
+	inline void SetVector(const String& name, const Vector2& vector)
 	{
 		_vector2Parameters[name] = vector;
 	}
 
-	inline void SetVector(const String& name, const XMFLOAT3& vector)
+	inline void SetVector(const String& name, const Vector3& vector)
 	{
 		_vector3Parameters[name] = vector;
 	}
 
-	inline void SetVector(const String& name, const XMFLOAT4& vector)
-	{
-		_vector4Parameters[name] = vector;
-	}
-
-	inline void SetColor(const String& name, const XMFLOAT4& color)
+	inline void SetColor(const String& name, const Vector4& color)
 	{
 		_vector4Parameters[name] = color;
 	}
 
-	inline void SetMatrix(const String& name, const XMMATRIX& matrix)
+	inline void SetMatrix(const String& name, const Matrix& matrix)
 	{
 		_matrixParameters[name] = matrix;
 	}

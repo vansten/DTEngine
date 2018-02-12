@@ -7,7 +7,7 @@
 class Input final
 {
 protected:
-	XMINT2 _mousePosition;
+	Vector2 _mousePosition;
 	
 	Dictionary<int, Event<bool>> _keyDownEvents;
 	Dictionary<int, Event<bool>> _keyUpEvents;
@@ -49,8 +49,8 @@ public:
 	void OnMouseDown(int mouseCode);
 	void OnMouseUp(int mouseCode);
 
-	void SetMousePosition(const XMINT2& newMousePosition);
-	XMINT2 GetMousePosition();
+	void SetMousePosition(const Vector2& newMousePosition);
+	Vector2 GetMousePosition();
 
 	void Shutdown();
 };

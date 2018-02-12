@@ -65,13 +65,13 @@ struct DebugDrawGeometry final
 private:
 	SharedPtr<MeshBase> _mesh;
 	UniquePtr<Material> _material;
-	XMMATRIX _worldMatrix;
+	Matrix _worldMatrix;
 
 	float _lifetime;
 
 public:
-	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1, 1, 1, 1), float lifetime = 0.0f);
-	DebugDrawGeometry(SharedPtr<MeshBase> mesh, XMFLOAT3 position, XMMATRIX rotation = XMMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f), XMFLOAT3 scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = 0.0f);
+	DebugDrawGeometry(SharedPtr<MeshBase> mesh, Vector3 position, Rotator rotation = Rotator(0.0f, 0.0f, 0.0f), Vector3 scale = Vector3(1.0f, 1.0f, 1.0f), Vector4 color = Vector4(1, 1, 1, 1), float lifetime = 0.0f);
+	DebugDrawGeometry(SharedPtr<MeshBase> mesh, Vector3 position, Matrix rotation = Matrix::IDENTITY, Vector3 scale = Vector3(1.0f, 1.0f, 1.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = 0.0f);
 	DebugDrawGeometry(DebugDrawGeometry&& other);
 	~DebugDrawGeometry();
 
@@ -111,9 +111,9 @@ public:
 	void RegisterChannel(const String& name);
 	void SetChannelVisibility(const String& name, bool visibility);
 
-	void DrawCube(XMFLOAT3 center, XMFLOAT3 size, XMFLOAT3 rotation = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
-	void DrawSphere(XMFLOAT3 center, float radius, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
-	void DrawLine(XMFLOAT3 start, XMFLOAT3 end, XMFLOAT4 color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), float thickness = 1.0f, float lifetime = -1.0f);
+	void DrawCube(Vector3 center, Vector3 size, Rotator rotation = Rotator(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawSphere(Vector3 center, float radius, Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawLine(Vector3 start, Vector3 end, Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float thickness = 1.0f, float lifetime = -1.0f);
 
 	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const { return _draws; }
 };

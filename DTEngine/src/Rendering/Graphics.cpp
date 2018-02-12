@@ -407,7 +407,7 @@ void Graphics::SetMaterial(Material* material)
 	if (_lastUsedMaterial && _currentlyRenderedEntity)
 	{
 		static const String MODEL_TO_WORLD_MATRIX_NAME = DT_TEXT("Model2WorldMatrix");
-		_lastUsedMaterial->SetMatrix(MODEL_TO_WORLD_MATRIX_NAME, XMMatrixTranspose(_currentlyRenderedEntity->GetTransform().GetModelMatrix()));
+		_lastUsedMaterial->SetMatrix(MODEL_TO_WORLD_MATRIX_NAME, _currentlyRenderedEntity->GetTransform().GetModelMatrix());
 		_lastUsedMaterial->UpdatePerObjectBuffers(*this);
 	}
 }

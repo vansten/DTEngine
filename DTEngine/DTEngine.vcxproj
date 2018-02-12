@@ -256,7 +256,6 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\ResourceManagement\Resources.cpp" />
     <ClCompile Include="src\GameFramework\Components\HexagonalGrid.cpp" />
     <ClCompile Include="src\Utility\BoundingBox.cpp" />
-    <ClCompile Include="src\Utility\Math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />

@@ -95,12 +95,12 @@ void Input::OnMouseUp(int mouseCode)
 	}
 }
 
-void Input::SetMousePosition(const XMINT2& newMousePosition)
+void Input::SetMousePosition(const Vector2& newMousePosition)
 {
 	_mousePosition = newMousePosition;
 }
 
-XMINT2 Input::GetMousePosition()
+Vector2 Input::GetMousePosition()
 {
 	return _mousePosition;
 }

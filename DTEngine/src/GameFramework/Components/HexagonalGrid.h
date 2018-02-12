@@ -144,7 +144,7 @@ struct HexagonalGridPath final
 
 protected:
 	DynamicArray<SharedPtr<Hexagon>> _path;
-	DynamicArray<XMFLOAT3> _worldPath;
+	DynamicArray<Vector3> _worldPath;
 
 public:
 	inline HexagonalGridPath()
@@ -166,7 +166,7 @@ public:
 	inline const DynamicArray<SharedPtr<Hexagon>>& GetPath() const { return _path; }
 
 	// Returns a path constructed from real world positions (i.e. for usage in navigation)
-	inline const DynamicArray<XMFLOAT3>& GetWorldPath() const { return _worldPath; }
+	inline const DynamicArray<Vector3>& GetWorldPath() const { return _worldPath; }
 
 	// Clears path
 	inline void ClearPath()
@@ -210,7 +210,7 @@ public:
 	// Returns hexagon at given coordinates (or nullptr if there isn't a hexagon with given coordinates)
 	SharedPtr<Hexagon> GetHexagonAt(const AxialCoordinates& axialCoordinates) const;
 	// Returns hexagon at given world position (or nullptr if there isn't a hexagon at given position)
-	SharedPtr<Hexagon> GetHexagonAt(const XMFLOAT3& worldPosition) const;
+	SharedPtr<Hexagon> GetHexagonAt(const Vector3& worldPosition) const;
 
 	// Returns whether there exists a path between start and target hexagons
 	bool CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate = nullptr) const;

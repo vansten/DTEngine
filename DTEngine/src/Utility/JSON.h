@@ -21,47 +21,44 @@ namespace std
 	}
 }
 
-namespace DirectX
+inline void to_json(JSON& json, const Vector2& value)
 {
-	inline void to_json(JSON& json, const XMFLOAT4& value)
-	{
-		json["x"] = value.x;
-		json["y"] = value.y;
-		json["z"] = value.z;
-		json["w"] = value.w;
-	}
+	json["x"] = value.X;
+	json["y"] = value.Y;
+}
 
-	inline void from_json(const JSON& json, XMFLOAT4& value)
-	{
-		value.x = json["x"].get<float>();
-		value.y = json["y"].get<float>();
-		value.z = json["z"].get<float>();
-		value.w = json["w"].get<float>();
-	}
+inline void from_json(const JSON& json, Vector2& value)
+{
+	value.X = json["x"].get<float>();
+	value.Y = json["y"].get<float>();
+}
 
-	inline void to_json(JSON& json, const XMFLOAT3& value)
-	{
-		json["x"] = value.x;
-		json["y"] = value.y;
-		json["z"] = value.z;
-	}
+inline void to_json(JSON& json, const Vector3& value)
+{
+	json["x"] = value.X;
+	json["y"] = value.Y;
+	json["z"] = value.Z;
+}
 
-	inline void from_json(const JSON& json, XMFLOAT3& value)
-	{
-		value.x = json["x"].get<float>();
-		value.y = json["y"].get<float>();
-		value.z = json["z"].get<float>();
-	}
+inline void from_json(const JSON& json, Vector3& value)
+{
+	value.X = json["x"];
+	value.Y = json["y"];
+	value.Z = json["z"];
+}
 
-	inline void to_json(JSON& json, const XMFLOAT2& value)
-	{
-		json["x"] = value.x;
-		json["y"] = value.y;
-	}
+inline void to_json(JSON& json, const Vector4& value)
+{
+	json["x"] = value.X;
+	json["y"] = value.Y;
+	json["z"] = value.Z;
+	json["w"] = value.W;
+}
 
-	inline void from_json(const JSON& json, XMFLOAT2& value)
-	{
-		value.x = json["x"].get<float>();
-		value.y = json["y"].get<float>();
-	}
+inline void from_json(const JSON& json, Vector4& value)
+{
+	value.X = json["x"];
+	value.Y = json["y"];
+	value.Z = json["z"];
+	value.W = json["w"];
 }

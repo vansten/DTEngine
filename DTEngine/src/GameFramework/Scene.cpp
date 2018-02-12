@@ -38,8 +38,8 @@ void Scene::Load()
 	SharedPtr<HexagonalGrid> grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridEntity);
 
 	cameraEntity->AddComponent<Camera>();
-	cameraEntity->SetPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
-	cameraEntity->SetRotation(XMFLOAT3(90.0f, 0.0f, 0.0f));
+	cameraEntity->SetPosition(Vector3(0.0f, 10.0f, 0.0f));
+	cameraEntity->SetRotation(Rotator(90.0f, 0.0f, 0.0f).ToQuaternion());
 	cameraEntity->AddComponent<CameraControl>();
 
 	SharedPtr<Hexagon> h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));
@@ -53,7 +53,7 @@ void Scene::Load()
 	if(hexagonPath.size() > 0)
 	{
 		materialInstance = hexagonPath[0]->GetOwner()->GetComponent<MeshRenderer>()->GetMaterial()->CreateInstance();
-		materialInstance->SetColor(DT_TEXT("Color"), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+		materialInstance->SetColor(DT_TEXT("Color"), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 	}
 
 	for(auto hexagon : hexagonPath)

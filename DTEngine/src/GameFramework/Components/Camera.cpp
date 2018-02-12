@@ -29,8 +29,7 @@ Camera::~Camera()
 
 void Camera::Resize()
 {
-	const float aspectRatio = gWindow.GetAspectRatio();
-	_projectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(_fov), aspectRatio, _near, _far);
+	_projectionMatrix = Matrix::Perspective(_fov, gWindow.GetAspectRatio(), _near, _far);
 
 	ConstructFrustum();
 
@@ -65,38 +64,38 @@ void Camera::DivideRenderersByRenderQueue(const DynamicArray<SharedPtr<MeshRende
 
 void Camera::ConstructFrustum()
 {
-	XMMATRIX vp = _viewMatrix * _projectionMatrix;
+	Matrix vp = _viewMatrix * _projectionMatrix;
 
 	// Order: left, right, bottom, top, near, far
-	_frustum[0] = Plane(GetMatrixComponentAt(vp, 0, 3) + GetMatrixComponentAt(vp, 0, 0),
-						GetMatrixComponentAt(vp, 1, 3) + GetMatrixComponentAt(vp, 1, 0),
-						GetMatrixComponentAt(vp, 2, 3) + GetMatrixComponentAt(vp, 2, 0),
-						GetMatrixComponentAt(vp, 3, 3) + GetMatrixComponentAt(vp, 3, 0));
+	_frustum[0] = Plane(vp[3][0] + vp[0][0],
+						vp[3][1] + vp[0][1],
+						vp[3][2] + vp[0][2],
+						vp[3][3] + vp[0][3]);
 
-	_frustum[1] = Plane(GetMatrixComponentAt(vp, 0, 3) - GetMatrixComponentAt(vp, 0, 0),
-						GetMatrixComponentAt(vp, 1, 3) - GetMatrixComponentAt(vp, 1, 0),
-						GetMatrixComponentAt(vp, 2, 3) - GetMatrixComponentAt(vp, 2, 0),
-						GetMatrixComponentAt(vp, 3, 3) - GetMatrixComponentAt(vp, 3, 0));
+	_frustum[1] = Plane(vp[3][0] - vp[0][0],
+						vp[3][1] - vp[0][1],
+						vp[3][2] - vp[0][2],
+						vp[3][3] - vp[0][3]);
 
-	_frustum[2] = Plane(GetMatrixComponentAt(vp, 0, 3) + GetMatrixComponentAt(vp, 0, 1),
-						GetMatrixComponentAt(vp, 1, 3) + GetMatrixComponentAt(vp, 1, 1),
-						GetMatrixComponentAt(vp, 2, 3) + GetMatrixComponentAt(vp, 2, 1),
-						GetMatrixComponentAt(vp, 3, 3) + GetMatrixComponentAt(vp, 3, 1));
+	_frustum[2] = Plane(vp[3][0] + vp[1][0],
+						vp[3][1] + vp[1][1],
+						vp[3][2] + vp[1][2],
+						vp[3][3] + vp[1][3]);
 
-	_frustum[3] = Plane(GetMatrixComponentAt(vp, 0, 3) - GetMatrixComponentAt(vp, 0, 1),
-						GetMatrixComponentAt(vp, 1, 3) - GetMatrixComponentAt(vp, 1, 1),
-						GetMatrixComponentAt(vp, 2, 3) - GetMatrixComponentAt(vp, 2, 1),
-						GetMatrixComponentAt(vp, 3, 3) - GetMatrixComponentAt(vp, 3, 1));
+	_frustum[3] = Plane(vp[3][0] - vp[1][0],
+						vp[3][1] - vp[1][1],
+						vp[3][2] - vp[1][2],
+						vp[3][3] - vp[1][3]);
 
-	_frustum[4] = Plane(GetMatrixComponentAt(vp, 0, 3) + GetMatrixComponentAt(vp, 0, 2),
-						GetMatrixComponentAt(vp, 1, 3) + GetMatrixComponentAt(vp, 1, 2),
-						GetMatrixComponentAt(vp, 2, 3) + GetMatrixComponentAt(vp, 2, 2),
-						GetMatrixComponentAt(vp, 3, 3) + GetMatrixComponentAt(vp, 3, 2));
+	_frustum[4] = Plane(vp[3][0] + vp[2][0],
+						vp[3][1] + vp[2][1],
+						vp[3][2] + vp[2][2],
+						vp[3][3] + vp[2][3]);
 
-	_frustum[5] = Plane(GetMatrixComponentAt(vp, 0, 3) - GetMatrixComponentAt(vp, 0, 2),
-						GetMatrixComponentAt(vp, 1, 3) - GetMatrixComponentAt(vp, 1, 2),
-						GetMatrixComponentAt(vp, 2, 3) - GetMatrixComponentAt(vp, 2, 2),
-						GetMatrixComponentAt(vp, 3, 3) - GetMatrixComponentAt(vp, 3, 2));
+	_frustum[5] = Plane(vp[3][0] - vp[2][0],
+						vp[3][1] - vp[2][1],
+						vp[3][2] - vp[2][2],
+						vp[3][3] - vp[2][3]);
 }
 
 bool Camera::IsVisible(SharedPtr<MeshRenderer> renderer)
@@ -182,9 +181,7 @@ void Camera::OnShutdown()
 
 void Camera::OnOwnerTransformUpdated(const Transform& transform)
 {
-	const XMFLOAT3 forward = transform.GetForward();
-	const XMFLOAT3 position = transform.GetPosition();
-	_viewMatrix = XMMatrixLookToLH(XMLoadFloat3(&position), XMLoadFloat3(&forward), XMLoadFloat3(&VectorHelpers::Up));
+	_viewMatrix = Matrix::LookTo(transform.GetPosition(), transform.GetForward(), Vector3::UNIT_Y);
 
 	ConstructFrustum();
 }
@@ -235,22 +232,7 @@ void Camera::RenderSky(Graphics& graphics)
 
 }
 
-bool Camera::IsInsideFrustum(const XMFLOAT3& worldPoint) const
-{
-	for(unsigned char i = 0; i < 6; ++i)
-	{
-		// Check if worldPoint is outside a frustum ith plane
-		if(_frustum[i].Dot(worldPoint) < 0.0f)
-		{
-			// Return false if condition is met
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool Camera::IsInsideFrustum(const XMVECTOR& worldPoint) const
+bool Camera::IsInsideFrustum(const Vector3& worldPoint) const
 {
 	for(unsigned char i = 0; i < 6; ++i)
 	{
@@ -267,19 +249,19 @@ bool Camera::IsInsideFrustum(const XMVECTOR& worldPoint) const
 
 bool Camera::IsInsideFrustum(const BoundingBox& boundingBox) const
 {
-	return IsInsideFrustum(boundingBox, XMMatrixIdentity());
+	return IsInsideFrustum(boundingBox, Matrix::IDENTITY);
 }
 
-bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const
+bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const Matrix& modelToWorld) const
 {
-	const DynamicArray<XMVECTOR>& corners = boundingBox.GetCorners();
+	const DynamicArray<Vector3>& corners = boundingBox.GetCorners();
 	for(unsigned char i = 0; i < 6; ++i)
 	{
 		bool liesBehind = true;
 		for(auto& corner : corners)
 		{
 			// Calculate world position of a corner
-			XMVECTOR worldCorner = XMVector3Transform(corner, modelToWorld);
+			Vector4 worldCorner = Vector4(corner, 1) * modelToWorld;
 			if(_frustum[i].Dot(worldCorner) > 0.0f)
 			{
 				liesBehind = false;
@@ -296,42 +278,33 @@ bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& mod
 	return true;
 }
 
-XMFLOAT3 Camera::ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const
+Vector3 Camera::ConvertWorldToViewPoint(const Vector3& worldPoint) const
 {
-	XMVECTOR worldVector = XMLoadFloat3(&worldPoint);
-	XMVECTOR viewSpaceVector = XMVector3Transform(worldVector, _viewMatrix);
-	XMFLOAT3 viewSpacePoint;
-	XMStoreFloat3(&viewSpacePoint, viewSpaceVector);
-
-	return viewSpacePoint;
+	return Vector3(Vector4(worldPoint, 1) * _viewMatrix);
 }
 
-XMFLOAT3 Camera::ConvertScreenToWorldPoint(const XMINT2& screenPoint) const
+Vector3 Camera::ConvertScreenToWorldPoint(const Vector2& screenPoint) const
 {
 	DT_ASSERT(gWindow.GetHeight() * gWindow.GetWidth() != 0, "");
 
-	XMFLOAT3 viewPosition;
-	viewPosition.x = gWindow.GetAspectRatio() * (float)screenPoint.x / gWindow.GetWidth();
-	viewPosition.y = (float)screenPoint.y / gWindow.GetHeight();
-	viewPosition.z = 0.0f;
+	Vector3 viewPosition;
+	viewPosition.X = gWindow.GetAspectRatio() * screenPoint.X / gWindow.GetWidth();
+	viewPosition.Y = screenPoint.Y / gWindow.GetHeight();
+	viewPosition.Z = 0.0f;
 
-	const XMMATRIX viewInversed = XMMatrixInverse(&XMMatrixDeterminant(_viewMatrix), _viewMatrix);
-	const XMVECTOR worldVector = XMVector3TransformCoord(XMLoadFloat3(&viewPosition), viewInversed);
-	XMFLOAT3 worldPosition;
-	XMStoreFloat3(&worldPosition, worldVector);
-	return worldPosition;
+	Matrix viewInversed = _viewMatrix.GetInversed();
+	return Vector3(Vector4(viewPosition, 1.0f) * viewInversed);
 }
 
-XMINT2 Camera::ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const
+Vector2 Camera::ConvertWorldToScreenPoint(const Vector3& worldPoint) const
 {
 	DT_ASSERT(gWindow.GetAspectRatio() != 0, "");
 
-	const XMVECTOR viewVector = XMVector3TransformCoord(XMLoadFloat3(&worldPoint), _viewMatrix);
-	XMFLOAT3 viewPosition;
-	XMStoreFloat3(&viewPosition, viewVector);
-	XMINT2 screenPosition;
-	screenPosition.x = (unsigned int)(viewPosition.x * gWindow.GetWidth() / gWindow.GetAspectRatio());
-	screenPosition.y = (unsigned int)(viewPosition.y * gWindow.GetHeight());
+	Vector3 viewPoint = Vector3(Vector4(worldPoint, 1) * _viewMatrix);
+
+	Vector2 screenPosition;
+	screenPosition.X = viewPoint.X * gWindow.GetWidth() / gWindow.GetAspectRatio();
+	screenPosition.Y = viewPoint.Y * gWindow.GetHeight();
 
 	return screenPosition;
 }

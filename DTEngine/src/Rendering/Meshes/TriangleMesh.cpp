@@ -23,17 +23,17 @@ bool TriangleMesh::Initialize()
 	VertexType* vertices = new VertexType[_verticesCount];
 	unsigned int* indices = new unsigned int[_indicesCount];
 
-	vertices[0].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	vertices[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-	vertices[0].UV = XMFLOAT2(0.0f, 0.0f);
+	vertices[0].Position = Vector3(-1.0f, -1.0f, 0.0f);
+	vertices[0].Normal = Vector3(0.0f, 0.0f, -1.0f);
+	vertices[0].UV = Vector2(0.0f, 0.0f);
 
-	vertices[1].Position = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	vertices[1].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-	vertices[1].UV = XMFLOAT2(0.5f, 1.0f);
+	vertices[1].Position = Vector3(0.0f, 1.0f, 0.0f);
+	vertices[1].Normal = Vector3(0.0f, 0.0f, -1.0f);
+	vertices[1].UV = Vector2(0.5f, 1.0f);
 
-	vertices[2].Position = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	vertices[2].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-	vertices[2].UV = XMFLOAT2(1.0f, 0.0f);
+	vertices[2].Position = Vector3(1.0f, -1.0f, 0.0f);
+	vertices[2].Normal = Vector3(0.0f, 0.0f, -1.0f);
+	vertices[2].UV = Vector2(1.0f, 0.0f);
 
 	indices[0] = 0;
 	indices[1] = 1;

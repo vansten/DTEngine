@@ -85,9 +85,9 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 		return false;
 	}
 
-	std::vector<XMFLOAT3> positions;
-	std::vector<XMFLOAT3> normals;
-	std::vector<XMFLOAT2> uvs;
+	std::vector<Vector3> positions;
+	std::vector<Vector3> normals;
+	std::vector<Vector2> uvs;
 	std::vector<Face> faces;
 
 	String line;
@@ -103,25 +103,25 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 			std::wistringstream s(line.substr(2));
 			if(line[1] == ' ')
 			{
-				XMFLOAT3 position;
-				s >> position.x;
-				s >> position.y;
-				s >> position.z;
+				Vector3 position;
+				s >> position.X;
+				s >> position.Y;
+				s >> position.Z;
 				positions.push_back(position);
 			}
 			else if(line[1] == 'n')
 			{
-				XMFLOAT3 normal;
-				s >> normal.x;
-				s >> normal.y;
-				s >> normal.z;
+				Vector3 normal;
+				s >> normal.X;
+				s >> normal.Y;
+				s >> normal.Z;
 				normals.push_back(normal);
 			}
 			else if(line[1] == 't')
 			{
-				XMFLOAT2 uv;
-				s >> uv.x;
-				s >> uv.y;
+				Vector2 uv;
+				s >> uv.X;
+				s >> uv.Y;
 				uvs.push_back(uv);
 			}
 		}

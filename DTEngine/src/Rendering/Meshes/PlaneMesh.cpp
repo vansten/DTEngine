@@ -30,9 +30,9 @@ bool PlaneMesh::Initialize()
 		for(unsigned int x = 0; x <= size; x++, i++)
 		{
 			const float xF = -0.5f + (float)x / size;
-			vertices[i].Position = XMFLOAT3(xF, yF, 0);
-			vertices[i].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
-			vertices[i].UV = XMFLOAT2(xF + 0.5f, yF + 0.5f);
+			vertices[i].Position = Vector3(xF, yF, 0);
+			vertices[i].Normal = Vector3(0.0f, 0.0f, -1.0f);
+			vertices[i].UV = Vector2(xF + 0.5f, yF + 0.5f);
 		}
 	}
 

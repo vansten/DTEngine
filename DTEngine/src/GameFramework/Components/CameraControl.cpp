@@ -32,49 +32,49 @@ SharedPtr<Component> CameraControl::Copy(SharedPtr<Entity> newOwner) const
 
 bool CameraControl::OnWPressed()
 {
-	_movementVector.z += 1.0f;
+	_movementVector.Z += 1.0f;
 	return false;
 }
 
 bool CameraControl::OnWReleased()
 {
-	_movementVector.z -= 1.0f;
+	_movementVector.Z -= 1.0f;
 	return false;
 }
 
 bool CameraControl::OnSPressed()
 {
-	_movementVector.z -= 1.0f;
+	_movementVector.Z -= 1.0f;
 	return false;
 }
 
 bool CameraControl::OnSReleased()
 {
-	_movementVector.z += 1.0f;
+	_movementVector.Z += 1.0f;
 	return false;
 }
 
 bool CameraControl::OnAPressed()
 {
-	_movementVector.x -= 1.0f;
+	_movementVector.X -= 1.0f;
 	return false;
 }
 
 bool CameraControl::OnAReleased()
 {
-	_movementVector.x += 1.0f;
+	_movementVector.X += 1.0f;
 	return false;
 }
 
 bool CameraControl::OnDPressed()
 {
-	_movementVector.x += 1.0f;
+	_movementVector.X += 1.0f;
 	return false;
 }
 
 bool CameraControl::OnDReleased()
 {
-	_movementVector.x -= 1.0f;
+	_movementVector.X -= 1.0f;
 	return false;
 }
 
@@ -107,13 +107,11 @@ bool CameraControl::ONRMBReleased()
 
 bool CameraControl::OnLMBReleased()
 {
-	XMINT2 mousePosition = gInput.GetMousePosition();
-	XMFLOAT3 worldPosition = Camera::GetMainCamera()->ConvertScreenToWorldPoint(mousePosition);
-	XMINT2 backToScreen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(worldPosition);
-
-	gDebug.Printf(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("%i %i %.2f %.2f %.2f %i %i"), mousePosition.x, mousePosition.y, worldPosition.x, worldPosition.y, worldPosition.z, backToScreen.x, backToScreen.y);
+	Vector3 wp = Camera::GetMainCamera()->ConvertScreenToWorldPoint(gInput.GetMousePosition());
+	Vector2 screen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(wp);
 	
-	// TODO: Cast a ray through scene and pick hexagon if found
+	gDebug.Print(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("IMPLEMENT RAYCASTS"));	
+
 	return false;
 }
 
@@ -149,21 +147,21 @@ void CameraControl::OnUpdate(float deltaTime)
 	{
 		_timer += deltaTime;
 
-		const XMFLOAT3 direction = _owner->GetTransform().TransformDirection(_movementVector);
+		const Vector3 direction = _owner->GetTransform().TransformDirection(_movementVector);
 		const float speedMulDeltaTime = _movementSpeed * deltaTime * _shiftMultiplier;
 
-		XMFLOAT3 currentPosition = _owner->GetPosition();
+		Vector3 currentPosition = _owner->GetPosition();
 		currentPosition += direction * speedMulDeltaTime;
 		_owner->SetPosition(currentPosition);
 
-		const XMINT2 mousePosition = gInput.GetMousePosition();
-		XMINT2 mouseDeltaPosition = mousePosition - _previousMousePosition;
+		const Vector2 mousePosition = gInput.GetMousePosition();
+		const Vector2 mouseDeltaPosition = mousePosition - _previousMousePosition;
 
-		XMFLOAT3 currentRotation = _owner->GetRotation();
-		currentRotation.x += (mouseDeltaPosition.y * deltaTime * _mouseSensitivity);
-		currentRotation.x = Clamp(currentRotation.x, _xRotationMin, _xRotationMax);
-		currentRotation.y = currentRotation.y + (mouseDeltaPosition.x * deltaTime * _mouseSensitivity);
-		_owner->SetRotation(currentRotation);
+		Rotator currentRotation = _owner->GetRotation().ToRotator();
+		currentRotation.Pitch += (mouseDeltaPosition.Y * deltaTime * _mouseSensitivity);
+		currentRotation.Pitch = Math::Clamp(currentRotation.Pitch, _xRotationMin, _xRotationMax);
+		currentRotation.Yaw += (mouseDeltaPosition.X * deltaTime * _mouseSensitivity);
+		_owner->SetRotation(currentRotation.ToQuaternion());
 
 		_previousMousePosition = mousePosition;
 	}

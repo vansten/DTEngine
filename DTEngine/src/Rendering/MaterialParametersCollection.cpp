@@ -44,7 +44,7 @@ void const* MaterialParametersCollection::GetVector2(const String& name) const
 	{
 		return nullptr;
 	}
-
+	
 	return &(found->second);
 }
 
@@ -155,17 +155,17 @@ bool MaterialParametersCollection::LoadFromJSON(const JSON& jsonData)
 					size_t size = (size_t)value.size();
 					if(size == 4)
 					{
-						XMFLOAT4 v = value;
-						SetVector(name, v);
+						Vector4 v = value;
+						SetColor(name, v);
 					}
 					else if(size == 3)
 					{
-						XMFLOAT3 v = value;
+						Vector3 v = value;
 						SetVector(name, v);
 					}
 					else if(size == 2)
 					{
-						XMFLOAT2 v = value;
+						Vector2 v = value;
 						SetVector(name, v);
 					}
 				}

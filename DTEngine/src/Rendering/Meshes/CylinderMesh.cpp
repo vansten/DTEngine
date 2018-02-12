@@ -26,24 +26,24 @@ bool CylinderMesh::Initialize()
 	unsigned int* indices = new unsigned int[_indicesCount];
 
 	// Bottom center
-	vertices[baseTriangles].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	vertices[baseTriangles].Position = Vector3(0.0f, 0.0f, 0.0f);
 	// Top center
-	vertices[baseTriangles * 2 + 1].Position = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	vertices[baseTriangles * 2 + 1].Position = Vector3(0.0f, 1.0f, 0.0f);
 
 	const float angleDelta = 360.0f / baseTriangles;
 
 	for(unsigned int i = 0; i < baseTriangles; ++i)
 	{
-		const float angleRad = XMConvertToRadians(angleDelta * i);
-		const float cosAngle = cos(angleRad) * 0.5f;
-		const float sinAngle = sin(angleRad) * 0.5f;
-		vertices[i].Position = XMFLOAT3(cosAngle, 0.0f, sinAngle);
-		vertices[i].Normal = XMFLOAT3(0.0f, -1.0f, 0.0f);
-		vertices[i].UV = XMFLOAT2((cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
+		const float angleRad = Math::DEG_TO_RAD * angleDelta * i;
+		const float cosAngle = Math::Cos(angleRad) * 0.5f;
+		const float sinAngle = Math::Sin(angleRad) * 0.5f;
+		vertices[i].Position = Vector3(cosAngle, 0.0f, sinAngle);
+		vertices[i].Normal = Vector3(0.0f, -1.0f, 0.0f);
+		vertices[i].UV = Vector2((cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
 
-		vertices[baseTriangles + 1 + i].Position = XMFLOAT3(cosAngle, 1.0f, sinAngle);
-		vertices[baseTriangles + 1 + i].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
-		vertices[baseTriangles + 1 + i].UV = XMFLOAT2(0.5f + (cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
+		vertices[baseTriangles + 1 + i].Position = Vector3(cosAngle, 1.0f, sinAngle);
+		vertices[baseTriangles + 1 + i].Normal = Vector3(0.0f, 1.0f, 0.0f);
+		vertices[baseTriangles + 1 + i].UV = Vector2(0.5f + (cosAngle + 0.5f) * 0.5f, (sinAngle + 0.5f) * 0.5f);
 
 		// Bottom triangle
 		indices[i * 3] = (i + 1) % baseTriangles;

@@ -14,8 +14,8 @@ private:
 	float _shiftMultiplier;
 	float _mouseSensitivity;
 
-	XMFLOAT3 _movementVector;
-	XMINT2 _previousMousePosition;
+	Vector3 _movementVector;
+	Vector2 _previousMousePosition;
 
 	bool _isRMBPressed;
 

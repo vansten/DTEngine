@@ -163,17 +163,17 @@ SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const AxialCoordinates& axialCoor
 	return nullptr;
 }
 
-SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const XMFLOAT3& worldPosition) const
+SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const Vector3& worldPosition) const
 {
 	const float hexagonWidth = 2.0f * _hexagonSize;
 	const float hexagonHeight = sqrt(3.0f) * _hexagonSize;
 
-	const XMFLOAT3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
-	const XMFLOAT3 yDirection(0.0f, 0.0f, hexagonHeight);
+	const Vector3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
+	const Vector3 yDirection(0.0f, 0.0f, hexagonHeight);
 	
 	// Calculate axial coordinates using axial x and y direction and world position of a hexagon
-	const int w = (int)round(worldPosition.x / xDirection.x);
-	const int h = (int)round((worldPosition.z - xDirection.z * worldPosition.x / xDirection.x) / yDirection.z);
+	const int w = (int)Math::Round(worldPosition.X / xDirection.X);
+	const int h = (int)Math::Round((worldPosition.Z - xDirection.Z * worldPosition.X / xDirection.X) / yDirection.Z);
 
 	// Return hexagon at calculated axial coordinates
 	return GetHexagonAt(AxialCoordinates(w, h));
@@ -296,8 +296,8 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, un
 	const float hexagonWidth = 2.0f * hexagonSize * 0.5f;
 	const float hexagonHeight = sqrt(3.0f) * hexagonSize * 0.5f;
 
-	const XMFLOAT3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
-	const XMFLOAT3 yDirection(0.0f, 0.0f, hexagonHeight);
+	const Vector3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
+	const Vector3 yDirection(0.0f, 0.0f, hexagonHeight);
 
 	// Store hexagon size in grid
 	gridComponent->_hexagonSize = hexagonSize;
@@ -323,13 +323,13 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, un
 			hexagon->SetCoordinates(coordinates);
 			// Sets scale and parent
 			hexagonEntity->SetParent(gridOwner);
-			hexagonEntity->SetScale(XMFLOAT3(hexagonSize, 1.0f, hexagonSize));
+			hexagonEntity->SetScale(Vector3(hexagonSize, 1.0f, hexagonSize));
 
 			// Calculate hexagon's position
-			XMFLOAT3 position;
-			position.x = xDirection.x * coordinates.X;
-			position.y = 0.0f;
-			position.z = xDirection.z * coordinates.X + yDirection.z * coordinates.Y;
+			Vector3 position;
+			position.X = xDirection.X * coordinates.X;
+			position.Y = 0.0f;
+			position.Z = xDirection.Z * coordinates.X + yDirection.Z * coordinates.Y;
 			hexagonEntity->SetPosition(position);
 
 			// Add hexagon to map

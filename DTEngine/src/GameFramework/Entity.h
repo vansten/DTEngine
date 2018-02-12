@@ -86,13 +86,13 @@ public:
 	inline const Transform& GetTransform() const { return _transform; }
 	inline void SetTransform(const Transform& transform) { _transform = transform; }
 
-	inline const XMFLOAT3& GetPosition() const { return _transform._position; }
-	inline const XMFLOAT3& GetRotation() const { return _transform._rotation; }
-	inline const XMFLOAT3& GetScale() const { return _transform._scale; }
+	inline const Vector3& GetPosition() const { return _transform._position; }
+	inline const Quaternion& GetRotation() const { return _transform._rotation; }
+	inline const Vector3& GetScale() const { return _transform._scale; }
 
-	inline void SetPosition(const XMFLOAT3& position) { _transform.SetPosition(position); }
-	inline void SetRotation(const XMFLOAT3& rotation) { _transform.SetRotation(rotation); }
-	inline void SetScale(const XMFLOAT3& scale) { _transform.SetScale(scale); }
+	inline void SetPosition(const Vector3& position) { _transform.SetPosition(position); }
+	inline void SetRotation(const Quaternion& rotation) { _transform.SetRotation(rotation); }
+	inline void SetScale(const Vector3& scale) { _transform.SetScale(scale); }
 
 	inline const DynamicArray<SharedPtr<Entity>>& GetChildren() const { return _children; }
 	inline size_t GetChildrenCount() const { return (size_t)_children.size(); }

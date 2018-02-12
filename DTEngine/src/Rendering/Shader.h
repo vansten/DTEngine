@@ -58,18 +58,6 @@ public:
 
 class Shader final : public Asset
 {
-public:
-	struct PerFrameBuffer
-	{
-		XMMATRIX view;
-		XMMATRIX projection;
-	};
-
-	struct PerObjectBuffer
-	{
-		XMMATRIX world;
-	};
-
 private:
 	ID3D11VertexShader* _vertexShader;
 	ID3D11PixelShader* _pixelShader;

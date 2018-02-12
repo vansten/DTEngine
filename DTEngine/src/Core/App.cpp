@@ -30,7 +30,7 @@ bool App::Initialize(UniquePtr<Game>&& game)
 		return false;
 	}
 
-	if(!gWindow.Open(DT_TEXT("DT Engine"), 1024, 768))
+	if(!gWindow.Open(DT_TEXT("DT Engine"), 1600, 900))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot open window"));
 		return false;

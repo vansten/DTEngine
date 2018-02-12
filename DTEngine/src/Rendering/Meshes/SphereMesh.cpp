@@ -34,20 +34,18 @@ bool SphereMesh::Initialize()
 	unsigned int j = 0;
 	for(unsigned int r = 0; r < rings; ++r)
 	{
-		const float sinR = sin(XM_PI * r * R);
-		const float sinRMinusPiDiv2 = sin(-XM_PIDIV2 + XM_PI * r * R);
+		const float sinR = sin(Math::PI * r * R);
+		const float sinRMinusPiDiv2 = sin(-Math::PI_DIV_2 + Math::PI * r * R);
 
 		for(unsigned int s = 0; s < sectors; ++s, ++i, j += 6)
 		{
 			const float y = sinRMinusPiDiv2 * radius;
-			const float x = cos(XM_2PI * s * S) * sinR * radius;
-			const float z = sin(XM_2PI * s * S) * sinR * radius;
+			const float x = cos(Math::TWO_PI * s * S) * sinR * radius;
+			const float z = sin(Math::TWO_PI * s * S) * sinR * radius;
 
-			vertices[i].Position = XMFLOAT3(x, y, z);
-			vertices[i].Normal = XMFLOAT3(x, y, z);
-			XMVECTOR normal = XMVector3Normalize(XMLoadFloat3(&vertices[i].Normal));
-			XMStoreFloat3(&vertices[i].Normal, normal);
-			vertices[i].UV = XMFLOAT2(s * S, 1.0f - r * R);
+			vertices[i].Position = Vector3(x, y, z);
+			vertices[i].Normal = Vector3(x, y, z).GetNormalized();
+			vertices[i].UV = Vector2(s * S, 1.0f - r * R);
 
 			if(r < rings - 1 && s < sectors - 1)
 			{

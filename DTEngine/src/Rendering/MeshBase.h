@@ -12,9 +12,9 @@ public:
 	struct VertexType
 	{
 	public:
-		XMFLOAT3 Position;
-		XMFLOAT3 Normal;
-		XMFLOAT2 UV;
+		Vector3 Position;
+		Vector3 Normal;
+		Vector2 UV;
 	};
 
 protected:

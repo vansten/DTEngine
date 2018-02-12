@@ -3,26 +3,40 @@
 #include "Core/Platform.h"
 #include "Utility/Math.h"
 
+#include "Physics/Physics.h"
+
 struct Transform final
 {
 	friend class Entity;
 
 protected:
-	XMMATRIX _modelMatrix;
+	Matrix _modelMatrix;
 
-	XMFLOAT3 _position;
-	XMFLOAT3 _rotation;
-	XMFLOAT3 _scale;
+	union
+	{
+		struct
+		{
+			Quaternion _rotation;
+			Vector3 _position;
+		};
+		physx::PxTransform _physicsTransform;
+	};
+	Vector3 _scale;
 
 	bool _shouldCalculateMatrix;
 
 public:
-	inline Transform() : _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f), _shouldCalculateMatrix(false)
+	inline Transform() : _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f, 1.0f), _scale(1.0f, 1.0f, 1.0f), _shouldCalculateMatrix(false)
 	{
 
 	}
 
-	inline Transform(const Transform& other) : _position(other._position), _rotation(other._rotation), _scale(other._scale), _shouldCalculateMatrix(false)
+	inline Transform(const Transform& other) : _position(other._position), _rotation(other._rotation), _scale(other._scale), _modelMatrix(other._modelMatrix), _shouldCalculateMatrix(other._shouldCalculateMatrix)
+	{
+
+	}
+
+	inline Transform(const physx::PxTransform& transform) : _physicsTransform(transform), _scale(1.0f, 1.0f, 1.0f), _shouldCalculateMatrix(true)
 	{
 
 	}
@@ -31,66 +45,83 @@ protected:
 	void CalculateModelMatrix(const Transform* parent);
 
 public:
-	inline void SetPosition(const XMFLOAT3& newPosition)
+	inline void SetPosition(const Vector3& newPosition)
 	{
 		_position = newPosition;
 		_shouldCalculateMatrix = true;
 	}
 
-	inline void SetRotation(const XMFLOAT3& newRotation)
+	inline void SetRotation(const Quaternion& newRotation)
 	{
 		_rotation = newRotation;
 		_shouldCalculateMatrix = true;
 	}
 
-	inline void SetScale(const XMFLOAT3& newScale)
+	inline void SetScale(const Vector3& newScale)
 	{
 		_scale = newScale;
 		_shouldCalculateMatrix = true;
 	}
 
-	inline const XMFLOAT3& GetPosition() const
+	inline const Vector3& GetPosition() const
 	{
 		return _position;
 	}
 
-	inline const XMFLOAT3& GetRotation() const
+	inline const Quaternion& GetRotation() const
 	{
 		return _rotation;
 	}
 
-	inline const XMFLOAT3& GetScale() const
+	inline const Vector3& GetScale() const
 	{
 		return _scale;
 	}
 
-	inline const XMMATRIX& GetModelMatrix() const
+	inline const Matrix& GetModelMatrix() const
 	{
 		return _modelMatrix;
 	}
 
-	inline XMFLOAT3 TransformDirection(XMFLOAT3 direction) const
+	inline Vector3 TransformDirection(const Vector3& direction) const
 	{
-		const XMFLOAT4 direction4(direction.x, direction.y, direction.z, 0.0f);
-		const XMVECTOR directionVector = XMLoadFloat4(&direction4);
-		const XMVECTOR transformedDirectionVector = XMVector4Transform(directionVector, _modelMatrix);
-		XMFLOAT3 transformedDirection;
-		XMStoreFloat3(&transformedDirection, transformedDirectionVector);
-		return transformedDirection;
+		return direction * _modelMatrix;
 	}
 
-	inline XMFLOAT3 GetForward() const
+	inline Vector3 GetForward() const
 	{
-		return TransformDirection(VectorHelpers::Forward);
+		return TransformDirection(Vector3::UNIT_Z);
 	}
 
-	inline XMFLOAT3 GetUp() const
+	inline Vector3 GetUp() const
 	{
-		return TransformDirection(VectorHelpers::Up);
+		return TransformDirection(Vector3::UNIT_Y);
 	}
 
-	inline XMFLOAT3 GetRight() const
+	inline Vector3 GetRight() const
 	{
-		return TransformDirection(VectorHelpers::Right);
+		return TransformDirection(Vector3::UNIT_X);
+	}
+
+	inline Transform& operator=(const Transform& t)
+	{
+		_rotation = t._rotation;
+		_position = t._position;
+		_scale = t._scale;
+		_modelMatrix = t._modelMatrix;
+		_shouldCalculateMatrix = t._shouldCalculateMatrix;
+		return *this;
+	}
+
+	inline Transform& operator=(const physx::PxTransform& t)
+	{
+		_physicsTransform = t;
+		_shouldCalculateMatrix = true;
+		return *this;
+	}
+
+	inline operator physx::PxTransform() const
+	{
+		return _physicsTransform;
 	}
 };

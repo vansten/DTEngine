@@ -19,8 +19,8 @@ private:
 	// Order: left, right, top, bottom, near, far
 	Plane _frustum[6];
 
-	XMMATRIX _viewMatrix;
-	XMMATRIX _projectionMatrix;
+	Matrix _projectionMatrix;
+	Matrix _viewMatrix;
 
 	float _fov;
 	float _near;
@@ -60,37 +60,35 @@ public:
 	void RenderUI(Graphics& graphics, const DynamicArray<SharedPtr<UIRenderer>>& uiRenderers) = delete;
 
 	// Returns true if a worldPoint is inside a frustum
-	bool IsInsideFrustum(const XMFLOAT3& worldPoint) const;
-	// Returns true if a worldPoint is inside frustum
-	bool IsInsideFrustum(const XMVECTOR& worldPoint) const;
+	bool IsInsideFrustum(const Vector3& worldPoint) const;
 	// Returns true if one of boundingBox corners is inside frustum
 	// NOTE: this function variant assumes that boundingBox has corners in world space already
 	bool IsInsideFrustum(const BoundingBox& boundingBox) const;
 	// Returns true if one of boundingBox corners transformed by modelToWorld matrix is inside frustum
 	// NOTE: this function variant assumes that boundingBox has corners in model/object space
-	bool IsInsideFrustum(const BoundingBox& boundingBox, const XMMATRIX& modelToWorld) const;
+	bool IsInsideFrustum(const BoundingBox& boundingBox, const Matrix& modelToWorld) const;
 
 	// Converts from world coordinates to view (camera) space coordinates
-	XMFLOAT3 ConvertWorldToViewPoint(const XMFLOAT3& worldPoint) const;
+	Vector3 ConvertWorldToViewPoint(const Vector3& worldPoint) const;
 
 	// Converts from screen coordinates to world coordinates
 	// Returns a point on near camera plane with world coordinate matching passed screen coordinates
 	// Pass XMINT2 in range [(0, screenWidth), (0, screenHeight)]
-	XMFLOAT3 ConvertScreenToWorldPoint(const XMINT2& screenPoint) const;
+	Vector3 ConvertScreenToWorldPoint(const Vector2& screenPoint) const;
 
 	// Converts from world coordinates to screen coordinates
 	// Returns screen coordinates in range [(0, screenWidth), (0, screenHeight)]
 	// Remember! When calling ConvertScreenToWorldPoint and ConvertWorldToScreenPoint right after
 	// There might be 1 pixel offset in each of the coordinates
 	// It's caused by floating point precision and converting from float to int
-	XMINT2 ConvertWorldToScreenPoint(const XMFLOAT3& worldPoint) const;
+	Vector2 ConvertWorldToScreenPoint(const Vector3& worldPoint) const;
 
-	inline const XMMATRIX& GetViewMatrix() const
+	inline const Matrix& GetViewMatrix() const
 	{
 		return _viewMatrix;
 	}
 
-	inline const XMMATRIX& GetProjectionMatrix() const
+	inline const Matrix& GetProjectionMatrix() const
 	{
 		return _projectionMatrix;
 	}

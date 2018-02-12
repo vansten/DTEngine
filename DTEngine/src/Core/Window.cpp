@@ -125,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			GetCursorPos(&point);
 			if(App::GetInstance()->IsRunning())
 			{
-				gInput.SetMousePosition(XMINT2(point.x, point.y));
+				gInput.SetMousePosition(Vector2((float)point.x, (float)point.y));
 			}
 			break;
 		}
@@ -201,7 +201,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				const int xPos = GET_X_LPARAM(lParam);
 				const int yPos = GET_Y_LPARAM(lParam);
 
-				gInput.SetMousePosition(XMINT2(xPos, yPos));
+				gInput.SetMousePosition(Vector2((float)xPos, (float)yPos));
 			}
 			break;
 		}
