@@ -90,8 +90,8 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 	unsigned int numerator;
 	unsigned int denominator;
 
-	const unsigned int windowWidth = (unsigned int)window.GetWidth();
-	const unsigned int windowHeight = (unsigned int)window.GetHeight();
+	const unsigned int windowWidth = window.GetWidth();
+	const unsigned int windowHeight = window.GetHeight();
 
 	if(!GetRefreshRate(windowHeight, numerator, denominator))
 	{
@@ -126,6 +126,7 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 	swapChainDesc.SampleDesc.Quality = 0;
 
 	swapChainDesc.Windowed = true;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -296,7 +297,7 @@ void Graphics::EndResize()
 	OnResize();
 }
 
-bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, ID3D11Buffer** bufferPtr)
+bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, ID3D11Buffer** bufferPtr) const
 {
 	if(!bufferPtr || !_device)
 	{
@@ -309,7 +310,7 @@ bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, ID3D11Buffer** 
 	return true;
 }
 
-bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUBRESOURCE_DATA& bufferData, ID3D11Buffer** bufferPtr)
+bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUBRESOURCE_DATA& bufferData, ID3D11Buffer** bufferPtr) const
 {
 	if (!bufferPtr || !_device)
 	{
@@ -322,7 +323,7 @@ bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, const D3D11_SUB
 	return true;
 }
 
-bool Graphics::CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader** vertexShader)
+bool Graphics::CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader** vertexShader) const
 {
 	if (!shaderBuffer || !vertexShader || !_device)
 	{
@@ -335,7 +336,7 @@ bool Graphics::CreateVertexShader(ID3D10Blob* shaderBuffer, ID3D11VertexShader**
 	return true;
 }
 
-bool Graphics::CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** pixelShader)
+bool Graphics::CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** pixelShader) const
 {
 	if (!shaderBuffer || !pixelShader || !_device)
 	{
@@ -348,7 +349,7 @@ bool Graphics::CreatePixelShader(ID3D10Blob* shaderBuffer, ID3D11PixelShader** p
 	return true;
 }
 
-bool Graphics::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, unsigned char inputLayoutDescSize, void* shaderBufferPointer, size_t shaderBufferSize, ID3D11InputLayout** inputLayout)
+bool Graphics::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc, unsigned char inputLayoutDescSize, void* shaderBufferPointer, size_t shaderBufferSize, ID3D11InputLayout** inputLayout) const
 {
 	if (!inputLayoutDesc || !inputLayout || !_device || !shaderBufferPointer || inputLayoutDescSize == 0 || shaderBufferSize == 0)
 	{
@@ -360,7 +361,7 @@ bool Graphics::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC const* inputLayoutDesc
 	return true;
 }
 
-void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag)
+void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result = _deviceContext->Map(resource, 0, mapFlag, 0, &mappedResource);
@@ -374,12 +375,12 @@ void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag)
 	return mappedResource.pData;
 }
 
-void Graphics::Unmap(ID3D11Resource* resource)
+void Graphics::Unmap(ID3D11Resource* resource) const
 {
 	_deviceContext->Unmap(resource, 0);
 }
 
-void Graphics::SetVSConstantBuffers(unsigned int bufferSlot, unsigned int bufferCount, ID3D11Buffer** buffers)
+void Graphics::SetVSConstantBuffers(unsigned int bufferSlot, unsigned int bufferCount, ID3D11Buffer** buffers) const
 {
 	_deviceContext->VSSetConstantBuffers(bufferSlot, bufferCount, buffers);
 }
@@ -412,7 +413,7 @@ void Graphics::SetMaterial(Material* material)
 	}
 }
 
-void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, unsigned int indicesCount, unsigned int stride, unsigned int offset)
+void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, unsigned int indicesCount, unsigned int stride, unsigned int offset) const
 {
 	_deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	_deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
@@ -420,7 +421,7 @@ void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer
 	_deviceContext->DrawIndexed(indicesCount, 0, 0);
 }
 
-bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState)
+bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState) const
 {
 	if(renderState)
 	{
@@ -432,7 +433,7 @@ bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState)
 	return renderState->Initialize(_device);
 }
 
-bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState, const RenderStateParams& renderStateParams)
+bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState, const RenderStateParams& renderStateParams) const
 {
 	if(renderState)
 	{

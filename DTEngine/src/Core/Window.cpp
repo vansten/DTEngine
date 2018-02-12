@@ -10,7 +10,7 @@ Window gWindow;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-bool Window::Open(const String& title, unsigned short width, unsigned short height)
+bool Window::Open(const String& title, unsigned int width, unsigned int height)
 {
 	_title = title;
 	_width = width;
@@ -41,6 +41,7 @@ bool Window::Open(const String& title, unsigned short width, unsigned short heig
 	}
 
 	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+	DWORD windowExStyle = WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE;
 
 	RECT desiredClientRect;
 	desiredClientRect.left = 0;
@@ -48,11 +49,13 @@ bool Window::Open(const String& title, unsigned short width, unsigned short heig
 	desiredClientRect.top = 0;
 	desiredClientRect.bottom = _height;
 
-	AdjustWindowRect(&desiredClientRect, windowStyle, false);
+	AdjustWindowRectEx(&desiredClientRect, windowStyle, false, windowExStyle);
+	_width = desiredClientRect.right - desiredClientRect.left;
+	_height = desiredClientRect.bottom - desiredClientRect.top;
 
 	// Create window and store handle
 	_hWnd = CreateWindowEx(
-		WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE,
+		windowExStyle,
 		wndClassEx.lpszClassName,
 		_title.c_str(),
 		windowStyle,
@@ -98,7 +101,7 @@ bool Window::Close()
 	return !IsWindow(_hWnd);
 }
 
-void Window::SetNewSize(unsigned short width, unsigned short height)
+void Window::SetNewSize(unsigned int width, unsigned int height)
 {
 	if(_width == width && _height == height)
 	{
@@ -138,8 +141,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_SIZE:
 		{
-			const unsigned short newWidth = LOWORD(lParam);
-			const unsigned short newHeight = HIWORD(lParam);
+			const unsigned int newWidth = LOWORD(lParam);
+			const unsigned int newHeight = HIWORD(lParam);
 
 			gWindow.SetNewSize(newWidth, newHeight);
 

@@ -5,20 +5,20 @@
 class Window final
 {
 private:
-	unsigned short _width;
-	unsigned short  _height;
+	unsigned int _width;
+	unsigned int  _height;
 	float _aspectRatio;
 	String _title;
 
 	HWND _hWnd;
 
 public:	
-	inline unsigned short GetWidth() const
+	inline unsigned int GetWidth() const
 	{
 		return _width;
 	}
 
-	inline unsigned short GetHeight() const
+	inline unsigned int GetHeight() const
 	{
 		return _height;
 	}
@@ -33,12 +33,12 @@ public:
 		return _hWnd;
 	}
 
-	bool Open(const String& title, unsigned short width, unsigned short height);
+	bool Open(const String& title, unsigned int width, unsigned int height);
 	bool Show();
 	bool Hide();
 	bool Close();
 
-	void SetNewSize(unsigned short width, unsigned short height);
+	void SetNewSize(unsigned int width, unsigned int height);
 };
 
 extern Window gWindow;
