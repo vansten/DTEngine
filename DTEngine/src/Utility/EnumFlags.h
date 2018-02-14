@@ -7,7 +7,7 @@ public:
 	Enum Flags;
 
 public:
-	constexpr EnumFlags() : Flags(0) { }
+	constexpr EnumFlags() : Flags((Enum)0) { }
 	constexpr EnumFlags(Enum flag) : Flags(flag) { }
 	constexpr EnumFlags(const EnumFlags<Enum>& flags) : Flags(flags.Flags) { }
 

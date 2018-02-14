@@ -5,10 +5,19 @@
 #include "Core/Archive.h"
 #include "Core/Platform.h"
 #include "Utility/Math.h"
+#include "Utility/EnumFlags.h"
 
 #include "Component.h"
 #include "Rendering/Graphics.h"
 #include "Transform.h"
+
+enum class EntityFlag
+{
+	STATIC = 1 << 0,
+	PENDING_DESTROY = 1 << 1,
+	INITIALIZED = 1 << 2,
+	DURING_UPDATE = 1 << 3
+};
 
 class Entity final : public EnableSharedFromThis<Entity>
 {
@@ -25,7 +34,8 @@ private:
 
 	Transform _transform;
 
-	bool _isInUpdate;
+public:
+	EnumFlags<EntityFlag> Flags;
 
 public:
 	Entity();
@@ -77,25 +87,75 @@ public:
 
 	bool IsEnabledInHierarchy() const;
 
-	inline const String& GetName() const { return _name; }
-	inline bool IsEnabled() const { return _enabled; }
+	inline const String& GetName() const
+	{
+		return _name;
+	}
+	inline bool IsEnabled() const
+	{
+		return _enabled;
+	}
 
-	inline void SetName(const String& name) { _name = name; }
+	inline void SetName(const String& name)
+	{
+		_name = name;
+	}
 
-	inline Transform& GetTransform() { return _transform; }
-	inline const Transform& GetTransform() const { return _transform; }
-	inline void SetTransform(const Transform& transform) { _transform = transform; }
+	inline const Transform& GetTransform() const
+	{
+		return _transform;
+	}
+	inline void SetTransform(const Transform& transform)
+	{
+		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		{
+			_transform = transform;
+		}
+	}
 
-	inline const Vector3& GetPosition() const { return _transform._position; }
-	inline const Quaternion& GetRotation() const { return _transform._rotation; }
-	inline const Vector3& GetScale() const { return _transform._scale; }
+	inline const Vector3& GetPosition() const
+	{
+		return _transform._position;
+	}
+	inline const Quaternion& GetRotation() const
+	{
+		return _transform._rotation;
+	}
+	inline const Vector3& GetScale() const
+	{
+		return _transform._scale;
+	}
 
-	inline void SetPosition(const Vector3& position) { _transform.SetPosition(position); }
-	inline void SetRotation(const Quaternion& rotation) { _transform.SetRotation(rotation); }
-	inline void SetScale(const Vector3& scale) { _transform.SetScale(scale); }
+	inline void SetPosition(const Vector3& position)
+	{
+		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		{
+			_transform.SetPosition(position);
+		}
+	}
+	inline void SetRotation(const Quaternion& rotation)
+	{
+		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		{
+			_transform.SetRotation(rotation);
+		}
+	}
+	inline void SetScale(const Vector3& scale)
+	{
+		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		{
+			_transform.SetScale(scale);
+		}
+	}
 
-	inline const DynamicArray<SharedPtr<Entity>>& GetChildren() const { return _children; }
-	inline size_t GetChildrenCount() const { return (size_t)_children.size(); }
+	inline const DynamicArray<SharedPtr<Entity>>& GetChildren() const
+	{
+		return _children;
+	}
+	inline size_t GetChildrenCount() const
+	{
+		return _children.size();
+	}
 	inline SharedPtr<Entity> GetChildAt(size_t index) const
 	{
 		if(_children.size() == 0 || index > _children.size())
@@ -127,7 +187,9 @@ public:
 	template<typename T>
 	inline SharedPtr<T> AddComponent();
 	template<typename T>
-	inline SharedPtr<T> GetComponent();
+	inline SharedPtr<T> GetComponent() const;
+	template<typename T>
+	inline DynamicArray<SharedPtr<T>> GetComponents() const;
 	void RemoveComponent(SharedPtr<Component> component);
 };
 
@@ -135,7 +197,7 @@ template<typename T>
 inline SharedPtr<T> Entity::AddComponent()
 {
 	SharedPtr<T> newComponent = SharedPtr<T>(new T(SharedFromThis()));
-	if (_isInUpdate)
+	if(Flags.IsFlagSet(EntityFlag::DURING_UPDATE))
 	{
 		_newComponents.push_back(newComponent);
 	}
@@ -150,18 +212,35 @@ inline SharedPtr<T> Entity::AddComponent()
 }
 
 template<typename T>
-inline SharedPtr<T> Entity::GetComponent()
+inline SharedPtr<T> Entity::GetComponent() const
 {
 	SharedPtr<T> component = nullptr;
-	
-	for (auto comp : _components)
+
+	for(const auto& comp : _components)
 	{
-		component = DynamicPointerCast<T>(comp);
-		if (component)
+		component = DynamicPointerCast<T>(const_cast<SharedPtr<Component>&>(comp));
+		if(component)
 		{
 			return component;
 		}
 	}
 
 	return component;
+}
+
+template<typename T>
+inline DynamicArray<SharedPtr<T>> Entity::GetComponents() const
+{
+	DynamicArray<SharedPtr<T>> components;
+
+	for(const auto& comp : _components)
+	{
+		SharedPtr<T> component = DynamicPointerCast<T>(const_cast<SharedPtr<Component>&>(comp));
+		if(component)
+		{
+			components.push_back(component);
+		}
+	}
+
+	return components;
 }

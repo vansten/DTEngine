@@ -4,17 +4,17 @@
 #include "Rendering/Graphics.h"
 #include "Game.h"
 
-Entity::Entity() : EnableSharedFromThis<Entity>(), _name(DT_TEXT("NewObject")), _enabled(true), _isInUpdate(false)
+Entity::Entity() : EnableSharedFromThis<Entity>(), _name(DT_TEXT("NewObject")), _enabled(true)
 {
 
 }
 
-Entity::Entity(const String& name) : EnableSharedFromThis<Entity>(), _name(name), _enabled(true), _isInUpdate(false)
+Entity::Entity(const String& name) : EnableSharedFromThis<Entity>(), _name(name), _enabled(true)
 {
 
 }
 
-Entity::Entity(const Entity& other) : EnableSharedFromThis<Entity>(), _transform(other._transform), _name(other._name), _enabled(other._enabled), _isInUpdate(false)
+Entity::Entity(const Entity& other) : EnableSharedFromThis<Entity>(), _transform(other._transform), _name(other._name), _enabled(other._enabled)
 {
 }
 
@@ -45,21 +45,28 @@ void Entity::Initialize()
 {
 	_transform.CalculateModelMatrix(_parent ? &(_parent->_transform) : nullptr);
 
-	for (auto component : _components)
+	for (const auto& component : _components)
 	{
 		component->OnInitialize();
 	}
+
+	Flags.RaiseFlag(EntityFlag::INITIALIZED);
 }
 
 void Entity::Shutdown()
 {
-	for (auto component : _components)
+	Flags.RaiseFlag(EntityFlag::PENDING_DESTROY);
+
+	for (const auto& component : _components)
 	{
 		component->OnShutdown();
 	}
+
 	_components.clear();
 	_children.clear();
 	_parent = nullptr;
+
+	Flags.ClearFlag(EntityFlag::INITIALIZED);
 }
 
 void Entity::Load(Archive& archive)
@@ -68,7 +75,7 @@ void Entity::Load(Archive& archive)
 	//		Component* c = new ComponentType(SharedFromThis());
 	//		_components.push_back(c);
 
-	for (auto component : _components)
+	for (const auto& component : _components)
 	{
 		component->Load(archive);
 	}
@@ -76,7 +83,7 @@ void Entity::Load(Archive& archive)
 
 void Entity::Save(Archive& archive)
 {
-	for (auto component : _components)
+	for (const auto& component : _components)
 	{
 		component->Save(archive);
 	}
@@ -84,19 +91,19 @@ void Entity::Save(Archive& archive)
 
 void Entity::Update(float deltaTime)
 {
-	for (auto component : _componentsToRemove)
+	for (const auto& component : _componentsToRemove)
 	{
 		RemoveComponent(component);
 	}
 	_componentsToRemove.clear();
 
-	for (auto component : _newComponents)
+	for (const auto& component : _newComponents)
 	{
 		_components.push_back(component);
 	}
 	_newComponents.clear();
 
-	_isInUpdate = true;
+	Flags.RaiseFlag(EntityFlag::DURING_UPDATE);
 
 	if (_transform._shouldCalculateMatrix)
 	{
@@ -104,7 +111,7 @@ void Entity::Update(float deltaTime)
 		OnTransformUpdated();
 	}
 	
-	for (auto component : _components)
+	for (const auto& component : _components)
 	{
 		if (component->IsEnabled())
 		{
@@ -112,13 +119,13 @@ void Entity::Update(float deltaTime)
 		}
 	}
 
-	_isInUpdate = false;
+	Flags.ClearFlag(EntityFlag::DURING_UPDATE);
 }
 
 void Entity::Render(Graphics& graphics)
 {
 	graphics.SetObject(this);
-	for(auto component : _components)
+	for(const auto& component : _components)
 	{
 		component->OnRender(graphics);
 	}
@@ -126,12 +133,12 @@ void Entity::Render(Graphics& graphics)
 
 void Entity::OnTransformUpdated()
 {
-	for(auto component : _components)
+	for(const auto& component : _components)
 	{
 		component->OnOwnerTransformUpdated(_transform);
 	}
 
-	for(auto entity : _children)
+	for(const auto& entity : _children)
 	{
 		Transform& transform = entity->_transform;
 		transform.CalculateModelMatrix(&_transform);
@@ -144,7 +151,7 @@ void Entity::SetEnabled(bool enabled)
 	_enabled = enabled;
 
 	// Notify all component that enabled property has changed
-	for(auto component : _components)
+	for(const auto& component : _components)
 	{
 		component->OnOwnerEnableChanged(_enabled);
 	}
@@ -169,7 +176,7 @@ bool Entity::IsEnabledInHierarchy() const
 
 void Entity::RemoveComponent(SharedPtr<Component> component)
 {
-	if (_isInUpdate)
+	if (Flags.IsFlagSet(EntityFlag::DURING_UPDATE))
 	{
 		_componentsToRemove.push_back(component);
 	}

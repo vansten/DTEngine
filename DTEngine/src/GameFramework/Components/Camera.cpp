@@ -108,13 +108,8 @@ bool Camera::IsVisible(SharedPtr<MeshRenderer> renderer)
 void Camera::RegisterCamera(SharedPtr<Camera> camera)
 {
 	_allCameras.push_back(camera);
-
-	if(!_main.lock())
-	{
-		_main = camera;
-	}
-
-	static auto sortPredicate = [](const WeakPtr<Camera>& cam1, const WeakPtr<Camera>& cam2)
+	
+	const static auto sortPredicate = [](const WeakPtr<Camera>& cam1, const WeakPtr<Camera>& cam2)
 	{
 		SharedPtr<Camera> cam1Shared = cam1.lock();
 		SharedPtr<Camera> cam2Shared = cam2.lock();
@@ -131,6 +126,11 @@ void Camera::RegisterCamera(SharedPtr<Camera> camera)
 	};
 
 	std::sort(_allCameras.begin(), _allCameras.end(), sortPredicate);
+
+	if(_allCameras.size() > 0)
+	{
+		_main = _allCameras[0];
+	}
 }
 
 void Camera::UnregisterCamera(SharedPtr<Camera> camera)
@@ -141,15 +141,9 @@ void Camera::UnregisterCamera(SharedPtr<Camera> camera)
 		_allCameras.erase(found);
 	}
 
-	// If unregistering current main camera
-	if(_main.lock() == camera)
+	if(_allCameras.size() > 0)
 	{
-		_main.reset();
-
-		if(_allCameras.size() > 0)
-		{
-			_main = _allCameras[0];
-		}
+		_main = _allCameras[0];
 	}
 }
 
