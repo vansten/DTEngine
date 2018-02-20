@@ -17,13 +17,6 @@ class Entity;
 class Graphics;
 class MaterialParametersCollection;
 
-enum class ConstantBufferType : unsigned char
-{
-	PerFrame,
-	PerObject,
-	PerDrawCall
-};
-
 struct ShaderVariable
 {
 	typedef void const* (MaterialParametersCollection::*VariableGetterFunctionPointer)(const String&) const;
@@ -46,7 +39,6 @@ private:
 public:
 	String Name;
 	unsigned char Index;
-	ConstantBufferType BufferType;
 
 	DynamicArray<UniquePtr<ShaderVariable>> Variables;
 
@@ -66,7 +58,8 @@ private:
 	ID3D10Blob* _vertexShaderBuffer;
 	ID3D10Blob* _pixelShaderBuffer;
 
-	Dictionary<ConstantBufferType, DynamicArray<UniquePtr<ShaderConstantBuffer>>> _constantBuffers;
+	DynamicArray<UniquePtr<ShaderConstantBuffer>> _perFrameBuffers;
+	DynamicArray<UniquePtr<ShaderConstantBuffer>> _perDrawCallBuffers;
 
 public:
 	Shader();
@@ -83,7 +76,6 @@ public:
 	virtual void Shutdown() override;
 
 	void UpdatePerFrameBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection);
-	void UpdatePerObjectBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection);
 	void UpdatePerDrawCallBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection);
 
 	inline ID3D11InputLayout* GetInputLayout() const { return _inputLayout; }

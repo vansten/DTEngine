@@ -42,7 +42,6 @@ public:
 	virtual void Shutdown() override;
 
 	void UpdatePerFrameBuffers(Graphics& graphics);
-	void UpdatePerObjectBuffers(Graphics& graphics);
 	void UpdatePerDrawCallBuffers(Graphics& graphics);
 
 	SharedPtr<Material> CreateInstance() const;

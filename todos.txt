@@ -43,6 +43,7 @@ TODOs:
 -- Physics									|> IN PROGRESS (TODO: read about PxScene, PxGeometry, PxShape, PxRigidbody, PxActor etc.; Think about physics architecture in DTEngine (colliders, rigidbodies, etc.); SceneQueries; Simulation filtering (layers?); hexagonal geometry; raycasting in CameraControl)
 -- General config (fullscreen, vsync mode, target resolution etc.)
 -- Fullscreen mode (maybe resizing is not properly handled)
+-- Rendering performance is an issue. Maybe map is not the best representation for material parameters.
 -- Read a little bit about 2D rendering in DX11
 -- Textures (2D only for now, simple TGA/PNG loading, SPRITE/TEXTURE/NORMAL_MAP types? ShaderVariable handling)
 -- UI (delegates on click for buttons using std::function (Functions), elements created once and rendered, UIText and UIImage classes responsible for rendering, both deriving from UIRenderer (?), components, texts, shaders for texts and images, font loading)

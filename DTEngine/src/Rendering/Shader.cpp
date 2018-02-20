@@ -182,18 +182,6 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 	const std::string name = reflectedConstantBufferDesc.Name;
 	constantBuffer->Name = String(name.begin(), name.end());
 	constantBuffer->Index = reflectedResourceDesc.BindPoint;
-	if(Contains(constantBuffer->Name, DT_TEXT("PerFrame"), false))
-	{
-		constantBuffer->BufferType = ConstantBufferType::PerFrame;
-	}
-	else if(Contains(constantBuffer->Name, DT_TEXT("PerObject"), false))
-	{
-		constantBuffer->BufferType = ConstantBufferType::PerObject;
-	}
-	else
-	{
-		constantBuffer->BufferType = ConstantBufferType::PerDrawCall;
-	}
 
 	// Create variables that given constant buffer contains
 	for(unsigned int j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
@@ -222,8 +210,14 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 		constantBuffer->Variables.push_back(std::move(variable));
 	}
 
-	// Push constant buffer to array 
-	_constantBuffers[constantBuffer->BufferType].push_back(std::move(constantBuffer));
+	if(Contains(constantBuffer->Name, DT_TEXT("PerFrame"), false))
+	{
+		_perFrameBuffers.push_back(std::move(constantBuffer));
+	}
+	else
+	{
+		_perDrawCallBuffers.push_back(std::move(constantBuffer));
+	}
 
 	return true;
 }
@@ -277,15 +271,21 @@ bool Shader::Initialize()
 		return false;
 	}
 
-	for(auto& constantBufferArray : _constantBuffers)
+	for(const auto& perFrameBuffer : _perFrameBuffers)
 	{
-		for(auto& constantBuffer : constantBufferArray.second)
+		if(!perFrameBuffer->Initialize(graphics))
 		{
-			if(!constantBuffer->Initialize(graphics))
-			{
-				gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), constantBuffer->Name.c_str());
-				return false;
-			}
+			gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), perFrameBuffer->Name.c_str());
+			return false;
+		}
+	}
+
+	for(const auto& perDrawCallBuffer : _perDrawCallBuffers)
+	{
+		if(!perDrawCallBuffer->Initialize(graphics))
+		{
+			gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), perDrawCallBuffer->Name.c_str());
+			return false;
 		}
 	}
 
@@ -321,14 +321,19 @@ bool Shader::Initialize()
 
 void Shader::Shutdown()
 {
-	for(auto& constantBufferArray : _constantBuffers)
+	for(const auto& perFrameBuffer : _perFrameBuffers)
 	{
-		for(auto& constantBuffer : constantBufferArray.second)
-		{
-			constantBuffer->Shutdown();
-		}
+		perFrameBuffer->Shutdown();
 	}
-	_constantBuffers.clear();
+
+	for(const auto& perDrawCallBuffer : _perDrawCallBuffers)
+	{
+		perDrawCallBuffer->Shutdown();
+	}
+
+	_perDrawCallBuffers.clear();
+	_perFrameBuffers.clear();
+
 	RELEASE_COM(_inputLayout);
 	RELEASE_COM(_pixelShader);
 	RELEASE_COM(_vertexShader);
@@ -338,17 +343,7 @@ void Shader::Shutdown()
 
 void Shader::UpdatePerFrameBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	const DynamicArray<UniquePtr<ShaderConstantBuffer>>& perFrameBuffers = _constantBuffers[ConstantBufferType::PerFrame];
-	for(auto& constantBuffer : perFrameBuffers)
-	{
-		constantBuffer->Update(graphics, materialParametersCollection);
-	}
-}
-
-void Shader::UpdatePerObjectBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
-{
-	const DynamicArray<UniquePtr<ShaderConstantBuffer>>& perObjectBuffers = _constantBuffers[ConstantBufferType::PerObject];
-	for(auto& constantBuffer : perObjectBuffers)
+	for(const auto& constantBuffer : _perFrameBuffers)
 	{
 		constantBuffer->Update(graphics, materialParametersCollection);
 	}
@@ -356,8 +351,7 @@ void Shader::UpdatePerObjectBuffers(Graphics& graphics, const MaterialParameters
 
 void Shader::UpdatePerDrawCallBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	const DynamicArray<UniquePtr<ShaderConstantBuffer>>& perDrawCallBuffers = _constantBuffers[ConstantBufferType::PerDrawCall];
-	for(auto& constantBuffer : perDrawCallBuffers)
+	for(auto& constantBuffer : _perDrawCallBuffers)
 	{
 		constantBuffer->Update(graphics, materialParametersCollection);
 	}

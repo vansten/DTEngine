@@ -35,7 +35,7 @@ void Scene::Load()
 	SharedPtr<Entity> gridEntity = SpawnEntity(DT_TEXT("Grid"));
 	SharedPtr<Entity> cameraEntity = SpawnEntity(DT_TEXT("Camera"));
 
-	SharedPtr<HexagonalGrid> grid = HexagonalGridUtility::CreateGrid(7, 7, 1, gridEntity);
+	SharedPtr<HexagonalGrid> grid = HexagonalGridUtility::CreateGrid(10, 10, 3, gridEntity);
 
 	cameraEntity->AddComponent<Camera>();
 	cameraEntity->SetPosition(Vector3(0.0f, 10.0f, 0.0f));

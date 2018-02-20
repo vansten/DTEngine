@@ -144,14 +144,6 @@ void Material::UpdatePerFrameBuffers(Graphics& graphics)
 	}
 }
 
-void Material::UpdatePerObjectBuffers(Graphics& graphics)
-{
-	if(_shader)
-	{
-		_shader->UpdatePerObjectBuffers(graphics, _parametersCollection);
-	}
-}
-
 void Material::UpdatePerDrawCallBuffers(Graphics& graphics)
 {
 	if(_shader)
