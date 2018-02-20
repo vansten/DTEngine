@@ -178,7 +178,7 @@ public:
 		}
 		if(xAxis.Length() < 0.0001f)
 		{
-			xAxis = Vector3::CrossProduct(up, normalized);
+			xAxis = Vector3::CrossProduct(yAxis, normalized);
 		}
 
 		return Matrix(xAxis.X, yAxis.X, normalized.X, 0.0f,

@@ -111,9 +111,10 @@ public:
 	void RegisterChannel(const String& name);
 	void SetChannelVisibility(const String& name, bool visibility);
 
-	void DrawCube(Vector3 center, Vector3 size, Rotator rotation = Rotator(0.0f, 0.0f, 0.0f), Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
-	void DrawSphere(Vector3 center, float radius, Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
-	void DrawLine(Vector3 start, Vector3 end, Vector4 color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float thickness = 1.0f, float lifetime = -1.0f);
+	void DrawMesh(const Vector3& position, SharedPtr<MeshBase> mesh, const Vector3& size = Vector3::ONE, const Rotator& rotation = Rotator(0.0f, 0.0f, 0.0f), const Vector4& color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawCube(const Vector3& center, const Vector3& size, const Rotator& rotation = Rotator(0.0f, 0.0f, 0.0f), const Vector4& color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawSphere(const Vector3& center, float radius, const Vector4& color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
+	void DrawLine(const Vector3& start, const Vector3& end, const Vector4& color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float thickness = 1.0f, float lifetime = -1.0f);
 
 	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const { return _draws; }
 };

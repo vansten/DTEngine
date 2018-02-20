@@ -185,21 +185,28 @@ void Debug::SetChannelVisibility(const String& name, bool visibility)
 #endif
 }
 
-void Debug::DrawCube(Vector3 center, Vector3 size, Rotator rotation, Vector4 color, float lifetime)
+void Debug::DrawMesh(const Vector3& position, SharedPtr<MeshBase> mesh, const Vector3& size, const Rotator& rotation, const Vector4& color, float lifetime)
+{
+#if DT_DEBUG
+	_draws.push_back(std::move(DebugDrawGeometry(mesh, position, rotation, size, color, lifetime)));
+#endif
+}
+
+void Debug::DrawCube(const Vector3& center, const Vector3& size, const Rotator& rotation, const Vector4& color, float lifetime)
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(_cube, center, rotation, size, color, lifetime)));
 #endif
 }
 
-void Debug::DrawSphere(Vector3 center, float radius, Vector4 color, float lifetime)
+void Debug::DrawSphere(const Vector3& center, float radius, const Vector4& color, float lifetime)
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(_sphere, center, Rotator(0.0f, 0.0f, 0.0f), Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime)));
 #endif
 }
 
-void Debug::DrawLine(Vector3 start, Vector3 end, Vector4 color, float thickness, float lifetime)
+void Debug::DrawLine(const Vector3& start, const Vector3& end, const Vector4& color, float thickness, float lifetime)
 {
 #if DT_DEBUG
 	Vector3 direction = end - start;

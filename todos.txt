@@ -40,6 +40,8 @@ TODOs:
 -- Setting shader parameters (reflection)	|> ALL DONE
 -- MATH library 							|> ALL DONE
 -- Entity flags								|> ALL DONE
+-- Debug drawing: custom mesh 				|> ALL DONE
+-- Direction to Rotator
 -- Physics									|> IN PROGRESS (TODO: read about PxScene, PxGeometry, PxShape, PxRigidbody, PxActor etc.; Think about physics architecture in DTEngine (colliders, rigidbodies, etc.); SceneQueries; Simulation filtering (layers?); hexagonal geometry; raycasting in CameraControl)
 -- General config (fullscreen, vsync mode, target resolution etc.)
 -- Fullscreen mode (maybe resizing is not properly handled)
@@ -57,8 +59,6 @@ TODOs:
 -- Basic lighting (PhongBlinn? Lambert? ShaderVariable arrays handling maybe?)
 -- Think about ComPtr from <wrl/client.h>
 -- Think about engine's DLL and connecting it to other projects where game will be written (maybe some sort of registering game derrived class? or registering game by passing it to the App constructor/initializer?)
--- Debug drawing: cone
--- Debug drawing: custom mesh
 -- 3D object texturing (do not forget about updating shader reflection to easily provide access like material->Set("MainTexture", mainTexturePtr))
 -- FBX loading
 -- Animation class with virtual calls like Update(float deltaTime), SetAnimationFrame(int frame), SetAnimationTime(float time), SetAnimationNormalizedTime(float normalizedTime)
