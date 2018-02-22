@@ -6,6 +6,8 @@
 
 class Vector3;
 class Vector4;
+class Quaternion;
+class Rotator;
 
 inline Vector3 operator+(const Vector3& v);
 inline Vector3 operator-(const Vector3& v);
@@ -84,6 +86,9 @@ public:
 
 		*this /= length;
 	}
+
+	Rotator ToRotator() const;
+	Quaternion ToQuaternion() const;
 
 	inline Vector3& operator=(const Vector3& v)
 	{

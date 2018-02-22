@@ -111,6 +111,7 @@ bool CameraControl::OnLMBReleased()
 	Vector2 screen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(wp);
 	
 	gDebug.Print(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("IMPLEMENT RAYCASTS"));	
+	gDebug.DrawLine(GetOwner()->GetPosition(), GetOwner()->GetPosition() + GetOwner()->GetTransform().GetForward() * 10.0f, Vector4(0.0f, 0.0f, 1.0f, 1.0f), 1.0f, 15.0f);
 
 	return false;
 }

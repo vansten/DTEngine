@@ -5,6 +5,8 @@
 
 const float SINGULARITY_THRESHOLD = 0.499f;
 
+const Quaternion Quaternion::IDENTITY(0.0f, 0.0f, 0.0f, 1.0f);
+
 Rotator Quaternion::ToRotator() const
 {
 	float yaw;

@@ -1,0 +1,85 @@
+-- Read about PxScene PxGeometry, PxShape, PxRigidbody, PxActor etc.
+-- Think about physics architecture in DTEngine (colliders, rigidbodies, etc.)
+-- SceneQueries
+-- Simulation filtering (layers?)
+-- Hexagonal geometry (as convex mesh geometry?)
+-- Raycasting in CameraControl
+
+PxScene should be placed in Physics class
+PxShape should be placed in some sort of collider
+PxRigidbody (Static or Dynamic) should be a single component with switch (something like isSimulatingPhysics)
+PxGeometry should be determined by Collider geometry (box, capsule, sphere, mesh) and used to initialize that's collider PxShape
+
+PhysicalBody derives from Component:
+	PxRigidbody* _rigidbody;
+	RigidbodyParameters _rigidbodyParameters;	(This should be set of parameters. Maybe they shouldn't be grouped in struct? Or some of their parts shouldn't)
+
+	DynamicArray<Collider*> _colliders;
+
+	Event<void, const CollisionInfo&> OnHit;
+	Event<void, const TriggerInfo&> OnTriggerBegin;
+	Event<void, const TriggerInfo&> OnTriggerEnd;
+
+	Initialize()
+	{
+		_rigidbody = gPhysics.CreateRigidbody(_rigidbodyParameters, this);
+
+		foreach(Collider* col in _colliders)
+		{
+			col->Initialize(this);
+		}
+	}
+
+	Shutdown()
+	{
+		foreach(Collider* c in _colliders)
+		{
+			c->Shutdown();
+		}
+
+		_rigidbody->Release();
+	}
+
+	AddCollider(Collider* c)
+	{
+		_colliders.Add(c);
+		c->Initialize(this);
+	}
+
+	OnPhysXCollision(const CollisionInfo& c)
+	{
+		OnHit.Invoke(c);
+	}
+
+	OnPhysXTriggerBegin(const TriggerInfo& t)
+	{
+		OnTriggerBegin.Invoke(t);
+	}
+
+	OnPhysXTriggerEnd(const TriggerInfo& t)
+	{
+		OnTriggerEnd.Invoke(t);
+	}
+
+Collider:
+	PxShape* _shape;
+
+	Initialize(PhysicalBody* r) = 0;
+	Shutdown() = 0;
+
+BoxCollider derives from Collider:
+	Vector3 _center;
+	Vector3 _size;
+
+	Initialize(PhysicalBody* r)
+	{	
+		_shape = gPhysics.CreateBoxShape(_center, _size);
+		r->_rigidbody->AttachShape(_shape);
+	}
+
+	Shutdown()
+	{
+		_shape->Release();	(Is it necessary if PxShape is attached to PxRigidbody?)
+	}
+
+SphereCollider, CapsuleCollider etc. work the same way as BoxCollider does

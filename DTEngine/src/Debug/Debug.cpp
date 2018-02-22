@@ -17,19 +17,9 @@ const String CHANNEL_GENERAL = DT_TEXT("General");
 
 Debug gDebug;
 
-DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, Vector3 position, Rotator rotation, Vector3 scale, Vector4 color, float lifetime) : _mesh(mesh), _lifetime(lifetime)
+DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, Vector3 position, Quaternion rotation, Vector3 scale, Vector4 color, float lifetime) : _mesh(mesh), _lifetime(lifetime)
 {
-	_worldMatrix = Matrix::FromScale(scale) * rotation.ToQuaternion().ToMatrix() * Matrix::FromTranslation(position);
-
-	_material = std::make_unique<Material>();
-	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
-	_material->Initialize();
-	_material->SetColor(color);
-}
-
-DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, Vector3 position, Matrix rotation, Vector3 scale, Vector4 color, float lifetime) : _mesh(mesh), _lifetime(lifetime)
-{
-	_worldMatrix = Matrix::FromScale(scale) * rotation * Matrix::FromTranslation(position);
+	_worldMatrix = Matrix::FromScale(scale) * rotation.ToMatrix() * Matrix::FromTranslation(position);
 
 	_material = std::make_unique<Material>();
 	_material->SetRenderStateParams(RenderStateParams(CullMode::None, FillMode::Wireframe, ZWrite::Off, BlendMode::SrcAlpha, BlendMode::InvSrcAlpha, CompareFunction::Always));
@@ -185,14 +175,14 @@ void Debug::SetChannelVisibility(const String& name, bool visibility)
 #endif
 }
 
-void Debug::DrawMesh(const Vector3& position, SharedPtr<MeshBase> mesh, const Vector3& size, const Rotator& rotation, const Vector4& color, float lifetime)
+void Debug::DrawMesh(const Vector3& position, SharedPtr<MeshBase> mesh, const Vector3& size, const Quaternion& rotation, const Vector4& color, float lifetime)
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(mesh, position, rotation, size, color, lifetime)));
 #endif
 }
 
-void Debug::DrawCube(const Vector3& center, const Vector3& size, const Rotator& rotation, const Vector4& color, float lifetime)
+void Debug::DrawCube(const Vector3& center, const Vector3& size, const Quaternion& rotation, const Vector4& color, float lifetime)
 {
 #if DT_DEBUG
 	_draws.push_back(std::move(DebugDrawGeometry(_cube, center, rotation, size, color, lifetime)));
@@ -202,7 +192,7 @@ void Debug::DrawCube(const Vector3& center, const Vector3& size, const Rotator& 
 void Debug::DrawSphere(const Vector3& center, float radius, const Vector4& color, float lifetime)
 {
 #if DT_DEBUG
-	_draws.push_back(std::move(DebugDrawGeometry(_sphere, center, Rotator(0.0f, 0.0f, 0.0f), Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime)));
+	_draws.push_back(std::move(DebugDrawGeometry(_sphere, center, Quaternion::IDENTITY, Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f), color, lifetime)));
 #endif
 }
 
@@ -211,6 +201,6 @@ void Debug::DrawLine(const Vector3& start, const Vector3& end, const Vector4& co
 #if DT_DEBUG
 	Vector3 direction = end - start;
 	Vector3 scale(thickness, thickness, direction.Length());
-	_draws.push_back(std::move(DebugDrawGeometry(_cube, start + (direction) * 0.5f, Matrix::FromDirection(direction), scale, color, lifetime)));
+	_draws.push_back(std::move(DebugDrawGeometry(_cube, start + direction * 0.5f, direction.ToRotator().ToQuaternion(), scale, color, lifetime)));
 #endif
 }

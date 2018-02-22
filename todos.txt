@@ -41,8 +41,9 @@ TODOs:
 -- MATH library 							|> ALL DONE
 -- Entity flags								|> ALL DONE
 -- Debug drawing: custom mesh 				|> ALL DONE
--- Direction to Rotator
--- Physics									|> IN PROGRESS (TODO: read about PxScene, PxGeometry, PxShape, PxRigidbody, PxActor etc.; Think about physics architecture in DTEngine (colliders, rigidbodies, etc.); SceneQueries; Simulation filtering (layers?); hexagonal geometry; raycasting in CameraControl)
+-- Direction to Rotator						|> ALL DONE
+-- Physics									|> IN PROGRESS (TODO: PhysicsIssues.txt)
+-- Input (gamepad, keyboad, mouse) should be reworked (maybe) from window messages to update and polling keyboard/gamepad/mouse states?
 -- General config (fullscreen, vsync mode, target resolution etc.)
 -- Fullscreen mode (maybe resizing is not properly handled)
 -- Rendering performance is an issue. Maybe map is not the best representation for material parameters.
