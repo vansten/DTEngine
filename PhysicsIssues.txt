@@ -1,7 +1,7 @@
 -- Read about PxScene PxGeometry, PxShape, PxRigidbody, PxActor etc.
 -- Think about physics architecture in DTEngine (colliders, rigidbodies, etc.)
 -- SceneQueries
--- Simulation filtering (layers?)
+-- Simulation filtering
 -- Hexagonal geometry (as convex mesh geometry?)
 -- Raycasting in CameraControl
 

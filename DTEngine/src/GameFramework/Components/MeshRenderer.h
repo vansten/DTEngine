@@ -34,9 +34,6 @@ public:
 	virtual void OnShutdown() override;
 	virtual void OnRender(Graphics& graphics) override;
 
-	virtual void OnOwnerEnableChanged(bool enabled) override;
-	virtual void OnEnableChanged(bool enabled) override;
-
 	RenderQueue GetQueue() const;
 
 	inline void SetMesh(SharedPtr<MeshBase> mesh)

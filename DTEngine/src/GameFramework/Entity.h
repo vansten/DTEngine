@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Core/Archive.h"
+#include "Core/LayerManager.h"
 #include "Core/Platform.h"
 #include "Utility/Math.h"
 #include "Utility/EnumFlags.h"
@@ -33,6 +34,8 @@ private:
 	SharedPtr<Entity> _parent;
 
 	Transform _transform;
+
+	LayerID _layer;
 
 public:
 	EnumFlags<EntityFlag> Flags;
@@ -96,9 +99,27 @@ public:
 		return _enabled;
 	}
 
+	inline LayerID GetLayer() const
+	{
+		return _layer;
+	}
+
 	inline void SetName(const String& name)
 	{
 		_name = name;
+	}
+
+	inline void SetLayer(LayerID layer, bool changeInChildren = true)
+	{
+		_layer = layer;
+
+		if (changeInChildren)
+		{
+			for (const auto& child : _children)
+			{
+				child->SetLayer(layer, true);
+			}
+		}
 	}
 
 	inline const Transform& GetTransform() const

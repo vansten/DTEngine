@@ -1,8 +1,8 @@
 #include "Camera.h"
 
-#include "GameFramework/Entity.h"
 #include "Core/Window.h"
 #include "Debug/Debug.h"
+#include "GameFramework/Entity.h"
 
 #include "MeshRenderer.h"
 #include "Rendering/Material.h"
@@ -12,10 +12,10 @@
 WeakPtr<Camera> Camera::_main;
 DynamicArray<SharedPtr<Camera>> Camera::_allCameras;
 
-Camera::Camera(SharedPtr<Entity> owner) : Component(owner), _fov(60.0f), _near(0.01f), _far(1000.0f), _order(0)
+Camera::Camera(SharedPtr<Entity> owner) : Component(owner), _fov(60.0f), _near(0.01f), _far(1000.0f), _order(0), _cullingMask(LayerManager::ALL)
 {}
 
-Camera::Camera(const Camera& other) : Component(other), _fov(other._fov), _near(other._near), _far(other._far)
+Camera::Camera(const Camera& other) : Component(other), _fov(other._fov), _near(other._near), _far(other._far), _cullingMask(other._cullingMask)
 {}
 
 Camera::~Camera()
@@ -34,7 +34,7 @@ void Camera::DetermineVisibleRenderers(const DynamicArray<SharedPtr<MeshRenderer
 {
 	for (auto renderer : allRenderers)
 	{
-		if (IsVisible(renderer))
+		if ((_cullingMask & renderer->GetOwner()->GetLayer()) != 0 && IsVisible(renderer))
 		{
 			visibleRenderers.push_back(renderer);
 		}
@@ -94,6 +94,11 @@ void Camera::ConstructFrustum()
 
 bool Camera::IsVisible(SharedPtr<MeshRenderer> renderer)
 {
+	if (!renderer->IsEnabled() || !renderer->GetOwner()->IsEnabledInHierarchy())
+	{
+		return false;
+	}
+
 	// Check if bounding box of given renderer is inside frustum
 	// Pass also a model-to-world matrix
 	return IsInsideFrustum(renderer->GetBoundingBox(), renderer->GetOwner()->GetTransform().GetModelMatrix());

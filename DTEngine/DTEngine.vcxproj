@@ -221,6 +221,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\Core\App.cpp" />
     <ClCompile Include="src\Core\Archive.cpp" />
     <ClCompile Include="src\Core\Input.cpp" />
+    <ClCompile Include="src\Core\LayerManager.cpp" />
     <ClCompile Include="src\Core\MessageSystem.cpp" />
     <ClCompile Include="src\Core\Platform.cpp" />
     <ClCompile Include="src\Core\Time.cpp" />
@@ -262,6 +263,7 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\Core\Archive.h" />
     <ClInclude Include="src\Core\Event.h" />
     <ClInclude Include="src\Core\Input.h" />
+    <ClInclude Include="src\Core\LayerManager.h" />
     <ClInclude Include="src\Core\MessageSystem.h" />
     <ClInclude Include="src\Core\Platform.h" />
     <ClInclude Include="src\Core\Time.h" />

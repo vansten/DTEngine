@@ -83,30 +83,6 @@ void MeshRenderer::OnRender(Graphics& graphics)
 	graphics.DrawIndexed(_mesh->GetVertexBuffer(), _mesh->GetIndexBuffer(), _mesh->GetIndicesCount(), _mesh->GetVertexTypeSize(), 0);
 }
 
-void MeshRenderer::OnOwnerEnableChanged(bool enabled)
-{
-	if (enabled)
-	{
-		RegisterMeshRenderer(SharedFromThis());
-	}
-	else
-	{
-		UnregisterMeshRenderer(SharedFromThis());
-	}
-}
-
-void MeshRenderer::OnEnableChanged(bool enabled)
-{
-	if (enabled)
-	{
-		RegisterMeshRenderer(SharedFromThis());
-	}
-	else
-	{
-		UnregisterMeshRenderer(SharedFromThis());
-	}
-}
-
 RenderQueue MeshRenderer::GetQueue() const
 {
 	if (!_material)

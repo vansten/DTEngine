@@ -4,19 +4,19 @@
 #include "Rendering/Graphics.h"
 #include "Game.h"
 
-Entity::Entity() : EnableSharedFromThis<Entity>(), _name(DT_TEXT("NewObject")), _enabled(true)
+Entity::Entity() : EnableSharedFromThis<Entity>(), _name(DT_TEXT("NewObject")), _enabled(true), _layer(1)
 {}
 
-Entity::Entity(const String& name) : EnableSharedFromThis<Entity>(), _name(name), _enabled(true)
+Entity::Entity(const String& name) : EnableSharedFromThis<Entity>(), _name(name), _enabled(true), _layer(1)
 {}
 
-Entity::Entity(const Entity& other) : EnableSharedFromThis<Entity>(), _transform(other._transform), _name(other._name), _enabled(other._enabled)
+Entity::Entity(const Entity& other) : EnableSharedFromThis<Entity>(), _transform(other._transform), _name(other._name), _enabled(other._enabled), _layer(other._layer)
 {}
 
 SharedPtr<Entity> Entity::Copy() const
 {
-	SharedPtr<Entity> copy = SharedPtr<Entity>(new Entity(GetName() + DT_TEXT(" (copy)")));
-	copy->_transform = _transform;
+	SharedPtr<Entity> copy = SharedPtr<Entity>(new Entity(*this));
+	copy->_name += DT_TEXT(" (copy)");
 
 	auto it = _components.begin();
 	auto end = _components.end();

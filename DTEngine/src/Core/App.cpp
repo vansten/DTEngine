@@ -11,6 +11,8 @@
 #include "Rendering/Graphics.h"
 #include "ResourceManagement/Resources.h"
 
+#include "LayerManager.h"
+
 App::App()
 {}
 
@@ -20,6 +22,8 @@ App::~App()
 bool App::Initialize(UniquePtr<Game>&& game)
 {
 	_isRunning = false;
+
+	LayerManager::Initialize();
 
 	if (!gDebug.Initialize())
 	{

@@ -25,6 +25,7 @@ private:
 	float _fov;
 	float _near;
 	float _far;
+	LayerID _cullingMask;
 	short _order;
 
 public:
@@ -91,6 +92,16 @@ public:
 	inline const Matrix& GetProjectionMatrix() const
 	{
 		return _projectionMatrix;
+	}
+
+	inline int GetCullingMask() const
+	{
+		return _cullingMask;
+	}
+
+	inline void SetCullingMask(int cullingMask)
+	{
+		_cullingMask = cullingMask;
 	}
 
 public:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/LayerManager.h"
 #include "Core/Platform.h"
 #include "Rendering/Graphics.h"
 #include "Transform.h"
