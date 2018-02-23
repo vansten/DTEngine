@@ -30,20 +30,23 @@ public:
 	static const Matrix IDENTITY;
 
 public:
-	inline Matrix() { }
+	inline Matrix()
+	{}
 	inline Matrix(float m11, float m12, float m13, float m14,
 				  float m21, float m22, float m23, float m24,
 				  float m31, float m32, float m33, float m34,
-				  float m41, float m42, float m43, float m44) : M11(m11), M21(m21), M31(m31), M41(m41),
-																M12(m12), M22(m22), M32(m32), M42(m42),
-																M13(m13), M23(m23), M33(m33), M43(m43),
-																M14(m14), M24(m24), M34(m34), M44(m44) 
-	{ }
-	inline Matrix(const Matrix& m) : M11(m.M11), M21(m.M21), M31(m.M31), M41(m.M41),
-									 M12(m.M12), M22(m.M22), M32(m.M32), M42(m.M42),
-									 M13(m.M13), M23(m.M23), M33(m.M33), M43(m.M43),
-									 M14(m.M14), M24(m.M24), M34(m.M34), M44(m.M44)
-	{ }
+				  float m41, float m42, float m43, float m44) :
+		M11(m11), M21(m21), M31(m31), M41(m41),
+		M12(m12), M22(m22), M32(m32), M42(m42),
+		M13(m13), M23(m23), M33(m33), M43(m43),
+		M14(m14), M24(m24), M34(m34), M44(m44)
+	{}
+	inline Matrix(const Matrix& m) :
+		M11(m.M11), M21(m.M21), M31(m.M31), M41(m.M41),
+		M12(m.M12), M22(m.M22), M32(m.M32), M42(m.M42),
+		M13(m.M13), M23(m.M23), M33(m.M33), M43(m.M43),
+		M14(m.M14), M24(m.M24), M34(m.M34), M44(m.M44)
+	{}
 
 	inline Matrix GetTransposed() const
 	{
@@ -172,11 +175,11 @@ public:
 		Vector3 normalized = direction.GetNormalized();
 		Vector3 xAxis = Vector3::CrossProduct(up, normalized);
 		Vector3 yAxis = Vector3::CrossProduct(normalized, xAxis);
-		if(yAxis.LengthSquared() < 0.0001f)
+		if (yAxis.LengthSquared() < 0.0001f)
 		{
 			yAxis = Vector3::CrossProduct(normalized, Vector3::UNIT_X);
 		}
-		if(xAxis.Length() < 0.0001f)
+		if (xAxis.Length() < 0.0001f)
 		{
 			xAxis = Vector3::CrossProduct(yAxis, normalized);
 		}
@@ -194,11 +197,11 @@ public:
 
 	inline static Matrix LookTo(const Vector3& eyePosition, Vector3 eyeDirection, const Vector3& up)
 	{
-		if(!Math::Approximately(eyeDirection.Length(), 1.0f))
+		if (!Math::Approximately(eyeDirection.Length(), 1.0f))
 		{
 			eyeDirection.Normalize();
 		}
-		
+
 		Vector3 right = Vector3::CrossProduct(up, eyeDirection).GetNormalized();
 
 		Vector3 upFromCross = Vector3::CrossProduct(eyeDirection, right).GetNormalized();

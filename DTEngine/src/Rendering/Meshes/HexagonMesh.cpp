@@ -1,16 +1,13 @@
 #include "HexagonMesh.h"
 
 HexagonMesh::HexagonMesh() : MeshBase()
-{
-}
+{}
 
 HexagonMesh::HexagonMesh(const HexagonMesh& other) : MeshBase(other)
-{
-}
+{}
 
 HexagonMesh::~HexagonMesh()
-{
-}
+{}
 
 bool HexagonMesh::Initialize()
 {
@@ -19,7 +16,7 @@ bool HexagonMesh::Initialize()
 
 	VertexType* vertices = new VertexType[_verticesCount];
 	unsigned int* indices = new unsigned int[_indicesCount];
-	
+
 	for (int i = 0; i < 6; ++i)
 	{
 		const float angleRad = Math::DEG_TO_RAD * 60.0f * i;
@@ -32,7 +29,7 @@ bool HexagonMesh::Initialize()
 	}
 
 	vertices[6].Position = Vector3(0.0f, 0.0f, 0.0f);
-	
+
 	const bool result = CreateBuffers(vertices, indices);
 
 	delete[] vertices;

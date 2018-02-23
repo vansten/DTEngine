@@ -20,7 +20,7 @@ protected:
 
 protected:
 	App();
-	
+
 public:
 	~App();
 

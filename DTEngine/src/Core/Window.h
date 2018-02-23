@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "Platform.h"
@@ -12,7 +13,7 @@ private:
 
 	HWND _hWnd;
 
-public:	
+public:
 	inline unsigned int GetWidth() const
 	{
 		return _width;

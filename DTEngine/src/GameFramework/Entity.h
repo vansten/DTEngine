@@ -46,7 +46,7 @@ public:
 
 	inline void AddChild(SharedPtr<Entity> entity)
 	{
-		if(std::find(_children.begin(), _children.end(), entity) == _children.end())
+		if (std::find(_children.begin(), _children.end(), entity) == _children.end())
 		{
 			_children.push_back(entity);
 		}
@@ -55,7 +55,7 @@ public:
 	inline void RemoveChild(SharedPtr<Entity> entity)
 	{
 		auto& childIterator = std::find(_children.begin(), _children.end(), entity);
-		if(childIterator != _children.end())
+		if (childIterator != _children.end())
 		{
 			_children.erase(childIterator);
 		}
@@ -107,7 +107,7 @@ public:
 	}
 	inline void SetTransform(const Transform& transform)
 	{
-		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		if (!Flags.IsFlagSet(EntityFlag::STATIC))
 		{
 			_transform = transform;
 		}
@@ -128,21 +128,21 @@ public:
 
 	inline void SetPosition(const Vector3& position)
 	{
-		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		if (!Flags.IsFlagSet(EntityFlag::STATIC))
 		{
 			_transform.SetPosition(position);
 		}
 	}
 	inline void SetRotation(const Quaternion& rotation)
 	{
-		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		if (!Flags.IsFlagSet(EntityFlag::STATIC))
 		{
 			_transform.SetRotation(rotation);
 		}
 	}
 	inline void SetScale(const Vector3& scale)
 	{
-		if(!Flags.IsFlagSet(EntityFlag::STATIC))
+		if (!Flags.IsFlagSet(EntityFlag::STATIC))
 		{
 			_transform.SetScale(scale);
 		}
@@ -158,7 +158,7 @@ public:
 	}
 	inline SharedPtr<Entity> GetChildAt(size_t index) const
 	{
-		if(_children.size() == 0 || index > _children.size())
+		if (_children.size() == 0 || index > _children.size())
 		{
 			return nullptr;
 		}
@@ -168,12 +168,12 @@ public:
 
 	inline void SetParent(SharedPtr<Entity> entity)
 	{
-		if(_parent)
+		if (_parent)
 		{
 			_parent->RemoveChild(SharedFromThis());
 		}
 		_parent = entity;
-		if(_parent)
+		if (_parent)
 		{
 			_parent->AddChild(SharedFromThis());
 		}
@@ -197,7 +197,7 @@ template<typename T>
 inline SharedPtr<T> Entity::AddComponent()
 {
 	SharedPtr<T> newComponent = SharedPtr<T>(new T(SharedFromThis()));
-	if(Flags.IsFlagSet(EntityFlag::DURING_UPDATE))
+	if (Flags.IsFlagSet(EntityFlag::DURING_UPDATE))
 	{
 		_newComponents.push_back(newComponent);
 	}
@@ -216,10 +216,10 @@ inline SharedPtr<T> Entity::GetComponent() const
 {
 	SharedPtr<T> component = nullptr;
 
-	for(const auto& comp : _components)
+	for (const auto& comp : _components)
 	{
 		component = DynamicPointerCast<T>(const_cast<SharedPtr<Component>&>(comp));
-		if(component)
+		if (component)
 		{
 			return component;
 		}
@@ -233,10 +233,10 @@ inline DynamicArray<SharedPtr<T>> Entity::GetComponents() const
 {
 	DynamicArray<SharedPtr<T>> components;
 
-	for(const auto& comp : _components)
+	for (const auto& comp : _components)
 	{
 		SharedPtr<T> component = DynamicPointerCast<T>(const_cast<SharedPtr<Component>&>(comp));
-		if(component)
+		if (component)
 		{
 			components.push_back(component);
 		}

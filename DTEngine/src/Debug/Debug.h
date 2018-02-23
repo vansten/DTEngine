@@ -19,10 +19,12 @@ enum class LogVerbosity
 
 DECLARE_ENUM_NAMES(LogVerbosity)
 {
-	{ DT_TEXT("Error"), LogVerbosity::Error },
-	{ DT_TEXT("Exception"), LogVerbosity::Exception },
-	{ DT_TEXT("Log"), LogVerbosity::Log },
-	{ DT_TEXT("Warning"), LogVerbosity::Warning }
+	{
+		DT_TEXT("Error"), LogVerbosity::Error
+	},
+		{DT_TEXT("Exception"), LogVerbosity::Exception},
+		{DT_TEXT("Log"), LogVerbosity::Log},
+		{DT_TEXT("Warning"), LogVerbosity::Warning}
 };
 
 struct Channel final
@@ -32,8 +34,10 @@ public:
 	bool Visible;
 
 public:
-	Channel() { }
-	Channel(const String& name, bool visible) : Name(name), Visible(visible) { }
+	Channel()
+	{}
+	Channel(const String& name, bool visible) : Name(name), Visible(visible)
+	{}
 
 	inline bool operator==(const Channel& other) const
 	{
@@ -55,7 +59,8 @@ public:
 	LogVerbosity Verbosity;
 	String Message;
 
-	Log(LogVerbosity verbosity, const String& message) : Verbosity(verbosity), Message(message) { }
+	Log(LogVerbosity verbosity, const String& message) : Verbosity(verbosity), Message(message)
+	{}
 };
 
 struct DebugDrawGeometry final
@@ -115,7 +120,10 @@ public:
 	void DrawSphere(const Vector3& center, float radius, const Vector4& color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float lifetime = -1.0f);
 	void DrawLine(const Vector3& start, const Vector3& end, const Vector4& color = Vector4(1.0f, 1.0f, 1.0f, 1.0f), float thickness = 1.0f, float lifetime = -1.0f);
 
-	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const { return _draws; }
+	inline const DynamicArray<DebugDrawGeometry>& GetDraws() const
+	{
+		return _draws;
+	}
 };
 
 extern const String CHANNEL_ENGINE;

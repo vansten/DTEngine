@@ -4,7 +4,7 @@
 
 bool RenderState::Initialize(ID3D11Device* device)
 {
-	if(!device)
+	if (!device)
 	{
 		return false;
 	}

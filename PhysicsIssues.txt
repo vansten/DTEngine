@@ -20,6 +20,15 @@ PhysicalBody derives from Component:
 	Event<void, const TriggerInfo&> OnTriggerBegin;
 	Event<void, const TriggerInfo&> OnTriggerEnd;
 
+	Load(archive bytes)
+	{
+		foreach(Collider* col in archive bytes)
+		{
+			_colliders.Add(col);
+			col->Load(archive bytes);
+		}
+	}
+
 	Initialize()
 	{
 		_rigidbody = gPhysics.CreateRigidbody(_rigidbodyParameters, this);
@@ -64,12 +73,27 @@ PhysicalBody derives from Component:
 Collider:
 	PxShape* _shape;
 
+	Load(archive bytes) = 0;
 	Initialize(PhysicalBody* r) = 0;
 	Shutdown() = 0;
+
+	MatchToMeshBoundingBox(const BoundingBox& bb) = 0;
 
 BoxCollider derives from Collider:
 	Vector3 _center;
 	Vector3 _size;
+
+	BoxCollider()
+	{
+		_center = Vector3::ONE;
+		_size = Vector3::ONE;
+	}
+
+	Load(archive bytes)
+	{
+		_center = LoadVector3FromBytes(archive bytes);
+		_size = LoadVector3FromBytes(archive bytes);
+	}
 
 	Initialize(PhysicalBody* r)
 	{	
@@ -80,6 +104,18 @@ BoxCollider derives from Collider:
 	Shutdown()
 	{
 		_shape->Release();	(Is it necessary if PxShape is attached to PxRigidbody?)
+	}
+
+	SetCenter(newCenter)
+	{
+		_center = newCenter;
+		_shape->GetBox().ChangeCenter(_center);
+	}
+
+	SetSize(newSize)
+	{
+		_size = newSize;
+		_shape->GetBox().ChangeSize(_size);
 	}
 
 SphereCollider, CapsuleCollider etc. work the same way as BoxCollider does

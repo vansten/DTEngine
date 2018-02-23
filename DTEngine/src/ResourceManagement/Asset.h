@@ -17,5 +17,8 @@ public:
 	virtual bool Initialize();
 	virtual void Shutdown();
 
-	inline const String& GetPath() const { return _path; }
+	inline const String& GetPath() const
+	{
+		return _path;
+	}
 };

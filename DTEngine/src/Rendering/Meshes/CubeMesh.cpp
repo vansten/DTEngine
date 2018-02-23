@@ -1,19 +1,13 @@
 #include "CubeMesh.h"
 
 CubeMesh::CubeMesh() : MeshBase()
-{
-
-}
+{}
 
 CubeMesh::CubeMesh(const CubeMesh& other) : MeshBase(other)
-{
-
-}
+{}
 
 CubeMesh::~CubeMesh()
-{
-
-}
+{}
 
 bool CubeMesh::Initialize()
 {

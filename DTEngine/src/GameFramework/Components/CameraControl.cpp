@@ -10,18 +10,13 @@ const float CameraControl::_xRotationMax = 89.99f;
 const float CameraControl::_xRotationMin = -89.99f;
 
 CameraControl::CameraControl(SharedPtr<Entity> owner) : Component(owner)
-{
-}
+{}
 
 CameraControl::CameraControl(const CameraControl& other) : Component(other), _movementSpeed(other._movementSpeed), _shiftMultiplier(other._shiftMultiplier), _mouseSensitivity(other._mouseSensitivity)
-{
-
-}
+{}
 
 CameraControl::~CameraControl()
-{
-
-}
+{}
 
 SharedPtr<Component> CameraControl::Copy(SharedPtr<Entity> newOwner) const
 {
@@ -109,8 +104,8 @@ bool CameraControl::OnLMBReleased()
 {
 	Vector3 wp = Camera::GetMainCamera()->ConvertScreenToWorldPoint(gInput.GetMousePosition());
 	Vector2 screen = Camera::GetMainCamera()->ConvertWorldToScreenPoint(wp);
-	
-	gDebug.Print(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("IMPLEMENT RAYCASTS"));	
+
+	gDebug.Print(LogVerbosity::Log, CHANNEL_CAMERA, DT_TEXT("IMPLEMENT RAYCASTS"));
 	gDebug.DrawLine(GetOwner()->GetPosition(), GetOwner()->GetPosition() + GetOwner()->GetTransform().GetForward() * 10.0f, Vector4(0.0f, 0.0f, 1.0f, 1.0f), 1.0f, 15.0f);
 
 	return false;

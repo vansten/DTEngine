@@ -29,17 +29,17 @@ void BoundingBox::SetMinMax(Vector3 min, Vector3 max)
 	static const float TOLERANCE = 0.0001f;
 	static const float HALF_TOLERANCE = 0.5f * TOLERANCE;
 
-	if(abs(min.X - max.X) < TOLERANCE)
+	if (abs(min.X - max.X) < TOLERANCE)
 	{
 		min.X -= HALF_TOLERANCE;
 		max.X += HALF_TOLERANCE;
 	}
-	if(abs(min.Y - max.Y) < TOLERANCE)
+	if (abs(min.Y - max.Y) < TOLERANCE)
 	{
 		min.Y -= HALF_TOLERANCE;
 		max.Y += HALF_TOLERANCE;
 	}
-	if(abs(min.Z - max.Z) < TOLERANCE)
+	if (abs(min.Z - max.Z) < TOLERANCE)
 	{
 		min.Z -= HALF_TOLERANCE;
 		max.Z += HALF_TOLERANCE;
@@ -47,7 +47,7 @@ void BoundingBox::SetMinMax(Vector3 min, Vector3 max)
 
 	_min = min;
 	_max = max;
-	
+
 	CalculateCorners();
 }
 
@@ -56,7 +56,7 @@ void BoundingBox::CalculateMinMax(const DynamicArray<Vector3>& positions)
 	Vector3 minPosition(FLT_MAX, FLT_MAX, FLT_MAX);
 	Vector3 maxPosition(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	for(auto& position : positions)
+	for (auto& position : positions)
 	{
 		minPosition = Vector3::Min(minPosition, position);
 		maxPosition = Vector3::Max(maxPosition, position);

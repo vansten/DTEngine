@@ -106,9 +106,9 @@ public:
 
 	inline static void OnResize()
 	{
-		for(auto& camera : _allCameras)
+		for (auto& camera : _allCameras)
 		{
-			if(camera)
+			if (camera)
 			{
 				camera->Resize();
 			}

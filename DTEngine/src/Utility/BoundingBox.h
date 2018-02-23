@@ -12,7 +12,8 @@ private:
 	DynamicArray<Vector3> _corners;
 
 public:
-	inline BoundingBox() { }
+	inline BoundingBox()
+	{}
 	BoundingBox(const Vector3& min, const Vector3& max);
 	BoundingBox(const DynamicArray<Vector3>& positions);
 
@@ -67,7 +68,7 @@ inline void BoundingBox::CalculateMinMax(const T* dataArray, unsigned int dataCo
 	Vector3 minPosition(FLT_MAX, FLT_MAX, FLT_MAX);
 	Vector3 maxPosition(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	for(unsigned int i = 0; i < dataCount; ++i)
+	for (unsigned int i = 0; i < dataCount; ++i)
 	{
 		minPosition = Vector3::Min(minPosition, positionGetter(dataArray[i]));
 		maxPosition = Vector3::Max(maxPosition, positionGetter(dataArray[i]));

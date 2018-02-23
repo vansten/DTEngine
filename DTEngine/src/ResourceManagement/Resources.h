@@ -30,8 +30,6 @@ protected:
 	UniquePtr<Material> _missingMaterial;
 
 public:
-	Resources();
-
 	bool Initialize();
 	void Shutdown();
 
@@ -54,14 +52,14 @@ SharedPtr<T> Resources::Get()
 	std::string typeNameStr = typeid(T).name();
 	String typeName(typeNameStr.begin(), typeNameStr.end());
 	path += typeName;
-	if(_assetsMap.find(path) != _assetsMap.end())
+	if (_assetsMap.find(path) != _assetsMap.end())
 	{
 		return StaticPointerCast<T>(_assetsMap[path]);
 	}
 
 	SharedPtr<T> nAsset(new T());
-	bool result =  nAsset->Initialize();
-	if(!result)
+	bool result = nAsset->Initialize();
+	if (!result)
 	{
 		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s"), typeName.c_str());
 		nAsset->Shutdown();
@@ -78,7 +76,7 @@ SharedPtr<T> Resources::Get()
 template<typename T>
 SharedPtr<T> Resources::Get(const String& path)
 {
-	if(_assetsMap.find(path) != _assetsMap.end())
+	if (_assetsMap.find(path) != _assetsMap.end())
 	{
 		return StaticPointerCast<T>(_assetsMap[path]);
 	}
@@ -87,7 +85,7 @@ SharedPtr<T> Resources::Get(const String& path)
 	String typeName(typeNameStr.begin(), typeNameStr.end());
 	SharedPtr<T> nAsset(new T());
 	bool result = nAsset->Load(path);
-	if(!result)
+	if (!result)
 	{
 		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot load %s at path: %s"), typeName.c_str(), path.c_str());
 		nAsset->Shutdown();
@@ -97,7 +95,7 @@ SharedPtr<T> Resources::Get(const String& path)
 	gDebug.Printf(LogVerbosity::Log, CHANNEL_ENGINE, DT_TEXT("Loaded asset of type %s at path: %s"), typeName.c_str(), path.c_str());
 
 	result = nAsset->Initialize();
-	if(!result)
+	if (!result)
 	{
 		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize %s at path: %s"), typeName.c_str(), path.c_str());
 		nAsset->Shutdown();
@@ -120,7 +118,7 @@ inline SharedPtr<T> Resources::GetCopy(const T& original)
 	String path = original.GetPath() + DT_TEXT("_copy");
 
 	bool result = nAsset->Initialize();
-	if(!result)
+	if (!result)
 	{
 		gDebug.Printf(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize copy of a %s"), typeName.c_str());
 		nAsset->Shutdown();

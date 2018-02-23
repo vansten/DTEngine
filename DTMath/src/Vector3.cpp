@@ -11,9 +11,7 @@ const Vector3 Vector3::UNIT_Z(0.0f, 0.0f, 1.0f);
 const Vector3 Vector3::ONE(1.0f, 1.0f, 1.0f);
 
 Vector3::Vector3(const Vector4& v4) : X(v4.X), Y(v4.Y), Z(v4.Z)
-{
-
-}
+{}
 
 Rotator Vector3::ToRotator() const
 {
@@ -36,17 +34,17 @@ Quaternion Vector3::ToQuaternion() const
 	// and conversion to quaternion
 
 	static const float ALMOST_EQUAL_DOT = 0.998f;
-	
+
 	Vector3 direction = GetNormalized();
 	Vector3 initialDirection = Vector3::UNIT_Z;
 
 	float dot = Vector3::DotProduct(direction, initialDirection);
-	
-	if(dot > ALMOST_EQUAL_DOT)
+
+	if (dot > ALMOST_EQUAL_DOT)
 	{
 		return Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
 	}
-	else if(dot < -ALMOST_EQUAL_DOT)
+	else if (dot < -ALMOST_EQUAL_DOT)
 	{
 		direction = direction * Rotator(Math::RAD_TO_DEG * 0.5f, 0.0f, 0.0f).ToQuaternion();
 	}
@@ -60,7 +58,7 @@ Quaternion Vector3::ToQuaternion() const
 
 Vector3 Vector3::ClampLength(const Vector3& v, float length)
 {
-	if(v.LengthSquared() > length * length)
+	if (v.LengthSquared() > length * length)
 	{
 		return v.GetNormalized() * length;
 	}

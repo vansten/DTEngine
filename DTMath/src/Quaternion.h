@@ -25,10 +25,14 @@ public:
 	static const Quaternion IDENTITY;
 
 public:
-	inline Quaternion() : W(1.0f), X(0.0f), Y(0.0f), Z(0.0f) { }
-	inline Quaternion(float x, float y, float z, float w) : W(w), X(x), Y(y), Z(z) { }
-	inline Quaternion(const Vector3& v, float w) : W(w), V(v) { }
-	inline Quaternion(const Quaternion& q) : W(q.W), V(q.V) { }
+	inline Quaternion() : W(1.0f), X(0.0f), Y(0.0f), Z(0.0f)
+	{}
+	inline Quaternion(float x, float y, float z, float w) : W(w), X(x), Y(y), Z(z)
+	{}
+	inline Quaternion(const Vector3& v, float w) : W(w), V(v)
+	{}
+	inline Quaternion(const Quaternion& q) : W(q.W), V(q.V)
+	{}
 
 	inline Quaternion Conjugate() const
 	{
@@ -64,7 +68,7 @@ public:
 	inline void NormalizeSafe()
 	{
 		float l = Length();
-		if(Math::Approximately(l, 0.0f))
+		if (Math::Approximately(l, 0.0f))
 		{
 			return;
 		}
@@ -94,11 +98,11 @@ public:
 
 	inline static Quaternion Slerp(const Quaternion& from, const Quaternion& to, float t)
 	{
-		if(Math::Approximately(t, 0.0f))
+		if (Math::Approximately(t, 0.0f))
 		{
 			return from;
 		}
-		if(Math::Approximately(t, 1.0f))
+		if (Math::Approximately(t, 1.0f))
 		{
 			return to;
 		}
@@ -107,7 +111,7 @@ public:
 		float halfTheta = Math::Acos(cosHalfTheta);
 		float sinHalfTheta = Math::Sqrt(1.0f - cosHalfTheta);
 
-		if(Math::Approximately(sinHalfTheta, 0.0f))
+		if (Math::Approximately(sinHalfTheta, 0.0f))
 		{
 			return Quaternion(from.V * 0.5f + to.V * 0.5f, from.W * 0.5f + to.W * 0.5f);
 		}
@@ -124,7 +128,7 @@ inline Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 	return Quaternion(
 		-q1.X * q2.Z + q1.Y * q2.W + q1.Z * q2.X + q1.W * q2.Y,
 		q1.X * q2.Y - q1.Y * q2.X + q1.Z * q2.W + q1.W * q2.Z,
-		-q1.X * q2.X - q1.Y * q2.Y - q1.Z * q2.Z + q1.W * q2.W, 
+		-q1.X * q2.X - q1.Y * q2.Y - q1.Z * q2.Z + q1.W * q2.W,
 		q1.X * q2.W + q1.Y * q2.Z - q1.Z * q2.Y + q1.W * q2.X
 	);
 }

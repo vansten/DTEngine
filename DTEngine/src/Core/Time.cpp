@@ -3,9 +3,7 @@
 Time gTime;
 
 Time::Time() : _deltaTime(0.0f), _timeSinceStartup(0.0f), _timeScale(1.0f)
-{
-
-}
+{}
 
 void Time::Initialize()
 {
@@ -23,5 +21,14 @@ void Time::Tick()
 	_timeSinceStartup += _deltaTime;
 
 	_previousTime = currentTime;
+}
+
+float Time::GetRealtime() const
+{
+	LARGE_INTEGER currentTime;
+	QueryPerformanceCounter(&currentTime);
+	float realtime = currentTime.LowPart * 1000.0f / _frequency.LowPart;
+
+	return realtime * 0.001f;
 }
 

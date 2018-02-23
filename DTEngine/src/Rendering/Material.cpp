@@ -11,26 +11,20 @@
 static const String DEFAULT_SHADER_PATH = DT_TEXT("Resources/Shaders/Color");
 
 Material::Material() : _shader(nullptr), _color(1.0f, 1.0f, 1.0f, 1.0f), _queue(OPAQUE_UPPER_LIMIT), _renderState(nullptr)
-{
-
-}
+{}
 
 Material::Material(const Material& other) : _shader(other._shader), _color(other._color), _queue(other._queue), _parametersCollection(other._parametersCollection), _renderState(nullptr), _renderStateParams(other._renderStateParams)
-{
-
-}
+{}
 
 Material::~Material()
-{
-
-}
+{}
 
 bool Material::Load(const String& path)
 {
 	Asset::Load(path);
 
 	std::ifstream materialFile(path);
-	if(!materialFile.is_open())
+	if (!materialFile.is_open())
 	{
 		return false;
 	}
@@ -49,7 +43,7 @@ bool Material::Load(const String& path)
 	_color = materialData["Color"];
 
 	JSON parametersData = materialData["Parameters"];
-	if(!_parametersCollection.LoadFromJSON(parametersData))
+	if (!_parametersCollection.LoadFromJSON(parametersData))
 	{
 		return false;
 	}
@@ -64,13 +58,13 @@ bool Material::Load(const String& path)
 bool Material::Save(const String& path)
 {
 	std::ofstream materialFile(path);
-	if(!materialFile.is_open())
+	if (!materialFile.is_open())
 	{
 		return false;
 	}
 
 	JSON materialData;
-	if(_shader)
+	if (_shader)
 	{
 		materialData["Shader"] = _shader->GetPath();
 	}
@@ -98,22 +92,22 @@ bool Material::Save(const String& path)
 bool Material::Initialize()
 {
 	_queue = OPAQUE_UPPER_LIMIT;
-	
+
 	Graphics& graphics = gGraphics;
-	
-	if(!graphics.CreateRenderState(_renderState, _renderStateParams))
+
+	if (!graphics.CreateRenderState(_renderState, _renderStateParams))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create render state"));
 		return false;
 	}
 
-	if(!_shader)
+	if (!_shader)
 	{
 		_shader = gResources.Get<Shader>(DEFAULT_SHADER_PATH);
 	}
 
 	String colorName = DT_TEXT("Color");
-	if(_parametersCollection.GetVector4(colorName) == nullptr)
+	if (_parametersCollection.GetVector4(colorName) == nullptr)
 	{
 		_parametersCollection.SetColor(colorName, _color);
 	}
@@ -123,7 +117,7 @@ bool Material::Initialize()
 
 void Material::Shutdown()
 {
-	if(_renderState)
+	if (_renderState)
 	{
 		_renderState->Shutdown();
 		_renderState = nullptr;
@@ -138,7 +132,7 @@ void Material::UpdatePerFrameBuffers(Graphics& graphics)
 	SetMatrix(WORLD_TO_VIEW_MATRIX_NAME, Camera::GetMainCamera()->GetViewMatrix());
 	SetMatrix(VIEW_TO_PROJECTION_MATRIX_NAME, Camera::GetMainCamera()->GetProjectionMatrix());
 
-	if(_shader)
+	if (_shader)
 	{
 		_shader->UpdatePerFrameBuffers(graphics, _parametersCollection);
 	}
@@ -146,7 +140,7 @@ void Material::UpdatePerFrameBuffers(Graphics& graphics)
 
 void Material::UpdatePerDrawCallBuffers(Graphics& graphics)
 {
-	if(_shader)
+	if (_shader)
 	{
 		_shader->UpdatePerDrawCallBuffers(graphics, _parametersCollection);
 	}

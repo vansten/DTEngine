@@ -1,19 +1,13 @@
 #include "TriangleMesh.h"
 
 TriangleMesh::TriangleMesh() : MeshBase()
-{
-
-}
+{}
 
 TriangleMesh::TriangleMesh(const TriangleMesh& other) : MeshBase(other)
-{
-
-}
+{}
 
 TriangleMesh::~TriangleMesh()
-{
-
-}
+{}
 
 bool TriangleMesh::Initialize()
 {
@@ -40,7 +34,7 @@ bool TriangleMesh::Initialize()
 	indices[2] = 2;
 
 	const bool result = CreateBuffers(vertices, indices);
-	
+
 	delete[] vertices;
 	delete[] indices;
 

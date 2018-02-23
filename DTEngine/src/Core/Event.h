@@ -16,17 +16,22 @@ private:
 		int _priority;
 
 	public:
-		DelegateBase(int priority) : _priority(priority) { }
-		virtual ~DelegateBase()	{ }
+		DelegateBase(int priority) : _priority(priority)
+		{}
+		virtual ~DelegateBase()
+		{}
 
 		virtual ReturnType Execute(Args... args) const = 0;
 		inline virtual bool IsBound() const = 0;
 
-		inline int GetPriority() const { return _priority; }
-		
+		inline int GetPriority() const
+		{
+			return _priority;
+		}
+
 		static bool Compare(const UniquePtr<DelegateBase>& first, const UniquePtr<DelegateBase>& second)
 		{
-			if(!first || !second)
+			if (!first || !second)
 			{
 				return false;
 			}
@@ -47,11 +52,12 @@ public:
 		FunctionType _function;
 
 	public:
-		Delegate(FunctionType function, int priority) : DelegateBase(priority), _function(function) { }
+		Delegate(FunctionType function, int priority) : DelegateBase(priority), _function(function)
+		{}
 
 		virtual ReturnType Execute(Args... args) const override
 		{
-			if(_function)
+			if (_function)
 			{
 				return _function(args...);
 			}
@@ -78,12 +84,13 @@ public:
 		WeakPtr<Class> _object;
 
 	public:
-		ClassDelegate(SharedPtr<Class> object, ClassFunctionType function, int priority) : DelegateBase(priority), _object(object), _function(function) { }
+		ClassDelegate(SharedPtr<Class> object, ClassFunctionType function, int priority) : DelegateBase(priority), _object(object), _function(function)
+		{}
 
 		virtual ReturnType Execute(Args... args) const override
 		{
 			SharedPtr<Class> sharedObject = _object.lock();
-			if(_function && sharedObject)
+			if (_function && sharedObject)
 			{
 				Class* rawPtr = sharedObject.get();
 				return (rawPtr->*_function)(args...);
@@ -123,7 +130,7 @@ public:
 		{
 			const DelegateBase* const db = del.get();
 			const Delegate* const d = dynamic_cast<const Delegate* const>(db);
-			if(!d)
+			if (!d)
 			{
 				return false;
 			}
@@ -131,7 +138,7 @@ public:
 			return d->_function == function;
 		});
 
-		if(found != _delegates.end())
+		if (found != _delegates.end())
 		{
 			_delegates.erase(found);
 		}
@@ -151,7 +158,7 @@ public:
 		{
 			const DelegateBase* const db = del.get();
 			const ClassDelegate<Class>* const cd = dynamic_cast<const ClassDelegate<Class>* const>(db);
-			if(!cd)
+			if (!cd)
 			{
 				return false;
 			}
@@ -159,7 +166,7 @@ public:
 			return cd->_function == function && cd->_object == object;
 		});
 
-		if(found != _delegates.end())
+		if (found != _delegates.end())
 		{
 			_delegates.erase(found);
 		}
@@ -169,12 +176,12 @@ public:
 	{
 		const size_t functionsSize = _delegates.size();
 		size_t i = 0;
-		for(auto& function : _delegates)
+		for (auto& function : _delegates)
 		{
 			++i;
-			if(function->IsBound())
+			if (function->IsBound())
 			{
-				if(i == functionsSize)
+				if (i == functionsSize)
 				{
 					return function->Execute(args...);
 				}
@@ -192,13 +199,13 @@ public:
 	{
 		const size_t functionsSize = _delegates.size();
 		size_t i = 0;
-		for(auto& function : _delegates)
+		for (auto& function : _delegates)
 		{
 			++i;
-			if(function->IsBound())
+			if (function->IsBound())
 			{
 				const ReturnType returnValue = function->Execute(args...);
-				if(predicate(returnValue) || i == functionsSize)
+				if (predicate(returnValue) || i == functionsSize)
 				{
 					return returnValue;
 				}

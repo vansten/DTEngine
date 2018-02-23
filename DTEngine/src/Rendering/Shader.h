@@ -78,7 +78,16 @@ public:
 	void UpdatePerFrameBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection);
 	void UpdatePerDrawCallBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection);
 
-	inline ID3D11InputLayout* GetInputLayout() const { return _inputLayout; }
-	inline ID3D11VertexShader* GetVertexShader() const { return _vertexShader; }
-	inline ID3D11PixelShader* GetPixelShader() const { return _pixelShader; }
+	inline ID3D11InputLayout* GetInputLayout() const
+	{
+		return _inputLayout;
+	}
+	inline ID3D11VertexShader* GetVertexShader() const
+	{
+		return _vertexShader;
+	}
+	inline ID3D11PixelShader* GetPixelShader() const
+	{
+		return _pixelShader;
+	}
 };

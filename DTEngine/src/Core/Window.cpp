@@ -33,7 +33,7 @@ bool Window::Open(const String& title, unsigned int width, unsigned int height)
 	wndClassEx.lpszClassName = DT_TEXT("DTEngineClass");
 	wndClassEx.hIconSm = wndClassEx.hIcon;
 
-	if(!RegisterClassEx(&wndClassEx))
+	if (!RegisterClassEx(&wndClassEx))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot register window class"));
 
@@ -69,7 +69,7 @@ bool Window::Open(const String& title, unsigned int width, unsigned int height)
 		0
 	);
 
-	if(_hWnd == INVALID_HANDLE_VALUE)
+	if (_hWnd == INVALID_HANDLE_VALUE)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create HWND"));
 
@@ -103,7 +103,7 @@ bool Window::Close()
 
 void Window::SetNewSize(unsigned int width, unsigned int height)
 {
-	if(_width == width && _height == height)
+	if (_width == width && _height == height)
 	{
 		// Prevent resizing when current size already matches requested size
 		return;
@@ -120,143 +120,143 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// Helper bool to catch only size msg in EXITSIZEMMOVE and ENTERSIZEMOVE
 	static bool wasResizing = false;
 
-	switch(msg)
+	switch (msg)
 	{
-	case WM_ACTIVATE:
-		{
-			POINT point;
-			GetCursorPos(&point);
-			if(App::GetInstance()->IsRunning())
+		case WM_ACTIVATE:
 			{
-				gInput.SetMousePosition(Vector2((float)point.x, (float)point.y));
-			}
-			break;
-		}
-	case WM_QUIT:
-	case WM_DESTROY:
-	case WM_CLOSE:
-		{
-			MessageSystem::PostQuit();
-			break;
-		}
-	case WM_SIZE:
-		{
-			const unsigned int newWidth = LOWORD(lParam);
-			const unsigned int newHeight = HIWORD(lParam);
-
-			gWindow.SetNewSize(newWidth, newHeight);
-
-			if(App::GetInstance()->IsRunning())
-			{
-				wasResizing = true;
-				gGraphics.OnResize();
-			}
-
-			break;
-		}
-	case WM_ENTERSIZEMOVE:
-		{
-			gGraphics.BeginResize();
-			break;
-		}
-	case WM_EXITSIZEMOVE:
-		{
-			if(wasResizing)
-			{
-				wasResizing = false;
-				gGraphics.EndResize();
-			}
-			break;
-		}
-	case WM_KEYDOWN:
-		{
-			if(App::GetInstance()->IsRunning())
-			{
-				// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
-				// So in Down event I need to check if previous state of key was 'up' (not 'down')
-				const bool wasUp = !(lParam & (1 << 30));
-				if(wasUp)
+				POINT point;
+				GetCursorPos(&point);
+				if (App::GetInstance()->IsRunning())
 				{
-					gInput.OnKeyDown((int)wParam);
+					gInput.SetMousePosition(Vector2((float)point.x, (float)point.y));
 				}
+				break;
 			}
-			break;
-		}
-	case WM_KEYUP:
-		{
-			if(App::GetInstance()->IsRunning())
+		case WM_QUIT:
+		case WM_DESTROY:
+		case WM_CLOSE:
 			{
-				// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
-				// So in Up event I need to check if previous state of key was 'down'
-				const bool wasDown = lParam & (1 << 30);
-				if(wasDown)
-				{
-					gInput.OnKeyUp((int)wParam);
-				}
+				MessageSystem::PostQuit();
+				break;
 			}
-			break;
-		}
-	case WM_MOUSEMOVE:
-	case WM_NCMOUSEMOVE:
-		{
-			if(App::GetInstance()->IsRunning())
+		case WM_SIZE:
 			{
-				const int xPos = GET_X_LPARAM(lParam);
-				const int yPos = GET_Y_LPARAM(lParam);
+				const unsigned int newWidth = LOWORD(lParam);
+				const unsigned int newHeight = HIWORD(lParam);
 
-				gInput.SetMousePosition(Vector2((float)xPos, (float)yPos));
-			}
-			break;
-		}
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-	case WM_MBUTTONDOWN:
-		{
-			if(App::GetInstance()->IsRunning())
-			{
-				// Down events can be handled in one case statement
-				// Bitwise AND cause wParam can be something like MK_LBUTTON | MK_MBUTTON | ...
-				if((wParam & MK_LBUTTON) != 0)
-				{
-					gInput.OnMouseDown(VK_LBUTTON);
-				}
-				if((wParam & MK_RBUTTON) != 0)
-				{
-					gInput.OnMouseDown(VK_RBUTTON);
-				}
-				if((wParam & MK_MBUTTON) != 0)
-				{
-					gInput.OnMouseDown(VK_MBUTTON);
-				}
-			}
+				gWindow.SetNewSize(newWidth, newHeight);
 
-			break;
-		}
-		// Up events cannot be (unfortunately) handled in one case statement as Down events...
-	case WM_LBUTTONUP:
-		{
-			if(App::GetInstance()->IsRunning())
-			{
-				gInput.OnMouseUp(VK_LBUTTON);
+				if (App::GetInstance()->IsRunning())
+				{
+					wasResizing = true;
+					gGraphics.OnResize();
+				}
+
+				break;
 			}
-			break;
-		}
-	case WM_RBUTTONUP:
-		{
-			if(App::GetInstance()->IsRunning())
+		case WM_ENTERSIZEMOVE:
 			{
-				gInput.OnMouseUp(VK_RBUTTON);
+				gGraphics.BeginResize();
+				break;
 			}
-			break;
-		}
-	case WM_MBUTTONUP:
-		{
-			if(App::GetInstance()->IsRunning())
+		case WM_EXITSIZEMOVE:
 			{
-				gInput.OnMouseUp(VK_MBUTTON);
+				if (wasResizing)
+				{
+					wasResizing = false;
+					gGraphics.EndResize();
+				}
+				break;
 			}
-			break;
-		}
+		case WM_KEYDOWN:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
+					// So in Down event I need to check if previous state of key was 'up' (not 'down')
+					const bool wasUp = !(lParam & (1 << 30));
+					if (wasUp)
+					{
+						gInput.OnKeyDown((int)wParam);
+					}
+				}
+				break;
+			}
+		case WM_KEYUP:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					// 30 bit of lParam indicates whether key was down (1) or up (0) before message was sent
+					// So in Up event I need to check if previous state of key was 'down'
+					const bool wasDown = lParam & (1 << 30);
+					if (wasDown)
+					{
+						gInput.OnKeyUp((int)wParam);
+					}
+				}
+				break;
+			}
+		case WM_MOUSEMOVE:
+		case WM_NCMOUSEMOVE:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					const int xPos = GET_X_LPARAM(lParam);
+					const int yPos = GET_Y_LPARAM(lParam);
+
+					gInput.SetMousePosition(Vector2((float)xPos, (float)yPos));
+				}
+				break;
+			}
+		case WM_LBUTTONDOWN:
+		case WM_RBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					// Down events can be handled in one case statement
+					// Bitwise AND cause wParam can be something like MK_LBUTTON | MK_MBUTTON | ...
+					if ((wParam & MK_LBUTTON) != 0)
+					{
+						gInput.OnMouseDown(VK_LBUTTON);
+					}
+					if ((wParam & MK_RBUTTON) != 0)
+					{
+						gInput.OnMouseDown(VK_RBUTTON);
+					}
+					if ((wParam & MK_MBUTTON) != 0)
+					{
+						gInput.OnMouseDown(VK_MBUTTON);
+					}
+				}
+
+				break;
+			}
+			// Up events cannot be (unfortunately) handled in one case statement as Down events...
+		case WM_LBUTTONUP:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					gInput.OnMouseUp(VK_LBUTTON);
+				}
+				break;
+			}
+		case WM_RBUTTONUP:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					gInput.OnMouseUp(VK_RBUTTON);
+				}
+				break;
+			}
+		case WM_MBUTTONUP:
+			{
+				if (App::GetInstance()->IsRunning())
+				{
+					gInput.OnMouseUp(VK_MBUTTON);
+				}
+				break;
+			}
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

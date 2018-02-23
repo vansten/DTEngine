@@ -27,19 +27,11 @@ protected:
 
 public:
 	inline Transform() : _position(0.0f, 0.0f, 0.0f), _rotation(0.0f, 0.0f, 0.0f, 1.0f), _scale(1.0f, 1.0f, 1.0f), _shouldCalculateMatrix(false)
-	{
-
-	}
-
+	{}
 	inline Transform(const Transform& other) : _position(other._position), _rotation(other._rotation), _scale(other._scale), _modelMatrix(other._modelMatrix), _shouldCalculateMatrix(other._shouldCalculateMatrix)
-	{
-
-	}
-
+	{}
 	inline Transform(const physx::PxTransform& transform) : _physicsTransform(transform), _scale(1.0f, 1.0f, 1.0f), _shouldCalculateMatrix(true)
-	{
-
-	}
+	{}
 
 protected:
 	void CalculateModelMatrix(const Transform* parent);

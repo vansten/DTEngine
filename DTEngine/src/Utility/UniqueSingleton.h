@@ -11,7 +11,7 @@ protected:
 public:
 	static const UniquePtr<T>& GetInstance()
 	{
-		if(!_instance)
+		if (!_instance)
 		{
 			_instance = UniquePtr<T>(new T());
 		}
@@ -20,7 +20,7 @@ public:
 
 	static void FreeInstance()
 	{
-		if(_instance)
+		if (_instance)
 		{
 			_instance.reset();
 		}

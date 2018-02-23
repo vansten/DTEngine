@@ -33,9 +33,12 @@ public:
 	static const Vector3 ONE;
 
 public:
-	inline Vector3() : X(0.0f), Y(0.0f), Z(0.0f) { }
-	inline Vector3(float x, float y, float z) : X(x), Y(y), Z(z) { }
-	inline Vector3(const Vector3& v) : X(v.X), Y(v.Y), Z(v.Z) { }
+	inline Vector3() : X(0.0f), Y(0.0f), Z(0.0f)
+	{}
+	inline Vector3(float x, float y, float z) : X(x), Y(y), Z(z)
+	{}
+	inline Vector3(const Vector3& v) : X(v.X), Y(v.Y), Z(v.Z)
+	{}
 	explicit Vector3(const Vector4& v4);
 
 	inline float Length() const
@@ -79,7 +82,7 @@ public:
 	inline void NormalizeSafe()
 	{
 		float length = Length();
-		if(Math::Approximately(length, 0.0f))
+		if (Math::Approximately(length, 0.0f))
 		{
 			return;
 		}
@@ -162,7 +165,7 @@ public:
 	inline static float AngleBetween(const Vector3& v1, const Vector3& v2)
 	{
 		float lengths = v1.Length() * v2.Length();
-		if(Math::Approximately(lengths, 0.0f))
+		if (Math::Approximately(lengths, 0.0f))
 		{
 			return 0.0f;
 		}

@@ -14,13 +14,13 @@ Rotator Quaternion::ToRotator() const
 	float roll;
 
 	const float singularity = X * Y + Z * W;
-	if(singularity > SINGULARITY_THRESHOLD)
+	if (singularity > SINGULARITY_THRESHOLD)
 	{
 		yaw = 2.0f * Math::Atan2(X, W);
 		pitch = 0.0f;
 		roll = Math::PI_DIV_2;
 	}
-	else if(singularity < -SINGULARITY_THRESHOLD)
+	else if (singularity < -SINGULARITY_THRESHOLD)
 	{
 		yaw = -2.0f * Math::Atan2(X, W);
 		pitch = 0.0f;

@@ -20,6 +20,8 @@ public:
 	virtual void Initialize();
 	virtual void Tick();
 
+	float GetRealtime() const;
+
 	inline float GetTimeSinceStartup() const
 	{
 		return _timeSinceStartup;

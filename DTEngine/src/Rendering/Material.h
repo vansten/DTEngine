@@ -48,11 +48,11 @@ public:
 
 	inline RenderQueue GetRenderQueue() const
 	{
-		if(_queue <= OPAQUE_UPPER_LIMIT)
+		if (_queue <= OPAQUE_UPPER_LIMIT)
 		{
 			return RenderQueue::Opaque;
 		}
-		if(_queue <= TRANSPARENT_UPPER_LIMIT)
+		if (_queue <= TRANSPARENT_UPPER_LIMIT)
 		{
 			return RenderQueue::Transparent;
 		}
@@ -60,19 +60,34 @@ public:
 		return RenderQueue::Overlay;
 	}
 
-	inline const Vector4& GetColor() const { return _color; }
+	inline const Vector4& GetColor() const
+	{
+		return _color;
+	}
 	inline void SetColor(const Vector4& newColor)
 	{
 		_color = newColor;
 		SetColor(DT_TEXT("Color"), _color);
 	}
 
-	inline const SharedPtr<Shader> GetShader() const { return _shader; }
-	inline void SetShader(SharedPtr<Shader> shader) {_shader = shader;}
+	inline const SharedPtr<Shader> GetShader() const
+	{
+		return _shader;
+	}
+	inline void SetShader(SharedPtr<Shader> shader)
+	{
+		_shader = shader;
+	}
 
-	inline const UniquePtr<RenderState>& GetRenderState() const { return _renderState; }
+	inline const UniquePtr<RenderState>& GetRenderState() const
+	{
+		return _renderState;
+	}
 
-	inline void SetRenderStateParams(const RenderStateParams& params) { _renderStateParams = params; }
+	inline void SetRenderStateParams(const RenderStateParams& params)
+	{
+		_renderStateParams = params;
+	}
 
 	inline void SetFloat(const String& name, float value)
 	{
@@ -93,7 +108,7 @@ public:
 	{
 		_parametersCollection.SetVector(name, vector);
 	}
-	
+
 	inline void SetColor(const String& name, const Vector4& color)
 	{
 		_parametersCollection.SetColor(name, color);

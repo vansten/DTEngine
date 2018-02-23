@@ -85,77 +85,77 @@ using Map = std::map<Key, Value>;
 
 #if defined(_WIN32) || defined(_WIN64)
 
-	#define DT_WINDOWS 1
-	#define DT_UNDEFINEDPLATFORM 0
+#define DT_WINDOWS 1
+#define DT_UNDEFINEDPLATFORM 0
 
 #else
 
-	#define DT_WINDOWS 0
-	#define DT_UNDEFINEDPLATFORM 1
+#define DT_WINDOWS 0
+#define DT_UNDEFINEDPLATFORM 1
 
 #endif
 
 #if DT_WINDOWS
 
-	#if defined(_WIN64)
+#if defined(_WIN64)
 
-		// Defining unicode to get wide characters in Win32 API strings
-		#define UNICODE
+// Defining unicode to get wide characters in Win32 API strings
+#define UNICODE
 
-		using Char = wchar_t;
-		using String = std::wstring;
-		using StringStream = std::wstringstream;
-		
-		template<int Size>
-		inline int Sprintf(Char (&buffer)[Size], const Char* const format, va_list argList)
-		{
-			return vswprintf_s(buffer, format, argList);
-		}
-		
-		#define DT_TEXT(string) L##string
+using Char = wchar_t;
+using String = std::wstring;
+using StringStream = std::wstringstream;
 
-	#else
+template<int Size>
+inline int Sprintf(Char(&buffer)[Size], const Char* const format, va_list argList)
+{
+	return vswprintf_s(buffer, format, argList);
+}
 
-		using Char = char;
-		using String = std::string;
-		using StringStream = std::stringstream;
-		
-		template<int Size>
-		inline int Sprintf(Char (&buffer)[Size], char Char* const format, va_list argList)
-		{
-			return sprintf_s(buffer, format, argList);
-		}
+#define DT_TEXT(string) L##string
 
-		#define DT_TEXT(string) string
+#else
 
-	#endif
+using Char = char;
+using String = std::string;
+using StringStream = std::stringstream;
 
-	// Windows specific includes
-	#include <Windows.h>
-	#include <windowsx.h>
+template<int Size>
+inline int Sprintf(Char(&buffer)[Size], char Char* const format, va_list argList)
+{
+	return sprintf_s(buffer, format, argList);
+}
+
+#define DT_TEXT(string) string
+
+#endif
+
+// Windows specific includes
+#include <Windows.h>
+#include <windowsx.h>
 
 
 #else
 
-	using String = std::string;
+using String = std::string;
 
-	#define DT_TEXT(string) string
+#define DT_TEXT(string) string
 
 #endif
 
 #if defined(DEBUG) || defined(_DEBUG)
 
-	#define DT_DEBUG 1
-	#define DT_RELEASE 0
+#define DT_DEBUG 1
+#define DT_RELEASE 0
 
-	#define DT_ASSERT(cond, message) assert((cond) && message)
+#define DT_ASSERT(cond, message) assert((cond) && message)
 
 #else
 
-	#define DT_DEBUG 0
-	#define DT_RELEASE 1
+#define DT_DEBUG 0
+#define DT_RELEASE 1
 
-	#define DT_ASSERT(cond, message)
+#define DT_ASSERT(cond, message)
 
 #endif
 

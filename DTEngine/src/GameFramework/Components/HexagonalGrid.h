@@ -7,14 +7,14 @@ struct CubeCoordinates;
 
 enum class HexagonDirection
 {
-	NORTH		= 0,
-	NORTH_EAST	= 1,
-	SOUTH_EAST	= 2,
-	SOUTH		= 3,
-	SOUTH_WEST	= 4,
-	NORTH_WEST	= 5,
+	NORTH = 0,
+	NORTH_EAST = 1,
+	SOUTH_EAST = 2,
+	SOUTH = 3,
+	SOUTH_WEST = 4,
+	NORTH_WEST = 5,
 
-	_COUNT		= 6
+	_COUNT = 6
 };
 
 // Stores axial coordinates for hexagonal map
@@ -48,7 +48,7 @@ public:
 
 	inline bool operator<(const AxialCoordinates& other) const
 	{
-		if(X < other.X && Y < other.Y)
+		if (X < other.X && Y < other.Y)
 		{
 			return true;
 		}
@@ -114,7 +114,7 @@ public:
 	// Returns distance from this hexagon to the other
 	inline int Distance(SharedPtr<Hexagon> other)
 	{
-		if(!other)
+		if (!other)
 		{
 			return -1;
 		}
@@ -122,9 +122,15 @@ public:
 		return _coordinates.Distance(other->_coordinates);
 	}
 
-	inline AxialCoordinates GetCoordinates() const { return _coordinates; }
-	inline SharedPtr<Entity> GetEntityOn() const { return _entityOnHexagon; }
-	
+	inline AxialCoordinates GetCoordinates() const
+	{
+		return _coordinates;
+	}
+	inline SharedPtr<Entity> GetEntityOn() const
+	{
+		return _entityOnHexagon;
+	}
+
 	inline void SetCoordinates(const AxialCoordinates& coordinates)
 	{
 		_coordinates = coordinates;
@@ -148,9 +154,7 @@ protected:
 
 public:
 	inline HexagonalGridPath()
-	{
-
-	}
+	{}
 
 protected:
 	inline void AddHexagonToPath(SharedPtr<Hexagon> hex)
@@ -163,10 +167,16 @@ protected:
 
 public:
 	// Returns a path constructed from hexagons (i.e. for displaying something fancy on them)
-	inline const DynamicArray<SharedPtr<Hexagon>>& GetPath() const { return _path; }
+	inline const DynamicArray<SharedPtr<Hexagon>>& GetPath() const
+	{
+		return _path;
+	}
 
 	// Returns a path constructed from real world positions (i.e. for usage in navigation)
-	inline const DynamicArray<Vector3>& GetWorldPath() const { return _worldPath; }
+	inline const DynamicArray<Vector3>& GetWorldPath() const
+	{
+		return _worldPath;
+	}
 
 	// Clears path
 	inline void ClearPath()

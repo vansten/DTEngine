@@ -7,14 +7,14 @@
 static String GetExtension(const String& path)
 {
 	const size_t lastDotIndex = path.find_last_of('.');
-	if(lastDotIndex == -1)
+	if (lastDotIndex == -1)
 	{
 		return DT_TEXT("");
 	}
 
 	String extension = path.substr(lastDotIndex + 1);
 	const size_t length = extension.length();
-	for(size_t i = 0; i < length; ++i)
+	for (size_t i = 0; i < length; ++i)
 	{
 		extension[i] = tolower(extension[i]);
 	}
@@ -26,23 +26,23 @@ static bool Contains(const String& string, const String& testString, bool caseSe
 {
 	const size_t testStringSize = testString.size();
 	const size_t stringSize = string.size();
-	if(testStringSize > stringSize)
+	if (testStringSize > stringSize)
 	{
 		return false;
 	}
 
 	const size_t firstCharIndex = string.find_first_of(testString[0]);
 	const size_t lastCharIndex = firstCharIndex + (testStringSize - 1);
-	if(firstCharIndex == -1 || lastCharIndex >= stringSize)
+	if (firstCharIndex == -1 || lastCharIndex >= stringSize)
 	{
 		return false;
 	}
 
-	if(caseSensitive)
+	if (caseSensitive)
 	{
-		for(size_t i = firstCharIndex; i < lastCharIndex; ++i)
+		for (size_t i = firstCharIndex; i < lastCharIndex; ++i)
 		{
-			if(string[i] != testString[i - firstCharIndex])
+			if (string[i] != testString[i - firstCharIndex])
 			{
 				return false;
 			}
@@ -50,9 +50,9 @@ static bool Contains(const String& string, const String& testString, bool caseSe
 	}
 	else
 	{
-		for(size_t i = firstCharIndex; i < lastCharIndex; ++i)
+		for (size_t i = firstCharIndex; i < lastCharIndex; ++i)
 		{
-			if(std::tolower(string[i]) != std::tolower(testString[i - firstCharIndex]))
+			if (std::tolower(string[i]) != std::tolower(testString[i - firstCharIndex]))
 			{
 				return false;
 			}

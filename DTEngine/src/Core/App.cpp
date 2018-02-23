@@ -12,49 +12,45 @@
 #include "ResourceManagement/Resources.h"
 
 App::App()
-{
-
-}
+{}
 
 App::~App()
-{
-
-}
+{}
 
 bool App::Initialize(UniquePtr<Game>&& game)
 {
 	_isRunning = false;
 
-	if(!gDebug.Initialize())
+	if (!gDebug.Initialize())
 	{
 		return false;
 	}
 
-	if(!gWindow.Open(DT_TEXT("DT Engine"), 1600, 900))
+	if (!gWindow.Open(DT_TEXT("DT Engine"), 1600, 900))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot open window"));
 		return false;
 	}
 
-	if(!gWindow.Show())
+	if (!gWindow.Show())
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot show window"));
 		return false;
 	}
 
-	if(!gGraphics.Initialize(true))
+	if (!gGraphics.Initialize(true))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize window"));
 		return false;
 	}
 
-	if(!gPhysics.Initialize())
+	if (!gPhysics.Initialize())
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize physics"));
 		return false;
 	}
 
-	if(!gResources.Initialize())
+	if (!gResources.Initialize())
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize resource manager"));
 		return false;
@@ -65,13 +61,13 @@ bool App::Initialize(UniquePtr<Game>&& game)
 	gTime.Initialize();
 
 	_game = std::move(game);
-	if(!_game)
+	if (!_game)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot create game"));
 		return false;
 	}
 
-	if(!_game->Initialize())
+	if (!_game->Initialize())
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_ENGINE, DT_TEXT("Cannot initialize game"));
 		return false;
@@ -87,13 +83,13 @@ void App::Loop()
 	float timer = 0.0f;
 	unsigned int frames = 0;
 
-	while(!MessageSystem::IsPendingQuit())
+	while (!MessageSystem::IsPendingQuit())
 	{
 		MessageSystem::GatherMessages();
 
 		gDebug.Update(deltaTime);
 
-		gPhysics.Simulate(deltaTime);
+		gPhysics.Update(deltaTime);
 
 		_game->Update(deltaTime);
 
@@ -104,7 +100,7 @@ void App::Loop()
 		timer += deltaTime;
 		frames += 1;
 
-		if(timer > 1.0f)
+		if (timer > 1.0f)
 		{
 			float fps = frames / timer;
 			timer = 0.0f;
@@ -128,7 +124,7 @@ void App::Shutdown()
 
 	gGraphics.Shutdown();
 	gResources.Shutdown();
-	
+
 	gWindow.Hide();
 	gWindow.Close();
 
@@ -138,7 +134,7 @@ void App::Shutdown()
 
 int App::Run(UniquePtr<Game>&& game)
 {
-	if(!Initialize(std::forward<UniquePtr<Game>>(game)))
+	if (!Initialize(std::forward<UniquePtr<Game>>(game)))
 	{
 		return APP_INITIALIZATION_FAILED;
 	}

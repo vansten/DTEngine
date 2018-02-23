@@ -1,19 +1,13 @@
 #include "PlaneMesh.h"
 
 PlaneMesh::PlaneMesh() : MeshBase()
-{
-
-}
+{}
 
 PlaneMesh::PlaneMesh(const PlaneMesh& other) : MeshBase(other)
-{
-
-}
+{}
 
 PlaneMesh::~PlaneMesh()
-{
-
-}
+{}
 
 bool PlaneMesh::Initialize()
 {
@@ -24,10 +18,10 @@ bool PlaneMesh::Initialize()
 	VertexType* vertices = new VertexType[_verticesCount];
 	unsigned int* indices = new unsigned int[_indicesCount];
 
-	for(unsigned int i = 0, y = 0; y <= size; y++)
+	for (unsigned int i = 0, y = 0; y <= size; y++)
 	{
 		const float yF = -0.5f + (float)y / size;
-		for(unsigned int x = 0; x <= size; x++, i++)
+		for (unsigned int x = 0; x <= size; x++, i++)
 		{
 			const float xF = -0.5f + (float)x / size;
 			vertices[i].Position = Vector3(xF, yF, 0);
@@ -36,11 +30,11 @@ bool PlaneMesh::Initialize()
 		}
 	}
 
-	for(unsigned int ti = 0, vi = 0, y = 0; y < size; y++, vi++)
+	for (unsigned int ti = 0, vi = 0, y = 0; y < size; y++, vi++)
 	{
-		for(unsigned int x = 0; x < size; x++, ti += 6, vi++)
+		for (unsigned int x = 0; x < size; x++, ti += 6, vi++)
 		{
-			indices[ti] = vi; 
+			indices[ti] = vi;
 			indices[ti + 1] = vi + size + 1;
 			indices[ti + 2] = vi + 1;
 			indices[ti + 3] = vi + 1;

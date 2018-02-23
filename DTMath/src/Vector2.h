@@ -27,9 +27,12 @@ public:
 	static const Vector2 ONE;
 
 public:
-	inline Vector2() : X(0.0f), Y(0.0f) { }
-	inline Vector2(float x, float y) : X(x), Y(y) { }
-	inline Vector2(const Vector2& v) : X(v.X), Y(v.Y) { }
+	inline Vector2() : X(0.0f), Y(0.0f)
+	{}
+	inline Vector2(float x, float y) : X(x), Y(y)
+	{}
+	inline Vector2(const Vector2& v) : X(v.X), Y(v.Y)
+	{}
 	explicit Vector2(const Vector3& v);
 	explicit Vector2(const Vector4& v);
 
@@ -67,7 +70,7 @@ public:
 	inline void NormalizeSafe()
 	{
 		float l = GetLength();
-		if(Math::Approximately(l, 0.0f))
+		if (Math::Approximately(l, 0.0f))
 		{
 			return;
 		}

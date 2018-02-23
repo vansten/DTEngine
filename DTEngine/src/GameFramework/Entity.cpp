@@ -5,18 +5,13 @@
 #include "Game.h"
 
 Entity::Entity() : EnableSharedFromThis<Entity>(), _name(DT_TEXT("NewObject")), _enabled(true)
-{
-
-}
+{}
 
 Entity::Entity(const String& name) : EnableSharedFromThis<Entity>(), _name(name), _enabled(true)
-{
-
-}
+{}
 
 Entity::Entity(const Entity& other) : EnableSharedFromThis<Entity>(), _transform(other._transform), _name(other._name), _enabled(other._enabled)
-{
-}
+{}
 
 SharedPtr<Entity> Entity::Copy() const
 {
@@ -25,14 +20,14 @@ SharedPtr<Entity> Entity::Copy() const
 
 	auto it = _components.begin();
 	auto end = _components.end();
-	for(it; it != end; ++it)
+	for (it; it != end; ++it)
 	{
 		copy->_components.push_back((*it)->Copy(copy));
 	}
 
 	Game& game = GetGame();
 
-	for(const auto& child : _children)
+	for (const auto& child : _children)
 	{
 		SharedPtr<Entity> newChildEntity = game.GetActiveScene()->SpawnEntity(child);
 		newChildEntity->SetParent(copy);
@@ -110,7 +105,7 @@ void Entity::Update(float deltaTime)
 		_transform.CalculateModelMatrix(_parent ? &(_parent->_transform) : nullptr);
 		OnTransformUpdated();
 	}
-	
+
 	for (const auto& component : _components)
 	{
 		if (component->IsEnabled())
@@ -125,7 +120,7 @@ void Entity::Update(float deltaTime)
 void Entity::Render(Graphics& graphics)
 {
 	graphics.SetObject(this);
-	for(const auto& component : _components)
+	for (const auto& component : _components)
 	{
 		component->OnRender(graphics);
 	}
@@ -133,12 +128,12 @@ void Entity::Render(Graphics& graphics)
 
 void Entity::OnTransformUpdated()
 {
-	for(const auto& component : _components)
+	for (const auto& component : _components)
 	{
 		component->OnOwnerTransformUpdated(_transform);
 	}
 
-	for(const auto& entity : _children)
+	for (const auto& entity : _children)
 	{
 		Transform& transform = entity->_transform;
 		transform.CalculateModelMatrix(&_transform);
@@ -151,7 +146,7 @@ void Entity::SetEnabled(bool enabled)
 	_enabled = enabled;
 
 	// Notify all component that enabled property has changed
-	for(const auto& component : _components)
+	for (const auto& component : _components)
 	{
 		component->OnOwnerEnableChanged(_enabled);
 	}
@@ -159,14 +154,14 @@ void Entity::SetEnabled(bool enabled)
 
 bool Entity::IsEnabledInHierarchy() const
 {
-	if(!IsEnabled())
+	if (!IsEnabled())
 	{
 		return false;
 	}
 
 	SharedPtr<Entity> parent = _parent;
-	
-	if(parent)
+
+	if (parent)
 	{
 		return parent->IsEnabledInHierarchy();
 	}

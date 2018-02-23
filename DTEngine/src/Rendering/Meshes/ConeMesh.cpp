@@ -1,19 +1,13 @@
 #include "ConeMesh.h"
 
 ConeMesh::ConeMesh() : MeshBase()
-{
-
-}
+{}
 
 ConeMesh::ConeMesh(const ConeMesh& other) : MeshBase(other)
-{
-
-}
+{}
 
 ConeMesh::~ConeMesh()
-{
-
-}
+{}
 
 bool ConeMesh::Initialize()
 {
@@ -34,7 +28,7 @@ bool ConeMesh::Initialize()
 	vertices[baseTriangles + 1].UV = Vector2(0.0f, 1.0f);
 
 	const float angleDelta = 360.0f / baseTriangles;
-	for(unsigned int i = 0; i < baseTriangles; ++i)
+	for (unsigned int i = 0; i < baseTriangles; ++i)
 	{
 		const float angleRad = Math::DEG_TO_RAD * angleDelta * i;
 		const float cosAngle = Math::Cos(angleRad) * 0.5f;
@@ -51,7 +45,7 @@ bool ConeMesh::Initialize()
 		// Top triangle
 		indices[(baseTriangles + i) * 3] = i;
 		indices[(baseTriangles + i) * 3 + 1] = baseTriangles + 1;
-		indices[(baseTriangles + i) * 3 + 2] =(i + 1) % baseTriangles;
+		indices[(baseTriangles + i) * 3 + 2] = (i + 1) % baseTriangles;
 	}
 
 	const bool result = CreateBuffers(vertices, indices);

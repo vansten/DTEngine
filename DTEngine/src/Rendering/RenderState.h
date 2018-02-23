@@ -130,16 +130,42 @@ private:
 	CompareFunction _zTestFunction;
 
 public:
-	inline RenderStateParams() : _cullMode(CullMode::Back), _fillMode(FillMode::Solid), _zWrite(ZWrite::On), _srcBlendMode(BlendMode::SrcAlpha), _destBlendMode(BlendMode::InvSrcAlpha), _zTestFunction(CompareFunction::Less) { }
-	inline RenderStateParams(CullMode cullMode, FillMode fillMode, ZWrite zWrite, BlendMode srcBlendMode, BlendMode destBlendMode, CompareFunction zTestFunction) : _cullMode(cullMode), _fillMode(fillMode), _zWrite(zWrite), _srcBlendMode(srcBlendMode), _destBlendMode(destBlendMode), _zTestFunction(zTestFunction) { }
-	inline RenderStateParams(const RenderStateParams& other) : _cullMode(other._cullMode), _fillMode(other._fillMode), _zWrite(other._zWrite), _srcBlendMode(other._srcBlendMode), _destBlendMode(other._destBlendMode), _zTestFunction(other._zTestFunction) { }
+	inline RenderStateParams() : _cullMode(CullMode::Back), _fillMode(FillMode::Solid), _zWrite(ZWrite::On), _srcBlendMode(BlendMode::SrcAlpha), _destBlendMode(BlendMode::InvSrcAlpha), _zTestFunction(CompareFunction::Less)
+	{}
+	inline RenderStateParams(CullMode cullMode, FillMode fillMode, ZWrite zWrite, BlendMode srcBlendMode, BlendMode destBlendMode, CompareFunction zTestFunction) : _cullMode(cullMode), _fillMode(fillMode), _zWrite(zWrite), _srcBlendMode(srcBlendMode), _destBlendMode(destBlendMode), _zTestFunction(zTestFunction)
+	{}
+	inline RenderStateParams(const RenderStateParams& other) : _cullMode(other._cullMode), _fillMode(other._fillMode), _zWrite(other._zWrite), _srcBlendMode(other._srcBlendMode), _destBlendMode(other._destBlendMode), _zTestFunction(other._zTestFunction)
+	{}
 
-	inline CullMode GetCullMode() const { return _cullMode; }
-	inline FillMode GetFillMode() const { return _fillMode; }
-	inline ZWrite GetZWrite() const { return _zWrite; }
-	inline BlendMode GetSrcBlendMode() const { return _srcBlendMode; }
-	inline BlendMode GetDestBlendMode() const { return _destBlendMode; }
-	inline CompareFunction GetZTestFunction() const { return _zTestFunction; }
+	inline CullMode GetCullMode() const
+	{
+		return _cullMode;
+	}
+
+	inline FillMode GetFillMode() const
+	{
+		return _fillMode;
+	}
+
+	inline ZWrite GetZWrite() const
+	{
+		return _zWrite;
+	}
+
+	inline BlendMode GetSrcBlendMode() const
+	{
+		return _srcBlendMode;
+	}
+
+	inline BlendMode GetDestBlendMode() const
+	{
+		return _destBlendMode;
+	}
+
+	inline CompareFunction GetZTestFunction() const
+	{
+		return _zTestFunction;
+	}
 
 	inline RenderStateParams& operator=(const RenderStateParams& other)
 	{
@@ -179,8 +205,10 @@ private:
 	ID3D11RasterizerState* _rasterizerState;
 
 private:
-	inline RenderState(const RenderStateParams& renderStateParams) : _params(renderStateParams), _depthStencilState(nullptr), _rasterizerState(nullptr) { }
-	inline RenderState() : _depthStencilState(nullptr), _rasterizerState(nullptr) { }
+	inline RenderState(const RenderStateParams& renderStateParams) : _params(renderStateParams), _depthStencilState(nullptr), _rasterizerState(nullptr)
+	{}
+	inline RenderState() : _depthStencilState(nullptr), _rasterizerState(nullptr)
+	{}
 	inline RenderState(const RenderState& other) = delete;
 	inline RenderState(RenderState&& other) = delete;
 

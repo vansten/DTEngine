@@ -9,19 +9,13 @@
 #include <unordered_map>
 
 StaticMesh::StaticMesh() : MeshBase()
-{
-
-}
+{}
 
 StaticMesh::StaticMesh(const StaticMesh& other) : MeshBase(other)
-{
-
-}
+{}
 
 StaticMesh::~StaticMesh()
-{
-
-}
+{}
 
 struct Face
 {
@@ -50,20 +44,20 @@ void ProcessFace(Face& face, const String& faceDefinition)
 	String normalIndex;
 
 	unsigned int i = 0;
-	while(faceDefinition[i] != '/')
+	while (faceDefinition[i] != '/')
 	{
 		positionIndex += faceDefinition[i];
 		++i;
 	}
 	++i;
-	while(faceDefinition[i] != '/')
+	while (faceDefinition[i] != '/')
 	{
 		uvIndex += faceDefinition[i];
 		++i;
 	}
 	++i;
 	const unsigned int length = (unsigned int)faceDefinition.size();
-	while(faceDefinition[i] != '/' && i < length)
+	while (faceDefinition[i] != '/' && i < length)
 	{
 		normalIndex += faceDefinition[i];
 		++i;
@@ -80,7 +74,7 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 	std::wifstream file;
 	file.open(path, std::ios::in);
 
-	if(!file.is_open())
+	if (!file.is_open())
 	{
 		return false;
 	}
@@ -91,17 +85,17 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 	std::vector<Face> faces;
 
 	String line;
-	while(std::getline(file, line))
+	while (std::getline(file, line))
 	{
-		if(line.length() == 0)
+		if (line.length() == 0)
 		{
 			continue;
 		}
 
-		if(line[0] == 'v')
+		if (line[0] == 'v')
 		{
 			std::wistringstream s(line.substr(2));
-			if(line[1] == ' ')
+			if (line[1] == ' ')
 			{
 				Vector3 position;
 				s >> position.X;
@@ -109,7 +103,7 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 				s >> position.Z;
 				positions.push_back(position);
 			}
-			else if(line[1] == 'n')
+			else if (line[1] == 'n')
 			{
 				Vector3 normal;
 				s >> normal.X;
@@ -117,7 +111,7 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 				s >> normal.Z;
 				normals.push_back(normal);
 			}
-			else if(line[1] == 't')
+			else if (line[1] == 't')
 			{
 				Vector2 uv;
 				s >> uv.X;
@@ -125,7 +119,7 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 				uvs.push_back(uv);
 			}
 		}
-		else if(line[0] == 'f')
+		else if (line[0] == 'f')
 		{
 			std::wistringstream s(line.substr(2));
 			String faceDef1, faceDef2, faceDef3;
@@ -150,10 +144,10 @@ bool StaticMesh::LoadFromOBJ(const String& path)
 
 	const unsigned int facesCount = (unsigned int)faces.size();
 	unsigned int k = 0;
-	for(unsigned int i = 0; i < facesCount; ++i)
+	for (unsigned int i = 0; i < facesCount; ++i)
 	{
 		auto found = face2Vertex.find(faces[i]);
-		if(found == face2Vertex.end())
+		if (found == face2Vertex.end())
 		{
 			_indices.push_back(k);
 
@@ -191,11 +185,11 @@ bool StaticMesh::Load(const String& path)
 	MeshBase::Load(path);
 
 	String extension = GetExtension(path);
-	if(extension == DT_TEXT("obj"))
+	if (extension == DT_TEXT("obj"))
 	{
 		return LoadFromOBJ(path);
 	}
-	else if(extension == DT_TEXT("fbx"))
+	else if (extension == DT_TEXT("fbx"))
 	{
 		return LoadFromFBX(path);
 	}
@@ -206,7 +200,7 @@ bool StaticMesh::Load(const String& path)
 
 bool StaticMesh::Initialize()
 {
-	if(_vertices.size() == 0 || _indices.size() == 0)
+	if (_vertices.size() == 0 || _indices.size() == 0)
 	{
 		_vertices.clear();
 		_indices.clear();

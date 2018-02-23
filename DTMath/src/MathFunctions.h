@@ -75,11 +75,11 @@ namespace Math
 	{
 		float result = value;
 		float step = Abs(max) - Abs(min);
-		while(result < min)
+		while (result < min)
 		{
 			result += step;
 		}
-		while(result > max)
+		while (result > max)
 		{
 			result -= step;
 		}

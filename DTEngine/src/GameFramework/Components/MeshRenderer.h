@@ -39,12 +39,26 @@ public:
 
 	RenderQueue GetQueue() const;
 
-	inline void SetMesh(SharedPtr<MeshBase> mesh) { _mesh = mesh; }
-	inline void SetMaterial(SharedPtr<Material> material) { _material = material; }
+	inline void SetMesh(SharedPtr<MeshBase> mesh)
+	{
+		_mesh = mesh;
+	}
 
-	inline SharedPtr<Material> GetMaterial() const { return _material; }
-	inline SharedPtr<MeshBase> GetMesh() const { return _mesh; }
-	
+	inline void SetMaterial(SharedPtr<Material> material)
+	{
+		_material = material;
+	}
+
+	inline SharedPtr<Material> GetMaterial() const
+	{
+		return _material;
+	}
+
+	inline SharedPtr<MeshBase> GetMesh() const
+	{
+		return _mesh;
+	}
+
 	inline const BoundingBox& GetBoundingBox() const
 	{
 		DT_ASSERT(_mesh, DT_TEXT("Cannot obtain bounding box from a mesh renderer without a mesh"));

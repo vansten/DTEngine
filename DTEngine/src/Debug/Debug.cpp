@@ -28,13 +28,11 @@ DebugDrawGeometry::DebugDrawGeometry(SharedPtr<MeshBase> mesh, Vector3 position,
 }
 
 DebugDrawGeometry::DebugDrawGeometry(DebugDrawGeometry&& other) : _mesh(std::move(other._mesh)), _lifetime(other._lifetime), _worldMatrix(other._worldMatrix), _material(std::move(other._material))
-{
-	
-}
+{}
 
 DebugDrawGeometry::~DebugDrawGeometry()
 {
-	if(_material)
+	if (_material)
 	{
 		_material->Shutdown();
 	}
@@ -71,10 +69,10 @@ DebugDrawGeometry& DebugDrawGeometry::operator=(const DebugDrawGeometry& other)
 void Debug::UpdateDraws(float deltaTime)
 {
 	const int drawsCount = (int)_draws.size();
-	for(int i = drawsCount - 1; i >= 0; --i)
+	for (int i = drawsCount - 1; i >= 0; --i)
 	{
 		_draws[i]._lifetime -= deltaTime;
-		if(_draws[i]._lifetime <= 0.0f)
+		if (_draws[i]._lifetime <= 0.0f)
 		{
 			_draws.erase(_draws.begin() + i);
 		}
@@ -129,7 +127,7 @@ void Debug::Print(LogVerbosity verbosity, const String& channel, const String& m
 	_logsPerChannel[channelRef].push_back(l);
 	OnLogged.Execute(channelRef, l);
 
-	if(channelRef.Visible)
+	if (channelRef.Visible)
 	{
 		String s = channel;
 		s += DT_TEXT(": ");

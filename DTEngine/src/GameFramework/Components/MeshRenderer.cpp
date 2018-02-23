@@ -14,17 +14,15 @@ MeshRenderer::MeshRenderer(SharedPtr<Entity> owner) : Component(owner), _mesh(nu
 }
 
 MeshRenderer::MeshRenderer(const MeshRenderer& other) : Component(other), _mesh(other._mesh), _material(other._material)
-{
-}
+{}
 
 MeshRenderer::~MeshRenderer()
-{
-}
+{}
 
 void MeshRenderer::RegisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
 {
 	auto& found = std::find(_allRenderers.begin(), _allRenderers.end(), meshRenderer);
-	if(found != _allRenderers.end())
+	if (found != _allRenderers.end())
 	{
 		gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Renderer of object %s already registered!"), meshRenderer->GetOwner()->GetName().c_str());
 		return;
@@ -35,7 +33,7 @@ void MeshRenderer::RegisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
 void MeshRenderer::UnregisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
 {
 	auto& found = std::find(_allRenderers.begin(), _allRenderers.end(), meshRenderer);
-	if(found != _allRenderers.end())
+	if (found != _allRenderers.end())
 	{
 		_allRenderers.erase(found);
 	}
@@ -64,13 +62,13 @@ void MeshRenderer::OnShutdown()
 
 void MeshRenderer::OnRender(Graphics& graphics)
 {
-	if(!_mesh)
+	if (!_mesh)
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without mesh set. Aborting"));
 		return;
 	}
 
-	if(!_material)
+	if (!_material)
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Trying to render mesh renderer without material set. Aborting"));
 #if DT_DEBUG
@@ -87,7 +85,7 @@ void MeshRenderer::OnRender(Graphics& graphics)
 
 void MeshRenderer::OnOwnerEnableChanged(bool enabled)
 {
-	if(enabled)
+	if (enabled)
 	{
 		RegisterMeshRenderer(SharedFromThis());
 	}
@@ -99,7 +97,7 @@ void MeshRenderer::OnOwnerEnableChanged(bool enabled)
 
 void MeshRenderer::OnEnableChanged(bool enabled)
 {
-	if(enabled)
+	if (enabled)
 	{
 		RegisterMeshRenderer(SharedFromThis());
 	}
@@ -111,7 +109,7 @@ void MeshRenderer::OnEnableChanged(bool enabled)
 
 RenderQueue MeshRenderer::GetQueue() const
 {
-	if(!_material)
+	if (!_material)
 	{
 		return RenderQueue::Opaque;
 	}

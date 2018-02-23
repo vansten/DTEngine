@@ -4,24 +4,20 @@
 #include "Debug/Debug.h"
 
 MeshBase::MeshBase() : _vertexBuffer(nullptr), _indexBuffer(nullptr), _verticesCount(0), _indicesCount(0)
-{
-
-}
+{}
 
 MeshBase::MeshBase(const MeshBase& other) : _vertexBuffer(nullptr), _indexBuffer(nullptr), _verticesCount(0), _indicesCount(0)
-{
-}
+{}
 
 MeshBase::~MeshBase()
-{
-}
+{}
 
 bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 {
 	Graphics& graphics = gGraphics;
 
-	D3D11_BUFFER_DESC bufferDesc = { 0 };
-	D3D11_SUBRESOURCE_DATA bufferData = { 0 };
+	D3D11_BUFFER_DESC bufferDesc = {0};
+	D3D11_SUBRESOURCE_DATA bufferData = {0};
 
 	// Vertex buffer creation
 	// Filling desc
@@ -49,13 +45,13 @@ bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 	bufferData.pSysMem = indices;
 
 	result = graphics.CreateBuffer(bufferDesc, bufferData, &_indexBuffer);
-	if(!result)
+	if (!result)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create index buffer"));
 	}
 
 	// Calculate bounding box
-	static const auto positionGetter = [](const VertexType& vertex) -> const Vector3& { return vertex.Position; };
+	static const auto positionGetter = [](const VertexType& vertex) -> const Vector3&{return vertex.Position;};
 	_boundingBox.CalculateMinMax<VertexType>(vertices, _verticesCount, positionGetter);
 
 	return result;

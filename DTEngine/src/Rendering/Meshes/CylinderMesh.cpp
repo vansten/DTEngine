@@ -1,19 +1,13 @@
 #include "CylinderMesh.h"
 
 CylinderMesh::CylinderMesh() : MeshBase()
-{
-
-}
+{}
 
 CylinderMesh::CylinderMesh(const CylinderMesh& other) : MeshBase()
-{
-	
-}
+{}
 
 CylinderMesh::~CylinderMesh()
-{
-	
-}
+{}
 
 bool CylinderMesh::Initialize()
 {
@@ -32,7 +26,7 @@ bool CylinderMesh::Initialize()
 
 	const float angleDelta = 360.0f / baseTriangles;
 
-	for(unsigned int i = 0; i < baseTriangles; ++i)
+	for (unsigned int i = 0; i < baseTriangles; ++i)
 	{
 		const float angleRad = Math::DEG_TO_RAD * angleDelta * i;
 		const float cosAngle = Math::Cos(angleRad) * 0.5f;
@@ -67,7 +61,7 @@ bool CylinderMesh::Initialize()
 	}
 
 	const bool result = CreateBuffers(vertices, indices);
-	
+
 	delete[] vertices;
 	delete[] indices;
 

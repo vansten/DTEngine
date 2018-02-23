@@ -56,22 +56,22 @@ void PhysicsErrorCallback::reportError(PxErrorCode::Enum code, const char* messa
 	std::string fileString = file + std::string(" line: ") + std::to_string(line);
 	String fileWString(fileString.begin(), fileString.end());
 
-	switch(code)
+	switch (code)
 	{
-	case PxErrorCode::eABORT:
-	case PxErrorCode::eINTERNAL_ERROR:
-	case PxErrorCode::eINVALID_OPERATION:
-	case PxErrorCode::eINVALID_PARAMETER:
-	case PxErrorCode::eOUT_OF_MEMORY:
-		gDebug.Printf(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("PhysX Error. Message: %s\n%s"), msgString.c_str(), fileWString.c_str());
-		break;
-	case PxErrorCode::eDEBUG_WARNING:
-	case PxErrorCode::ePERF_WARNING:
-		gDebug.Printf(LogVerbosity::Warning, CHANNEL_PHYSICS, DT_TEXT("PhysX Warning. Message: %s\n%s"), msgString.c_str(), fileWString.c_str());
-		break;
-	case PxErrorCode::eDEBUG_INFO:
-		gDebug.Printf(LogVerbosity::Log, CHANNEL_PHYSICS, DT_TEXT("PhysX Log. Message: %s\n%s"), msgString.c_str(), fileWString.c_str());
-		break;
+		case PxErrorCode::eABORT:
+		case PxErrorCode::eINTERNAL_ERROR:
+		case PxErrorCode::eINVALID_OPERATION:
+		case PxErrorCode::eINVALID_PARAMETER:
+		case PxErrorCode::eOUT_OF_MEMORY:
+			gDebug.Printf(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("PhysX Error. Message: %s\n%s"), msgString.c_str(), fileWString.c_str());
+			break;
+		case PxErrorCode::eDEBUG_WARNING:
+		case PxErrorCode::ePERF_WARNING:
+			gDebug.Printf(LogVerbosity::Warning, CHANNEL_PHYSICS, DT_TEXT("PhysX Warning. Message: %s\n%s"), msgString.c_str(), fileWString.c_str());
+			break;
+		case PxErrorCode::eDEBUG_INFO:
+			gDebug.Printf(LogVerbosity::Log, CHANNEL_PHYSICS, DT_TEXT("PhysX Log. Message: %s\n%s"), msgString.c_str(), fileWString.c_str());
+			break;
 	}
 }
 
@@ -91,7 +91,7 @@ bool Physics::Initialize()
 
 	_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, _allocator, _errorCallback);
 
-	if(!_foundation)
+	if (!_foundation)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot create physx::PxFoundation instance"));
 		return false;
@@ -101,7 +101,7 @@ bool Physics::Initialize()
 
 	_pvd = PxCreatePvd(*_foundation);
 	_pvdTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-	if(!_pvd || !_pvdTransport || !_pvd->connect(*_pvdTransport, PxPvdInstrumentationFlag::eALL))
+	if (!_pvd || !_pvdTransport || !_pvd->connect(*_pvdTransport, PxPvdInstrumentationFlag::eALL))
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_PHYSICS, DT_TEXT("Cannot establish connection with PhysX Visual Debugger"));
 		RELEASE_PHYSX(_pvdTransport);
@@ -130,7 +130,7 @@ bool Physics::Initialize()
 
 	_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_foundation, scale, trackMemoryAllocations, _pvd);
 
-	if(!_physics)
+	if (!_physics)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot create physx::PxPhysics instance"));
 		return false;
@@ -138,20 +138,20 @@ bool Physics::Initialize()
 
 	_cpuDispatcher = PxDefaultCpuDispatcherCreate(2);
 
-	if(!_cpuDispatcher)
+	if (!_cpuDispatcher)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot create physx::PxCpuDispatcher instance"));
 		return false;
 	}
 
-	PxSceneDesc sceneDesc(scale); 
+	PxSceneDesc sceneDesc(scale);
 	sceneDesc.cpuDispatcher = _cpuDispatcher;
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 
 	_scene = _physics->createScene(sceneDesc);
 
-	if(!_scene)
+	if (!_scene)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot create physx::PxScene instance"));
 		return false;
@@ -163,7 +163,7 @@ bool Physics::Initialize()
 void Physics::Shutdown()
 {
 	RELEASE_PHYSX(_scene);
-	if(_cpuDispatcher)
+	if (_cpuDispatcher)
 	{
 		delete _cpuDispatcher;
 		_cpuDispatcher = nullptr;
@@ -174,9 +174,43 @@ void Physics::Shutdown()
 	RELEASE_PHYSX(_foundation);
 }
 
+void Physics::PreSimulate(float deltaTime)
+{
+	// TODO:
+	// foreach PhysicalBody pb
+	// if (pb.isKinematic())
+	//		pb._rigidbody->SetPose(pb.GetOwner().GetPhysXTransform());
+}
+
 void Physics::Simulate(float deltaTime)
 {
 	DT_ASSERT(_scene, DT_TEXT("Cannot advance PhysX simulation without physx::PxScene instance"));
+	DT_ASSERT(deltaTime > 0.0f, DT_TEXT("Cannot advance PhysX simulation with deltaTime <= 0"));
 	_scene->simulate(deltaTime);
 	_scene->fetchResults(true);
+}
+
+void Physics::PostSimulate(float deltaTime)
+{
+	// TODO:
+	// foreach PhysicalBody pb
+	// pb.GetOwner().SetPhysxTransform(pb._rigidbody->getPose());
+}
+
+void Physics::ResolveCallbacks()
+{
+	// TODO:
+	// foreach CollisionInfo ci
+	// ci.Report();
+	// foreach TriggerInfo ti
+	// ti.Report();
+}
+
+void Physics::Update(float deltaTime)
+{
+	PreSimulate(deltaTime);
+	Simulate(deltaTime);
+	PostSimulate(deltaTime);
+
+	ResolveCallbacks();
 }

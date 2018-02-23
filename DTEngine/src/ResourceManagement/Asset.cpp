@@ -1,14 +1,10 @@
 #include "Asset.h"
 
 Asset::Asset()
-{
-
-}
+{}
 
 Asset::~Asset()
-{
-
-}
+{}
 
 bool Asset::Load(const String& path)
 {
@@ -28,6 +24,4 @@ bool Asset::Initialize()
 }
 
 void Asset::Shutdown()
-{
-
-}
+{}

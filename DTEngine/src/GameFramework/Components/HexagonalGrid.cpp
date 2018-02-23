@@ -16,19 +16,13 @@ AxialCoordinates HexagonalGridUtility::AxialDirections[(size_t)HexagonDirection:
 };
 
 AxialCoordinates::AxialCoordinates(int x, int y) : X(x), Y(y)
-{
-
-}
+{}
 
 AxialCoordinates::AxialCoordinates(const AxialCoordinates& other) : X(other.X), Y(other.Y)
-{
-
-}
+{}
 
 AxialCoordinates::AxialCoordinates(const CubeCoordinates& cubeCoordinates) : X(cubeCoordinates.X), Y(cubeCoordinates.Z)
-{
-
-}
+{}
 
 int AxialCoordinates::Distance(const AxialCoordinates& other) const
 {
@@ -37,19 +31,13 @@ int AxialCoordinates::Distance(const AxialCoordinates& other) const
 }
 
 CubeCoordinates::CubeCoordinates(int x, int y, int z) : X(x), Y(y), Z(z)
-{
-
-}
+{}
 
 CubeCoordinates::CubeCoordinates(const CubeCoordinates& other) : X(other.X), Y(other.Y), Z(other.Z)
-{
-
-}
+{}
 
 CubeCoordinates::CubeCoordinates(const AxialCoordinates& axialCoordinates) : X(axialCoordinates.X), Z(axialCoordinates.Y), Y(-axialCoordinates.X - axialCoordinates.Y)
-{
-
-}
+{}
 
 int CubeCoordinates::Distance(CubeCoordinates& other) const
 {
@@ -58,19 +46,13 @@ int CubeCoordinates::Distance(CubeCoordinates& other) const
 }
 
 Hexagon::Hexagon(SharedPtr<Entity> owner) : Component(owner), _entityOnHexagon(nullptr), _coordinates(0, 0)
-{
-
-}
+{}
 
 Hexagon::Hexagon(const Hexagon& other) : Component(other), _entityOnHexagon(nullptr), _coordinates(other._coordinates)
-{
-
-}
+{}
 
 Hexagon::~Hexagon()
-{
-
-}
+{}
 
 SharedPtr<Component> Hexagon::Copy(SharedPtr<Entity> newOwner) const
 {
@@ -86,7 +68,7 @@ void HexagonalGridPath::ReversePath()
 	// Push all values from original path in reversed order to helperPath
 	auto it = _path.rbegin();
 	auto end = _path.rend();
-	for(it; it != end; ++it)
+	for (it; it != end; ++it)
 	{
 		helperPath.push_back((*it));
 	}
@@ -95,7 +77,7 @@ void HexagonalGridPath::ReversePath()
 	_path.clear();
 
 	// Push back all values from helperPath to path
-	for(auto hexagon : helperPath)
+	for (auto hexagon : helperPath)
 	{
 		_path.push_back(hexagon);
 	}
@@ -104,26 +86,20 @@ void HexagonalGridPath::ReversePath()
 
 void HexagonalGridPath::ConstructWorldPath()
 {
-	for(auto hexagon : _path)
+	for (auto hexagon : _path)
 	{
 		_worldPath.push_back(hexagon->GetOwner()->GetPosition());
 	}
 }
 
 HexagonalGrid::HexagonalGrid(SharedPtr<Entity> owner) : Component(owner)
-{
-
-}
+{}
 
 HexagonalGrid::HexagonalGrid(const HexagonalGrid& other) : Component(other), _width(other._width), _height(other._height), _hexagonSize(other._hexagonSize)
-{
-
-}
+{}
 
 HexagonalGrid::~HexagonalGrid()
-{
-
-}
+{}
 
 SharedPtr<Component> HexagonalGrid::Copy(SharedPtr<Entity> newOwner) const
 {
@@ -170,7 +146,7 @@ SharedPtr<Hexagon> HexagonalGrid::GetHexagonAt(const Vector3& worldPosition) con
 
 	const Vector3 xDirection(0.75f * hexagonWidth, 0.0f, 0.5f * hexagonHeight);
 	const Vector3 yDirection(0.0f, 0.0f, hexagonHeight);
-	
+
 	// Calculate axial coordinates using axial x and y direction and world position of a hexagon
 	const int w = (int)Math::Round(worldPosition.X / xDirection.X);
 	const int h = (int)Math::Round((worldPosition.Z - xDirection.Z * worldPosition.X / xDirection.X) / yDirection.Z);
@@ -187,10 +163,17 @@ protected:
 	int _cost;
 
 public:
-	HexagonalPathNode(std::shared_ptr<Hexagon> hex, int cost) : _hexagon(hex), _cost(cost) { }
+	HexagonalPathNode(std::shared_ptr<Hexagon> hex, int cost) : _hexagon(hex), _cost(cost)
+	{}
 
-	inline std::shared_ptr<Hexagon> GetHexagon() const { return _hexagon; }
-	inline int GetCost() const { return _cost; }
+	inline std::shared_ptr<Hexagon> GetHexagon() const
+	{
+		return _hexagon;
+	}
+	inline int GetCost() const
+	{
+		return _cost;
+	}
 
 	inline bool operator>(const HexagonalPathNode& other) const
 	{
@@ -201,14 +184,14 @@ public:
 bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> target, HexagonalGridPath& outPath, CanWalkPredicate canWalkPredicate) const
 {
 	// If start or target are nullptr then return false (can't find path when at least one of the path ends doesn't exist)
-	if(!start || !target)
+	if (!start || !target)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GENERAL, DT_TEXT("CalculatePath failed. Reason: either start or target doesn't exist"));
 		return false;
 	}
 
 	// If start and target points to the same object or they are at the same location then the path contains only one element
-	if(start == target || start->GetCoordinates() == target->GetCoordinates())
+	if (start == target || start->GetCoordinates() == target->GetCoordinates())
 	{
 		outPath.AddHexagonToPath(start);
 		outPath.ConstructWorldPath();
@@ -224,23 +207,23 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 	cameFrom.insert({start, nullptr});
 
 	bool foundTarget = false;
-	while(!toVisit.empty() && !foundTarget)
+	while (!toVisit.empty() && !foundTarget)
 	{
 		HexagonalPathNode hexPathNode = toVisit.top();
 		SharedPtr<Hexagon> hex = hexPathNode.GetHexagon();
 		toVisit.pop();
-		for(int i = 0; i < (int)HexagonDirection::_COUNT; ++i)
+		for (int i = 0; i < (int)HexagonDirection::_COUNT; ++i)
 		{
 			const HexagonDirection direction = (HexagonDirection)i;
 			SharedPtr<Hexagon> neighboor = GetNeighboor(hex, direction);
-			if(neighboor != nullptr && cameFrom.find(neighboor) == cameFrom.end())
+			if (neighboor != nullptr && cameFrom.find(neighboor) == cameFrom.end())
 			{
 				// If there is no predicate telling whether hexagon is "walkable" or the predicate returns true which means that hexagon is "walkable"
 				// Process that hexagon
-				if(!canWalkPredicate || canWalkPredicate(neighboor))
+				if (!canWalkPredicate || canWalkPredicate(neighboor))
 				{
 					cameFrom.insert({neighboor, hex});
-					if(neighboor == target)
+					if (neighboor == target)
 					{
 						foundTarget = true;
 						break;
@@ -252,7 +235,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 	}
 
 	// If target wasn't found then clear path and return false to tell user that target is not reachable from start
-	if(!foundTarget)
+	if (!foundTarget)
 	{
 		outPath.ClearPath();
 		return false;
@@ -260,7 +243,7 @@ bool HexagonalGrid::CalculatePath(SharedPtr<Hexagon> start, SharedPtr<Hexagon> t
 
 	// Reconstruct path from cameFrom map
 	SharedPtr<Hexagon> current = target;
-	while(current)
+	while (current)
 	{
 		outPath.AddHexagonToPath(current);
 		current = cameFrom[current];
@@ -289,7 +272,7 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, un
 	const int halfH = (int)(height * 0.5f);
 
 	Resources& resourceManager = gResources;
-	
+
 	// Load hexagon mesh and default material
 	SharedPtr<HexagonMesh> hexagonMesh = resourceManager.Get<HexagonMesh>();
 
@@ -306,9 +289,9 @@ SharedPtr<HexagonalGrid> HexagonalGridUtility::CreateGrid(unsigned int width, un
 
 	Game& game = GetGame();
 
-	for(int w = 0; w < (int)width; ++w)
+	for (int w = 0; w < (int)width; ++w)
 	{
-		for(int h = 0; h < (int)height; ++h)
+		for (int h = 0; h < (int)height; ++h)
 		{
 			const AxialCoordinates coordinates(w - halfW, h - halfH);
 

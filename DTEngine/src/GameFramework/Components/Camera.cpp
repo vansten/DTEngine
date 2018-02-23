@@ -13,19 +13,13 @@ WeakPtr<Camera> Camera::_main;
 DynamicArray<SharedPtr<Camera>> Camera::_allCameras;
 
 Camera::Camera(SharedPtr<Entity> owner) : Component(owner), _fov(60.0f), _near(0.01f), _far(1000.0f), _order(0)
-{
-
-}
+{}
 
 Camera::Camera(const Camera& other) : Component(other), _fov(other._fov), _near(other._near), _far(other._far)
-{
-
-}
+{}
 
 Camera::~Camera()
-{
-
-}
+{}
 
 void Camera::Resize()
 {
@@ -38,9 +32,9 @@ void Camera::Resize()
 
 void Camera::DetermineVisibleRenderers(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& visibleRenderers)
 {
-	for(auto renderer : allRenderers)
+	for (auto renderer : allRenderers)
 	{
-		if(IsVisible(renderer))
+		if (IsVisible(renderer))
 		{
 			visibleRenderers.push_back(renderer);
 		}
@@ -49,9 +43,9 @@ void Camera::DetermineVisibleRenderers(const DynamicArray<SharedPtr<MeshRenderer
 
 void Camera::DivideRenderersByRenderQueue(const DynamicArray<SharedPtr<MeshRenderer>>& allRenderers, DynamicArray<SharedPtr<MeshRenderer>>& opaqueRenderers, DynamicArray<SharedPtr<MeshRenderer>>& transparentRenderers)
 {
-	for(auto renderer : allRenderers)
+	for (auto renderer : allRenderers)
 	{
-		if(renderer->GetQueue() == RenderQueue::Opaque)
+		if (renderer->GetQueue() == RenderQueue::Opaque)
 		{
 			opaqueRenderers.push_back(renderer);
 		}
@@ -108,16 +102,16 @@ bool Camera::IsVisible(SharedPtr<MeshRenderer> renderer)
 void Camera::RegisterCamera(SharedPtr<Camera> camera)
 {
 	_allCameras.push_back(camera);
-	
+
 	const static auto sortPredicate = [](const WeakPtr<Camera>& cam1, const WeakPtr<Camera>& cam2)
 	{
 		SharedPtr<Camera> cam1Shared = cam1.lock();
 		SharedPtr<Camera> cam2Shared = cam2.lock();
-		if(!cam1Shared)
+		if (!cam1Shared)
 		{
 			return true;
 		}
-		if(!cam2Shared)
+		if (!cam2Shared)
 		{
 			return false;
 		}
@@ -127,7 +121,7 @@ void Camera::RegisterCamera(SharedPtr<Camera> camera)
 
 	std::sort(_allCameras.begin(), _allCameras.end(), sortPredicate);
 
-	if(_allCameras.size() > 0)
+	if (_allCameras.size() > 0)
 	{
 		_main = _allCameras[0];
 	}
@@ -136,12 +130,12 @@ void Camera::RegisterCamera(SharedPtr<Camera> camera)
 void Camera::UnregisterCamera(SharedPtr<Camera> camera)
 {
 	auto& found = std::find(_allCameras.begin(), _allCameras.end(), camera);
-	if(found != _allCameras.end())
+	if (found != _allCameras.end())
 	{
 		_allCameras.erase(found);
 	}
 
-	if(_allCameras.size() > 0)
+	if (_allCameras.size() > 0)
 	{
 		_main = _allCameras[0];
 	}
@@ -192,12 +186,12 @@ void Camera::Render(Graphics& graphics, const DynamicArray<SharedPtr<MeshRendere
 	DetermineVisibleRenderers(renderers, visibleRenderers);
 	DivideRenderersByRenderQueue(visibleRenderers, opaqueRenderers, transparentRenderers);
 
-	for(auto& meshRenderer : opaqueRenderers)
+	for (auto& meshRenderer : opaqueRenderers)
 	{
 		meshRenderer->GetOwner()->Render(graphics);
 	}
 
-	for(auto& meshRenderer : transparentRenderers)
+	for (auto& meshRenderer : transparentRenderers)
 	{
 		meshRenderer->GetOwner()->Render(graphics);
 	}
@@ -206,14 +200,14 @@ void Camera::Render(Graphics& graphics, const DynamicArray<SharedPtr<MeshRendere
 void Camera::RenderDebug(Graphics& graphics)
 {
 #if DT_DEBUG
-	
+
 	// Set render state to debug wireframe
 	graphics.SetRenderState(Graphics::CommonRenderStates::WireframeRenderState);
 	graphics.SetObject(nullptr);
-	
+
 	// Draw all debug draws
 	const DynamicArray<DebugDrawGeometry>& debugDraws = gDebug.GetDraws();
-	for(auto& draw : debugDraws)
+	for (auto& draw : debugDraws)
 	{
 		draw.Render(graphics);
 	}
@@ -228,10 +222,10 @@ void Camera::RenderSky(Graphics& graphics)
 
 bool Camera::IsInsideFrustum(const Vector3& worldPoint) const
 {
-	for(unsigned char i = 0; i < 6; ++i)
+	for (unsigned char i = 0; i < 6; ++i)
 	{
 		// Check if worldPoint is outside a frustum ith plane
-		if(_frustum[i].Dot(worldPoint) < 0.0f)
+		if (_frustum[i].Dot(worldPoint) < 0.0f)
 		{
 			// Return false if condition is met
 			return false;
@@ -249,21 +243,21 @@ bool Camera::IsInsideFrustum(const BoundingBox& boundingBox) const
 bool Camera::IsInsideFrustum(const BoundingBox& boundingBox, const Matrix& modelToWorld) const
 {
 	const DynamicArray<Vector3>& corners = boundingBox.GetCorners();
-	for(unsigned char i = 0; i < 6; ++i)
+	for (unsigned char i = 0; i < 6; ++i)
 	{
 		bool liesBehind = true;
-		for(auto& corner : corners)
+		for (auto& corner : corners)
 		{
 			// Calculate world position of a corner
 			Vector4 worldCorner = Vector4(corner, 1) * modelToWorld;
-			if(_frustum[i].Dot(worldCorner) > 0.0f)
+			if (_frustum[i].Dot(worldCorner) > 0.0f)
 			{
 				liesBehind = false;
 				break;
 			}
 		}
 
-		if(liesBehind)
+		if (liesBehind)
 		{
 			return false;
 		}

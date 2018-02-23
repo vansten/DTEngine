@@ -1,19 +1,13 @@
 #include "QuadMesh.h"
 
 QuadMesh::QuadMesh() : MeshBase()
-{
-
-}
+{}
 
 QuadMesh::QuadMesh(const QuadMesh& other) : MeshBase(other)
-{
-
-}
+{}
 
 QuadMesh::~QuadMesh()
-{
-	
-}
+{}
 
 bool QuadMesh::Initialize()
 {

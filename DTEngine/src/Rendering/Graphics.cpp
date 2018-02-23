@@ -28,9 +28,7 @@ void Graphics::CommonRenderStates::Shutdown()
 }
 
 Graphics::Graphics() : _swapChain(nullptr), _device(nullptr), _deviceContext(nullptr), _renderTargetView(nullptr), _depthStencilBuffer(nullptr), _depthStencilView(nullptr)
-{
-
-}
+{}
 
 bool Graphics::GetRefreshRate(unsigned int windowHeight, unsigned int& numerator, unsigned int& denominator)
 {
@@ -52,7 +50,7 @@ bool Graphics::GetRefreshRate(unsigned int windowHeight, unsigned int& numerator
 	HR(result);
 
 	DXGI_MODE_DESC* displayModeList = new DXGI_MODE_DESC[numModes];
-	if(!displayModeList)
+	if (!displayModeList)
 	{
 		return false;
 	}
@@ -61,9 +59,9 @@ bool Graphics::GetRefreshRate(unsigned int windowHeight, unsigned int& numerator
 	HR(result);
 
 	// Check whether display mode height is equal to desired window height and get its refresh rate
-	for(unsigned int i = 0; i < numModes; ++i)
+	for (unsigned int i = 0; i < numModes; ++i)
 	{
-		if(displayModeList[i].Height == windowHeight)
+		if (displayModeList[i].Height == windowHeight)
 		{
 			numerator = displayModeList[i].RefreshRate.Numerator;
 			denominator = displayModeList[i].RefreshRate.Denominator;
@@ -93,7 +91,7 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 	const unsigned int windowWidth = window.GetWidth();
 	const unsigned int windowHeight = window.GetHeight();
 
-	if(!GetRefreshRate(windowHeight, numerator, denominator))
+	if (!GetRefreshRate(windowHeight, numerator, denominator))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot retrieve refresh rate"));
 		return false;
@@ -181,7 +179,7 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 
 	_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
 
-	if(!CommonRenderStates::Initialize(_device))
+	if (!CommonRenderStates::Initialize(_device))
 	{
 		return false;
 	}
@@ -201,7 +199,7 @@ bool Graphics::InitializeWindowDependentResources(const Window& window)
 
 void Graphics::ReleaseWindowDependentResources()
 {
-	if(_swapChain)
+	if (_swapChain)
 	{
 		// Set to windowed before shutdown
 		_swapChain->SetFullscreenState(false, NULL);
@@ -229,7 +227,7 @@ bool Graphics::Initialize(bool vsync)
 
 	HR(result);
 
-	if(!InitializeWindowDependentResources(gWindow))
+	if (!InitializeWindowDependentResources(gWindow))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize window size dependent resources"));
 		return false;
@@ -259,7 +257,7 @@ void Graphics::BeginScene(D3D11_PRIMITIVE_TOPOLOGY topology)
 
 void Graphics::EndScene()
 {
-	if(_vsync)
+	if (_vsync)
 	{
 		_swapChain->Present(1, 0);
 	}
@@ -276,7 +274,7 @@ void Graphics::BeginResize()
 
 void Graphics::OnResize()
 {
-	if(_isResizing)
+	if (_isResizing)
 	{
 		return;
 	}
@@ -299,7 +297,7 @@ void Graphics::EndResize()
 
 bool Graphics::CreateBuffer(const D3D11_BUFFER_DESC& bufferDesc, ID3D11Buffer** bufferPtr) const
 {
-	if(!bufferPtr || !_device)
+	if (!bufferPtr || !_device)
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create buffer. Either bufferPtr or device is nullptr"));
 		return false;
@@ -365,7 +363,7 @@ void* Graphics::Map(ID3D11Resource* resource, D3D11_MAP mapFlag) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result = _deviceContext->Map(resource, 0, mapFlag, 0, &mappedResource);
-	if(FAILED(result))
+	if (FAILED(result))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to map resources"));
 		Unmap(resource);
@@ -404,7 +402,7 @@ void Graphics::SetMaterial(Material* material)
 			_deviceContext->PSSetShader(shader->GetPixelShader(), nullptr, 0);
 		}
 	}
-	
+
 	if (_lastUsedMaterial && _currentlyRenderedEntity)
 	{
 		static const String MODEL_TO_WORLD_MATRIX_NAME = DT_TEXT("Model2WorldMatrix");
@@ -423,7 +421,7 @@ void Graphics::DrawIndexed(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer
 
 bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState) const
 {
-	if(renderState)
+	if (renderState)
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
 	}
@@ -435,7 +433,7 @@ bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState) const
 
 bool Graphics::CreateRenderState(UniquePtr<RenderState>& renderState, const RenderStateParams& renderStateParams) const
 {
-	if(renderState)
+	if (renderState)
 	{
 		gDebug.Print(LogVerbosity::Warning, CHANNEL_GRAPHICS, DT_TEXT("Creating render state in place of existing render state. Possible memory leak!"));
 	}
@@ -453,7 +451,7 @@ void Graphics::SetRenderState(const RenderState& renderState)
 
 void Graphics::SetRenderState(const UniquePtr<RenderState>& renderState)
 {
-	if(renderState)
+	if (renderState)
 	{
 		_deviceContext->OMSetDepthStencilState(renderState->_depthStencilState, 1);
 		_deviceContext->RSSetState(renderState->_rasterizerState);

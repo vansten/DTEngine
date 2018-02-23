@@ -14,45 +14,45 @@
 void ShaderVariable::SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TYPE_DESC& typeDescription)
 {
 	VariableGetterFunction = &MaterialParametersCollection::Get;
-	if(typeDescription.Class == D3D_SVC_MATRIX_COLUMNS)
+	if (typeDescription.Class == D3D_SVC_MATRIX_COLUMNS)
 	{
 		VariableGetterFunction = &MaterialParametersCollection::GetMatrix;
 	}
-	else if(typeDescription.Class == D3D_SVC_VECTOR)
+	else if (typeDescription.Class == D3D_SVC_VECTOR)
 	{
 		unsigned int numberOfElements = typeDescription.Columns == 1 ? typeDescription.Rows : typeDescription.Columns;
-		switch(numberOfElements)
+		switch (numberOfElements)
 		{
-		case 1:
-			break;
-		case 2:
-			VariableGetterFunction = &MaterialParametersCollection::GetVector2;
-			break;
-		case 3:
-			VariableGetterFunction = &MaterialParametersCollection::GetVector3;
-			break;
-		case 4:
-			VariableGetterFunction = &MaterialParametersCollection::GetVector4;
-			break;
+			case 1:
+				break;
+			case 2:
+				VariableGetterFunction = &MaterialParametersCollection::GetVector2;
+				break;
+			case 3:
+				VariableGetterFunction = &MaterialParametersCollection::GetVector3;
+				break;
+			case 4:
+				VariableGetterFunction = &MaterialParametersCollection::GetVector4;
+				break;
 		}
 	}
-	else if(typeDescription.Class == D3D_SVC_SCALAR)
+	else if (typeDescription.Class == D3D_SVC_SCALAR)
 	{
-		switch(typeDescription.Type)
+		switch (typeDescription.Type)
 		{
-		case D3D_SVT_BOOL:
-			break;
-		case D3D_SVT_DOUBLE:
-			break;
-		case D3D_SVT_FLOAT:
-			VariableGetterFunction = &MaterialParametersCollection::GetFloat;
-			break;
-		case D3D_SVT_INT:
-			VariableGetterFunction = &MaterialParametersCollection::GetInt;
-			break;
+			case D3D_SVT_BOOL:
+				break;
+			case D3D_SVT_DOUBLE:
+				break;
+			case D3D_SVT_FLOAT:
+				VariableGetterFunction = &MaterialParametersCollection::GetFloat;
+				break;
+			case D3D_SVT_INT:
+				VariableGetterFunction = &MaterialParametersCollection::GetInt;
+				break;
 		}
 	}
-	else if(typeDescription.Class == D3D_SVC_OBJECT)
+	else if (typeDescription.Class == D3D_SVC_OBJECT)
 	{
 		DT_ASSERT(false, DT_TEXT("Unsupported shader variable type!"));
 	}
@@ -60,7 +60,7 @@ void ShaderVariable::SetGetterFunctionFromTypeDescription(const _D3D11_SHADER_TY
 
 void const* ShaderVariable::Get(const MaterialParametersCollection& materialParametersCollection)
 {
-	if(!VariableGetterFunction)
+	if (!VariableGetterFunction)
 	{
 		return nullptr;
 	}
@@ -72,7 +72,7 @@ void const* ShaderVariable::Get(const MaterialParametersCollection& materialPara
 bool ShaderConstantBuffer::Initialize(Graphics& graphics)
 {
 	unsigned int bufferSize = 0;
-	for(auto& variable : Variables)
+	for (auto& variable : Variables)
 	{
 		bufferSize += variable->Size;
 	}
@@ -96,21 +96,21 @@ void ShaderConstantBuffer::Shutdown()
 void ShaderConstantBuffer::Update(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
 	void* data = graphics.Map(_constantBuffer);
-	if(!data)
+	if (!data)
 	{
 		graphics.Unmap(_constantBuffer);
 		return;
 	}
 
-	for(auto& variable : Variables)
+	for (auto& variable : Variables)
 	{
 		void const* variableData = variable->Get(materialParametersCollection);
-		if(variableData == nullptr)
+		if (variableData == nullptr)
 		{
 			variableData = variable->Get(MaterialParametersCollection::GLOBAL);
 		}
 
-		if(variableData == nullptr)
+		if (variableData == nullptr)
 		{
 			continue;
 		}
@@ -124,17 +124,14 @@ void ShaderConstantBuffer::Update(Graphics& graphics, const MaterialParametersCo
 }
 
 Shader::Shader() : _vertexShader(nullptr), _pixelShader(nullptr), _inputLayout(nullptr)
-{
-}
+{}
 
 Shader::~Shader()
-{
-
-}
+{}
 
 bool Shader::GatherConstantBuffersInfo(ID3D10Blob* compiledShader)
 {
-	if(!compiledShader)
+	if (!compiledShader)
 	{
 		return false;
 	}
@@ -148,23 +145,23 @@ bool Shader::GatherConstantBuffersInfo(ID3D10Blob* compiledShader)
 	reflectedShader->GetDesc(&reflectedShaderDesc);
 
 	// For each of bound resource (textures, samplers, constant buffers)
-	for(unsigned int i = 0; i < reflectedShaderDesc.BoundResources; ++i)
+	for (unsigned int i = 0; i < reflectedShaderDesc.BoundResources; ++i)
 	{
 		D3D11_SHADER_INPUT_BIND_DESC reflectedBoundResourceDesc;
 		result = reflectedShader->GetResourceBindingDesc(i, &reflectedBoundResourceDesc);
 
-		switch(reflectedBoundResourceDesc.Type)
+		switch (reflectedBoundResourceDesc.Type)
 		{
-		case D3D_SIT_CBUFFER:
-			{
-				ID3D11ShaderReflectionConstantBuffer* reflectedConstantBuffer = reflectedShader->GetConstantBufferByName(reflectedBoundResourceDesc.Name);
-				CreateConstantBufferAndVariables(reflectedBoundResourceDesc, reflectedConstantBuffer);
-			}
-			break;
-		case D3D_SIT_TEXTURE:
-			break;
-		case D3D_SIT_SAMPLER:
-			break;
+			case D3D_SIT_CBUFFER:
+				{
+					ID3D11ShaderReflectionConstantBuffer* reflectedConstantBuffer = reflectedShader->GetConstantBufferByName(reflectedBoundResourceDesc.Name);
+					CreateConstantBufferAndVariables(reflectedBoundResourceDesc, reflectedConstantBuffer);
+				}
+				break;
+			case D3D_SIT_TEXTURE:
+				break;
+			case D3D_SIT_SAMPLER:
+				break;
 		}
 	}
 
@@ -184,7 +181,7 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 	constantBuffer->Index = reflectedResourceDesc.BindPoint;
 
 	// Create variables that given constant buffer contains
-	for(unsigned int j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
+	for (unsigned int j = 0; j < reflectedConstantBufferDesc.Variables; ++j)
 	{
 		// Get variable description
 		ID3D11ShaderReflectionVariable* reflectedVariable = reflectedConstantBuffer->GetVariableByIndex(j);
@@ -197,7 +194,7 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 		result = reflectedVariableType->GetDesc(&reflectedVariableTypeDesc);
 		HR_REACTION(result, gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot obtain variable type description!")));
 
-		
+
 		// Create variable
 		UniquePtr<ShaderVariable> variable = std::make_unique<ShaderVariable>();
 		variable->Offset = reflectedVariableDesc.StartOffset;
@@ -210,7 +207,7 @@ bool Shader::CreateConstantBufferAndVariables(const _D3D11_SHADER_INPUT_BIND_DES
 		constantBuffer->Variables.push_back(std::move(variable));
 	}
 
-	if(Contains(constantBuffer->Name, DT_TEXT("PerFrame"), false))
+	if (Contains(constantBuffer->Name, DT_TEXT("PerFrame"), false))
 	{
 		_perFrameBuffers.push_back(std::move(constantBuffer));
 	}
@@ -235,54 +232,54 @@ bool Shader::Load(const String& path)
 
 	result = D3DCompileFromFile(psFileName.c_str(), nullptr, nullptr, "main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &_pixelShaderBuffer, nullptr);
 	HR(result);
-	
+
 	return true;
 }
 
 bool Shader::Initialize()
 {
-	if(!_vertexShaderBuffer || !_pixelShaderBuffer)
+	if (!_vertexShaderBuffer || !_pixelShaderBuffer)
 	{
 		return false;
 	}
 
 	Graphics& graphics = gGraphics;
-	
-	if(!graphics.CreateVertexShader(_vertexShaderBuffer, &_vertexShader))
+
+	if (!graphics.CreateVertexShader(_vertexShaderBuffer, &_vertexShader))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create vertex shader"));
 		return false;
 	}
-	if(!graphics.CreatePixelShader(_pixelShaderBuffer, &_pixelShader))
+	if (!graphics.CreatePixelShader(_pixelShaderBuffer, &_pixelShader))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create pixel shader"));
 		return false;
 	}
 
-	if(!GatherConstantBuffersInfo(_vertexShaderBuffer))
+	if (!GatherConstantBuffersInfo(_vertexShaderBuffer))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
 		return false;
 	}
 
-	if(!GatherConstantBuffersInfo(_pixelShaderBuffer))
+	if (!GatherConstantBuffersInfo(_pixelShaderBuffer))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to obtain shader reflection info"));
 		return false;
 	}
 
-	for(const auto& perFrameBuffer : _perFrameBuffers)
+	for (const auto& perFrameBuffer : _perFrameBuffers)
 	{
-		if(!perFrameBuffer->Initialize(graphics))
+		if (!perFrameBuffer->Initialize(graphics))
 		{
 			gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), perFrameBuffer->Name.c_str());
 			return false;
 		}
 	}
 
-	for(const auto& perDrawCallBuffer : _perDrawCallBuffers)
+	for (const auto& perDrawCallBuffer : _perDrawCallBuffers)
 	{
-		if(!perDrawCallBuffer->Initialize(graphics))
+		if (!perDrawCallBuffer->Initialize(graphics))
 		{
 			gDebug.Printf(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Cannot initialize buffer named %s!"), perDrawCallBuffer->Name.c_str());
 			return false;
@@ -308,7 +305,7 @@ bool Shader::Initialize()
 	inputLayoutDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	if(!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), _vertexShaderBuffer->GetBufferPointer(), (size_t)_vertexShaderBuffer->GetBufferSize(), &_inputLayout))
+	if (!graphics.CreateInputLayout(inputLayoutDesc, sizeof(inputLayoutDesc) / sizeof(D3D11_INPUT_ELEMENT_DESC), _vertexShaderBuffer->GetBufferPointer(), (size_t)_vertexShaderBuffer->GetBufferSize(), &_inputLayout))
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_GRAPHICS, DT_TEXT("Failed to create input layout"));
 		return false;
@@ -321,12 +318,12 @@ bool Shader::Initialize()
 
 void Shader::Shutdown()
 {
-	for(const auto& perFrameBuffer : _perFrameBuffers)
+	for (const auto& perFrameBuffer : _perFrameBuffers)
 	{
 		perFrameBuffer->Shutdown();
 	}
 
-	for(const auto& perDrawCallBuffer : _perDrawCallBuffers)
+	for (const auto& perDrawCallBuffer : _perDrawCallBuffers)
 	{
 		perDrawCallBuffer->Shutdown();
 	}
@@ -343,7 +340,7 @@ void Shader::Shutdown()
 
 void Shader::UpdatePerFrameBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	for(const auto& constantBuffer : _perFrameBuffers)
+	for (const auto& constantBuffer : _perFrameBuffers)
 	{
 		constantBuffer->Update(graphics, materialParametersCollection);
 	}
@@ -351,7 +348,7 @@ void Shader::UpdatePerFrameBuffers(Graphics& graphics, const MaterialParametersC
 
 void Shader::UpdatePerDrawCallBuffers(Graphics& graphics, const MaterialParametersCollection& materialParametersCollection)
 {
-	for(auto& constantBuffer : _perDrawCallBuffers)
+	for (auto& constantBuffer : _perDrawCallBuffers)
 	{
 		constantBuffer->Update(graphics, materialParametersCollection);
 	}

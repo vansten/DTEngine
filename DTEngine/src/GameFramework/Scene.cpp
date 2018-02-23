@@ -9,13 +9,10 @@
 #include "Components/HexagonalGrid.h"
 
 Scene::Scene(const String& scenePath) : _scenePath(scenePath)
-{
-}
+{}
 
 Scene::~Scene()
-{
-
-}
+{}
 
 void Scene::Load()
 {
@@ -27,7 +24,7 @@ void Scene::Load()
 	//		_entities.push_back(entity);
 	//		entity->Load(archive)
 
-	for(const auto& e : _entities)
+	for (const auto& e : _entities)
 	{
 		e->Initialize();
 	}
@@ -44,22 +41,22 @@ void Scene::Load()
 
 	SharedPtr<Hexagon> h1 = grid->GetHexagonAt(AxialCoordinates(0, 0));
 	SharedPtr<Hexagon> h2 = grid->GetHexagonAt(AxialCoordinates(3, 1));
-	
+
 	HexagonalGridPath path;
 	grid->CalculatePath(h1, h2, path);
 
 	const DynamicArray<SharedPtr<Hexagon>>& hexagonPath = path.GetPath();
 	SharedPtr<Material> materialInstance = nullptr;
-	if(hexagonPath.size() > 0)
+	if (hexagonPath.size() > 0)
 	{
 		materialInstance = hexagonPath[0]->GetOwner()->GetComponent<MeshRenderer>()->GetMaterial()->CreateInstance();
 		materialInstance->SetColor(DT_TEXT("Color"), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 	}
 
-	for(auto hexagon : hexagonPath)
+	for (auto hexagon : hexagonPath)
 	{
 		SharedPtr<MeshRenderer> mr = hexagon->GetOwner()->GetComponent<MeshRenderer>();
-		if(mr)
+		if (mr)
 		{
 			mr->SetMaterial(materialInstance);
 		}
@@ -72,10 +69,10 @@ void Scene::Save()
 {
 	Archive archive;	//TODO: Replace with something like FileSystem::GetArchive(_scenePath);
 	UNREFERENCED_PARAMETER(archive);
-	
+
 	// TODO: archive->Clear();
-	
-	for(const auto& e : _entities)
+
+	for (const auto& e : _entities)
 	{
 		e->Save(archive);
 	}
@@ -91,7 +88,7 @@ void Scene::Unload()
 	}
 	_entities.clear();
 
-	for(auto go : _newEntities)
+	for (auto go : _newEntities)
 	{
 		go->Shutdown();
 	}
@@ -108,7 +105,7 @@ void Scene::Update(float deltaTime)
 
 	for (auto go : _entities)
 	{
-		if(go->IsEnabledInHierarchy())
+		if (go->IsEnabledInHierarchy())
 		{
 			go->Update(deltaTime);
 		}
@@ -117,31 +114,31 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render(Graphics& graphics)
 {
-	if(!Camera::GetMainCamera())
+	if (!Camera::GetMainCamera())
 	{
 		gDebug.Print(LogVerbosity::Error, CHANNEL_CAMERA, DT_TEXT("There is no camera placed on the scene!"));
 		return;
 	}
-	
+
 	const DynamicArray<SharedPtr<Camera>>& cameras = Camera::GetAllCameras();
-	for(auto camera : cameras)
+	for (auto camera : cameras)
 	{
-		if(camera)
+		if (camera)
 		{
 			camera->Render(graphics, MeshRenderer::GetAllMeshRenderers());
 		}
 	}
 
 	SharedPtr<Camera> main = Camera::GetMainCamera();
-	if(main)
+	if (main)
 	{
 		main->RenderDebug(graphics);
 		main->RenderSky(graphics);
 	}
 
-	for(auto camera : cameras)
+	for (auto camera : cameras)
 	{
-		if(camera)
+		if (camera)
 		{
 			// camera->RenderUI();
 		}

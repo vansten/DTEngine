@@ -10,7 +10,7 @@ const Matrix Matrix::IDENTITY(1.0f, 0.0f, 0.0f, 0.0f,
 Quaternion Matrix::ToQuaternion() const
 {
 	const float trace = M11 + M22 + M33;
-	if(trace > 0)
+	if (trace > 0)
 	{
 		const float s = 0.5f / Math::Sqrt(trace + 1.0f);
 		const float w = 0.25f / s;
@@ -22,7 +22,7 @@ Quaternion Matrix::ToQuaternion() const
 	}
 	else
 	{
-		if(M11 > M22 && M11 > M33)
+		if (M11 > M22 && M11 > M33)
 		{
 			const float s = 2.0f * Math::Sqrt(1.0f + M11 - M22 - M33);
 			const float w = (M32 - M23) / s;
@@ -32,7 +32,7 @@ Quaternion Matrix::ToQuaternion() const
 
 			return Quaternion(x, y, z, w);
 		}
-		else if(M22 > M33)
+		else if (M22 > M33)
 		{
 			const float s = 2.0f * Math::Sqrt(1.0f + M22 - M11 - M33);
 			const float w = (M13 - M31) / s;

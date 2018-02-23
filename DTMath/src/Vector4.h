@@ -11,10 +11,14 @@ public:
 	float W;
 
 public:
-	Vector4() : X(0.0f), Y(0.0f), Z(0.0f), W(0.0f) { }
-	Vector4(float x, float y, float z, float w) : X(x), Y(y), Z(z), W(w) { }
-	Vector4(const Vector3& v, float w) : X(v.X), Y(v.Y), Z(v.Z), W(w) { }
-	Vector4(const Vector4& v) : X(v.X), Y(v.Y), Z(v.Z), W(v.W) { }
+	Vector4() : X(0.0f), Y(0.0f), Z(0.0f), W(0.0f)
+	{}
+	Vector4(float x, float y, float z, float w) : X(x), Y(y), Z(z), W(w)
+	{}
+	Vector4(const Vector3& v, float w) : X(v.X), Y(v.Y), Z(v.Z), W(w)
+	{}
+	Vector4(const Vector4& v) : X(v.X), Y(v.Y), Z(v.Z), W(v.W)
+	{}
 
 	inline float& operator[](size_t index)
 	{

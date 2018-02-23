@@ -21,9 +21,9 @@ public:
 	static Enum FromString(const String& name)
 	{
 		const EnumStringPair<Enum>* pairs = _pairList;
-		for(; pairs->Name[0] != 0; ++pairs)
+		for (; pairs->Name[0] != 0; ++pairs)
 		{
-			if(name.compare(pairs->Name) == 0)
+			if (name.compare(pairs->Name) == 0)
 			{
 				return pairs->Value;
 			}
@@ -36,9 +36,9 @@ public:
 	static const String& ToString(Enum value)
 	{
 		const EnumStringPair<Enum>* pairs = _pairList;
-		for(; pairs->Name[0] != 0; ++pairs)
+		for (; pairs->Name[0] != 0; ++pairs)
 		{
-			if(pairs->Value == value)
+			if (pairs->Value == value)
 			{
 				return pairs->Name;
 			}

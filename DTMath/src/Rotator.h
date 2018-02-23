@@ -22,9 +22,12 @@ public:
 	float Roll;
 
 public:
-	inline Rotator() : Pitch(0.0f), Yaw(0.0f), Roll(0.0f) { }
-	inline Rotator(float pitch, float yaw, float roll) : Pitch(pitch), Yaw(yaw), Roll(roll) { }
-	inline Rotator(const Rotator& r) : Pitch(r.Pitch), Yaw(r.Yaw), Roll(r.Roll) { }
+	inline Rotator() : Pitch(0.0f), Yaw(0.0f), Roll(0.0f)
+	{}
+	inline Rotator(float pitch, float yaw, float roll) : Pitch(pitch), Yaw(yaw), Roll(roll)
+	{}
+	inline Rotator(const Rotator& r) : Pitch(r.Pitch), Yaw(r.Yaw), Roll(r.Roll)
+	{}
 
 	Quaternion ToQuaternion() const;
 

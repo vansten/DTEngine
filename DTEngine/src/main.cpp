@@ -11,7 +11,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	{
 		const UniquePtr<App>& app = App::GetInstance();
-		if(app)
+		if (app)
 		{
 			UniquePtr<Game> game = std::make_unique<Game>();
 			int exitCode = app->Run(std::move(game));

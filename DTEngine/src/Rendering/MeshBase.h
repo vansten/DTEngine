@@ -36,10 +36,28 @@ protected:
 public:
 	virtual void Shutdown() override;
 
-	inline ID3D11Buffer* GetVertexBuffer() const { return _vertexBuffer; }
-	inline ID3D11Buffer* GetIndexBuffer() const { return _indexBuffer; }
-	inline unsigned int GetIndicesCount() const { return _indicesCount; }
-	inline unsigned int GetVertexTypeSize() const { return sizeof(VertexType); }
+	inline ID3D11Buffer* GetVertexBuffer() const
+	{
+		return _vertexBuffer;
+	}
 
-	inline const BoundingBox& GetBoundingBox() const { return _boundingBox; }
+	inline ID3D11Buffer* GetIndexBuffer() const
+	{
+		return _indexBuffer;
+	}
+
+	inline unsigned int GetIndicesCount() const
+	{
+		return _indicesCount;
+	}
+
+	inline unsigned int GetVertexTypeSize() const
+	{
+		return sizeof(VertexType);
+	}
+
+	inline const BoundingBox& GetBoundingBox() const
+	{
+		return _boundingBox;
+	}
 };

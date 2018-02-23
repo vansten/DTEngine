@@ -8,7 +8,7 @@ class Input final
 {
 protected:
 	Vector2 _mousePosition;
-	
+
 	Dictionary<int, Event<bool>> _keyDownEvents;
 	Dictionary<int, Event<bool>> _keyUpEvents;
 	Dictionary<int, Event<bool>> _mouseDownEvents;
@@ -33,7 +33,7 @@ public:
 	void BindKeyUp(int keyCode, FunctionType function, SharedPtr<Class> object, int priority = 0);
 	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
 	void UnbindKeyUp(int keyCode, FunctionType function, SharedPtr<Class> object);
-	
+
 	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
 	void BindMouseDown(int mouseCode, FunctionType function, SharedPtr<Class> object, int priority = 0);
 	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
@@ -66,7 +66,7 @@ inline void Input::BindKeyDown(int keyCode, FunctionType function, SharedPtr<Cla
 template<typename Class, typename FunctionType>
 inline void Input::UnbindKeyDown(int keyCode, FunctionType function, SharedPtr<Class> object)
 {
-	if(_keyDownEvents.find(keyCode) != _keyDownEvents.end())
+	if (_keyDownEvents.find(keyCode) != _keyDownEvents.end())
 	{
 		_keyDownEvents[keyCode].Unbind(function, object);
 	}
@@ -81,7 +81,7 @@ inline void Input::BindKeyUp(int keyCode, FunctionType function, SharedPtr<Class
 template<typename Class, typename FunctionType>
 inline void Input::UnbindKeyUp(int keyCode, FunctionType function, SharedPtr<Class> object)
 {
-	if(_keyUpEvents.find(keyCode) != _keyUpEvents.end())
+	if (_keyUpEvents.find(keyCode) != _keyUpEvents.end())
 	{
 		_keyUpEvents[keyCode].Unbind(function, object);
 	}
@@ -96,7 +96,7 @@ inline void Input::BindMouseDown(int mouseCode, FunctionType function, SharedPtr
 template<typename Class, typename FunctionType>
 inline void Input::UnbindMouseDown(int mouseCode, FunctionType function, SharedPtr<Class> object)
 {
-	if(_mouseDownEvents.find(mouseCode) != _mouseDownEvents.end())
+	if (_mouseDownEvents.find(mouseCode) != _mouseDownEvents.end())
 	{
 		_mouseDownEvents[mouseCode].Unbind(function, object);
 	}
@@ -111,7 +111,7 @@ inline void Input::BindMouseUp(int mouseCode, FunctionType function, SharedPtr<C
 template<typename Class, typename FunctionType>
 inline void Input::UnbindMouseUp(int mouseCode, FunctionType function, SharedPtr<Class> object)
 {
-	if(_mouseUpEvents.find(mouseCode) != _mouseUpEvents.end())
+	if (_mouseUpEvents.find(mouseCode) != _mouseUpEvents.end())
 	{
 		_mouseUpEvents[mouseCode].Unbind(function, object);
 	}

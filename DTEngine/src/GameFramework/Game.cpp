@@ -3,9 +3,7 @@
 #include "Debug/Debug.h"
 
 Game::Game() : _activeScene(nullptr)
-{
-
-}
+{}
 
 bool Game::Initialize()
 {
