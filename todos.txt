@@ -44,6 +44,8 @@ TODOs:
 -- Direction to Rotator						|> ALL DONE
 -- Layers (for physics and rendering)		|> ALL DONE
 -- Physics									|> IN PROGRESS (TODO: PhysicsIssues.txt)
+-- Refactor event class 					|> ALL DONE
+-- Replace std::function with own implementation
 -- Input (gamepad, keyboad, mouse) should be reworked (maybe) from window messages to update and polling keyboard/gamepad/mouse states?
 -- General config (fullscreen, vsync mode, target resolution etc.)
 -- Fullscreen mode (maybe resizing is not properly handled)

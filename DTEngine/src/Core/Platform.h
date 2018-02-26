@@ -41,9 +41,6 @@ using PriorityQueue = std::priority_queue<T, UnderlyingType, LessType>;
 template<typename T1, typename T2>
 using Pair = std::pair<T1, T2>;
 
-template<typename T>
-using Function = std::function<T>;
-
 template<typename To, typename From>
 inline SharedPtr<To> StaticPointerCast(SharedPtr<From>& pointer)
 {

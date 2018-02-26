@@ -96,8 +96,8 @@ private:
 	SharedPtr<MeshBase> _sphere;
 
 public:
-	Event<void, const Channel&, const Log&> OnLogged;
-	Event<void, const Channel&> OnChannelVisibilityChanged;
+	Event<void(const Channel&, const Log&)> OnLogged;
+	Event<void(const Channel&)> OnChannelVisibilityChanged;
 
 private:
 	void UpdateDraws(float deltaTime);

@@ -2,15 +2,21 @@
 
 #include "Core/Platform.h"
 
+template<typename T>
+using Function = std::function<T>;
+
+// Base class for Event classes
+// DO NOT use this class!
+// Use Event<T> and Event<Ret(Args..)> instead!
 template<typename ReturnType, typename ...Args>
-class Event final
+class EventBase
 {
 private:
 	typedef bool(*Predicate)(ReturnType);
 
 	class DelegateBase
 	{
-		friend class Event<ReturnType, Args...>;
+		friend class EventBase<ReturnType, Args...>;
 
 	protected:
 		int _priority;
@@ -43,7 +49,7 @@ private:
 public:
 	class Delegate final : public DelegateBase
 	{
-		friend class Event<ReturnType, Args...>;
+		friend class EventBase<ReturnType, Args...>;
 
 	public:
 		typedef ReturnType(*FunctionType)(Args...);
@@ -74,7 +80,7 @@ public:
 	template<typename Class>
 	class ClassDelegate final : public DelegateBase
 	{
-		friend class Event<ReturnType, Args...>;
+		friend class EventBase<ReturnType, Args...>;
 
 	public:
 		typedef ReturnType(Class::*ClassFunctionType)(Args...);
@@ -114,6 +120,11 @@ private:
 	{
 		std::sort(_delegates.begin(), _delegates.end(), &DelegateBase::Compare);
 	}
+
+protected:
+	// This simple pure virtual function will do nothing in derived classes
+	// But it's super important to make sure nobody instantiates EventBase class directly
+	virtual void PreventFromInstantiating() const = 0;
 
 public:
 	template<typename FunctionType = Delegate::FunctionType>
@@ -212,5 +223,25 @@ public:
 			}
 		}
 		return ReturnType();
+	}
+};
+
+template<typename T>
+class Event : public EventBase<T>
+{
+protected:
+	virtual void PreventFromInstantiating() const override
+	{
+
+	}
+};
+
+template<typename ReturnType, typename ...Args>
+class Event<ReturnType(Args...)> : public EventBase<ReturnType, Args...>
+{
+protected:
+	virtual void PreventFromInstantiating() const override
+	{
+
 	}
 };

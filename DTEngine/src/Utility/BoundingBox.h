@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Platform.h"
+#include "Core/Event.h"
 #include "Math.h"
 
 struct BoundingBox final
