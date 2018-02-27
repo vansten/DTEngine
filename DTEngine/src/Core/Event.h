@@ -3,13 +3,119 @@
 #include "Core/Platform.h"
 
 template<typename T>
-using Function = std::function<T>;
+class Function;
 
-// Base class for Event classes
-// DO NOT use this class!
-// Use Event<T> and Event<Ret(Args..)> instead!
 template<typename ReturnType, typename ...Args>
-class EventBase
+class Function<ReturnType(Args...)>
+{
+private:
+	class ICallable
+	{
+	public:
+		virtual ~ICallable() = default;
+		virtual ReturnType Invoke(Args...) const = 0;
+	};
+
+	template<typename T>
+	class CallableT : public ICallable
+	{
+	private:
+		T _t;
+
+	public:
+		CallableT(const T& t) : _t(t)
+		{}
+		CallableT(const CallableT& ct) : _t(ct._t)
+		{}
+
+		~CallableT() override = default;
+
+		virtual ReturnType Invoke(Args... args) const override
+		{
+			return _t(std::forward<Args>(args)...);
+		}
+	};
+
+	template<typename Class, typename T>
+	class CallableClassT : public ICallable
+	{
+	private:
+		WeakPtr<Class> _object;
+		T _t;
+
+	public:
+		CallableClassT(SharedPtr<Class> object, const T& t) : _object(object), _t(t)
+		{}
+		CallableClassT(const CallableClassT& callable) : _object(callable._object), _t(callable._t)
+		{}
+
+		~CallableClassT() override = default;
+
+		virtual ReturnType Invoke(Args... args) const override
+		{
+			SharedPtr<Class> obj = _object.lock();
+			if (obj)
+			{
+				Class* rawPtr = obj.get();
+				return (rawPtr->*_t)(std::forward<Args>(args)...);
+			}
+
+			return ReturnType();
+		}
+	};
+
+private:
+	UniquePtr<ICallable> _callable;
+
+public:
+	Function()
+	{
+		_callable = nullptr;
+	}
+
+	template<typename T>
+	Function(T t)
+	{
+		_callable = std::make_unique<CallableT<T>>(t);
+	}
+
+	template<typename Class, typename T>
+	Function(SharedPtr<Class> object, const T& t)
+	{
+		_callable = std::make_unique<CallableClassT<Class, T>>(object, t);
+	}
+
+	template<typename Class, typename T>
+	void Bind(SharedPtr<Class> object, const T& t)
+	{
+		_callable = std::make_unique<CallableClassT<Class, T>>(object, t);
+	}
+
+	template<typename T>
+	Function& operator=(T t)
+	{
+		_callable = std::make_unique<CallableT<T>>(t);
+		return *this;
+	}
+
+	Function& operator=(nullptr_t)
+	{
+		_callable = nullptr;
+		return *this;
+	}
+
+	ReturnType operator()(Args... args) const
+	{
+		DT_ASSERT(_callable, DT_TEXT("Cannot invoke function that is not bound to anything"));
+		return _callable->Invoke(std::forward<Args>(args)...);
+	}
+};
+
+template<typename T>
+class Event;
+
+template<typename ReturnType, typename ...Args>
+class Event<ReturnType(Args...)>
 {
 private:
 	typedef bool(*Predicate)(ReturnType);
@@ -223,25 +329,5 @@ public:
 			}
 		}
 		return ReturnType();
-	}
-};
-
-template<typename T>
-class Event : public EventBase<T>
-{
-protected:
-	virtual void PreventFromInstantiating() const override
-	{
-
-	}
-};
-
-template<typename ReturnType, typename ...Args>
-class Event<ReturnType(Args...)> : public EventBase<ReturnType, Args...>
-{
-protected:
-	virtual void PreventFromInstantiating() const override
-	{
-
 	}
 };
