@@ -9,39 +9,39 @@ class Input final
 protected:
 	Vector2 _mousePosition;
 
-	Dictionary<int, Event<bool>> _keyDownEvents;
-	Dictionary<int, Event<bool>> _keyUpEvents;
-	Dictionary<int, Event<bool>> _mouseDownEvents;
-	Dictionary<int, Event<bool>> _mouseUpEvents;
+	Dictionary<int, Event<bool(void)>> _keyDownEvents;
+	Dictionary<int, Event<bool(void)>> _keyUpEvents;
+	Dictionary<int, Event<bool(void)>> _mouseDownEvents;
+	Dictionary<int, Event<bool(void)>> _mouseUpEvents;
 
 public:
-	void BindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function, int priority = 0);
-	void UnbindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function);
-	void BindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function, int priority = 0);
-	void UnbindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function);
-	void BindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function, int priority = 0);
-	void UnbindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function);
-	void BindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function, int priority = 0);
-	void UnbindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function);
+	void BindKeyDown(int keyCode, Event<bool(void)>::Delegate::FunctionType function, int priority = 0);
+	void UnbindKeyDown(int keyCode, Event<bool(void)>::Delegate::FunctionType function);
+	void BindKeyUp(int keyCode, Event<bool(void)>::Delegate::FunctionType function, int priority = 0);
+	void UnbindKeyUp(int keyCode, Event<bool(void)>::Delegate::FunctionType function);
+	void BindMouseDown(int mouseCode, Event<bool(void)>::Delegate::FunctionType function, int priority = 0);
+	void UnbindMouseDown(int mouseCode, Event<bool(void)>::Delegate::FunctionType function);
+	void BindMouseUp(int mouseCode, Event<bool(void)>::Delegate::FunctionType function, int priority = 0);
+	void UnbindMouseUp(int mouseCode, Event<bool(void)>::Delegate::FunctionType function);
 
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void BindKeyDown(int keyCode, FunctionType function, SharedPtr<Class> object, int priority = 0);
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void UnbindKeyDown(int keyCode, FunctionType function, SharedPtr<Class> object);
 
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void BindKeyUp(int keyCode, FunctionType function, SharedPtr<Class> object, int priority = 0);
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void UnbindKeyUp(int keyCode, FunctionType function, SharedPtr<Class> object);
 
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void BindMouseDown(int mouseCode, FunctionType function, SharedPtr<Class> object, int priority = 0);
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void UnbindMouseDown(int mouseCode, FunctionType function, SharedPtr<Class> object);
 
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void BindMouseUp(int mouseCode, FunctionType function, SharedPtr<Class> object, int priority = 0);
-	template<typename Class, typename FunctionType = Event<bool>::ClassDelegate<Class>::ClassFunctionType>
+	template<typename Class, typename FunctionType = Event<bool(void)>::ClassDelegate<Class>::ClassFunctionType>
 	void UnbindMouseUp(int mouseCode, FunctionType function, SharedPtr<Class> object);
 
 	void OnKeyDown(int keyCode);

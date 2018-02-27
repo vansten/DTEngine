@@ -122,7 +122,7 @@ private:
 
 	class DelegateBase
 	{
-		friend class EventBase<ReturnType, Args...>;
+		friend class Event<ReturnType(Args...)>;
 
 	protected:
 		int _priority;
@@ -155,7 +155,7 @@ private:
 public:
 	class Delegate final : public DelegateBase
 	{
-		friend class EventBase<ReturnType, Args...>;
+		friend class Event<ReturnType(Args...)>;
 
 	public:
 		typedef ReturnType(*FunctionType)(Args...);
@@ -186,7 +186,7 @@ public:
 	template<typename Class>
 	class ClassDelegate final : public DelegateBase
 	{
-		friend class EventBase<ReturnType, Args...>;
+		friend class Event<ReturnType(Args...)>;
 
 	public:
 		typedef ReturnType(Class::*ClassFunctionType)(Args...);
@@ -226,11 +226,6 @@ private:
 	{
 		std::sort(_delegates.begin(), _delegates.end(), &DelegateBase::Compare);
 	}
-
-protected:
-	// This simple pure virtual function will do nothing in derived classes
-	// But it's super important to make sure nobody instantiates EventBase class directly
-	virtual void PreventFromInstantiating() const = 0;
 
 public:
 	template<typename FunctionType = Delegate::FunctionType>

@@ -230,6 +230,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 
+				SetCapture(hWnd);
+
 				break;
 			}
 			// Up events cannot be (unfortunately) handled in one case statement as Down events...
@@ -239,6 +241,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					gInput.OnMouseUp(VK_LBUTTON);
 				}
+
+				ReleaseCapture();
 				break;
 			}
 		case WM_RBUTTONUP:
@@ -247,6 +251,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					gInput.OnMouseUp(VK_RBUTTON);
 				}
+
+				ReleaseCapture();
 				break;
 			}
 		case WM_MBUTTONUP:
@@ -255,6 +261,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					gInput.OnMouseUp(VK_MBUTTON);
 				}
+
+				ReleaseCapture();
 				break;
 			}
 	}

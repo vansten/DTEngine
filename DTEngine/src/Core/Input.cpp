@@ -2,12 +2,12 @@
 
 Input gInput;
 
-void Input::BindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function, int priority)
+void Input::BindKeyDown(int keyCode, Event<bool(void)>::Delegate::FunctionType function, int priority)
 {
 	_keyDownEvents[keyCode].Bind(function, priority);
 }
 
-void Input::UnbindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindKeyDown(int keyCode, Event<bool(void)>::Delegate::FunctionType function)
 {
 	const auto& keyDownEvent = _keyDownEvents.find(keyCode);
 	if (keyDownEvent != _keyDownEvents.end())
@@ -16,12 +16,12 @@ void Input::UnbindKeyDown(int keyCode, Event<bool>::Delegate::FunctionType funct
 	}
 }
 
-void Input::BindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function, int priority)
+void Input::BindKeyUp(int keyCode, Event<bool(void)>::Delegate::FunctionType function, int priority)
 {
 	_keyUpEvents[keyCode].Bind(function, priority);
 }
 
-void Input::UnbindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindKeyUp(int keyCode, Event<bool(void)>::Delegate::FunctionType function)
 {
 	const auto& keyUpEvent = _keyUpEvents.find(keyCode);
 	if (keyUpEvent != _keyUpEvents.end())
@@ -30,12 +30,12 @@ void Input::UnbindKeyUp(int keyCode, Event<bool>::Delegate::FunctionType functio
 	}
 }
 
-void Input::BindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function, int priority)
+void Input::BindMouseDown(int mouseCode, Event<bool(void)>::Delegate::FunctionType function, int priority)
 {
 	_mouseDownEvents[mouseCode].Bind(function, priority);
 }
 
-void Input::UnbindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindMouseDown(int mouseCode, Event<bool(void)>::Delegate::FunctionType function)
 {
 	const auto& mouseDownEvent = _mouseDownEvents.find(mouseCode);
 	if (mouseDownEvent != _mouseDownEvents.end())
@@ -44,12 +44,12 @@ void Input::UnbindMouseDown(int mouseCode, Event<bool>::Delegate::FunctionType f
 	}
 }
 
-void Input::BindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function, int priority)
+void Input::BindMouseUp(int mouseCode, Event<bool(void)>::Delegate::FunctionType function, int priority)
 {
 	_mouseUpEvents[mouseCode].Bind(function, priority);
 }
 
-void Input::UnbindMouseUp(int mouseCode, Event<bool>::Delegate::FunctionType function)
+void Input::UnbindMouseUp(int mouseCode, Event<bool(void)>::Delegate::FunctionType function)
 {
 	const auto& mouseUpEvent = _mouseUpEvents.find(mouseCode);
 	if (mouseUpEvent != _mouseUpEvents.end())
