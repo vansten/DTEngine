@@ -54,6 +54,11 @@ bool MeshBase::CreateBuffers(VertexType* vertices, unsigned int* indices)
 	static const auto positionGetter = [](const VertexType& vertex) -> const Vector3&{return vertex.Position;};
 	_boundingBox.CalculateMinMax<VertexType>(vertices, _verticesCount, positionGetter);
 
+	for (unsigned int i = 0; i < _verticesCount; ++i)
+	{
+		_vertices.push_back(vertices[i]);
+	}
+
 	return result;
 }
 

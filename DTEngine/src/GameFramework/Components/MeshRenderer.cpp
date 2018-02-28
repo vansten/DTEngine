@@ -41,9 +41,7 @@ void MeshRenderer::UnregisterMeshRenderer(SharedPtr<MeshRenderer> meshRenderer)
 
 SharedPtr<Component> MeshRenderer::Copy(SharedPtr<Entity> newOwner) const
 {
-	SharedPtr<MeshRenderer> copy = SharedPtr<MeshRenderer>(new MeshRenderer(*this));
-	copy->_owner = newOwner;
-	return StaticPointerCast<Component>(copy);
+	IMPLEMENT_COPY(MeshRenderer);
 }
 
 void MeshRenderer::OnInitialize()

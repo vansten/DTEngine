@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <type_traits>
 
 namespace Math
 {
@@ -56,25 +57,11 @@ namespace Math
 		return sin(radians);
 	}
 
-	inline float Max(float a, float b)
+	template<typename T>
+	inline std::enable_if_t<std::is_arithmetic_v<T>, T> Wrap(T value, T min, T max)
 	{
-		return a > b ? a : b;
-	}
-
-	inline float Min(float a, float b)
-	{
-		return a < b ? a : b;
-	}
-
-	inline float Clamp(float value, float min = 0.0f, float max = 1.0f)
-	{
-		return Min(max, Max(value, min));
-	}
-
-	inline float Wrap(float value, float min, float max)
-	{
-		float result = value;
-		float step = Abs(max) - Abs(min);
+		T result = value;
+		T step = Abs(max) - Abs(min);
 		while (result < min)
 		{
 			result += step;
@@ -87,8 +74,45 @@ namespace Math
 		return result;
 	}
 
-	inline float Round(float value)
+	template<typename T>
+	inline std::enable_if_t<std::is_arithmetic_v<T>, T> Round(T value)
 	{
 		return round(value);
+	}
+
+	template<typename T>
+	inline std::enable_if_t<std::is_trivially_constructible_v<T>, T> Max(T a, T b)
+	{
+		return a > b ? a : b;
+	}
+
+	template<typename T>
+	inline std::enable_if_t<!std::is_trivially_constructible_v<T>, const T&> Max(const T& a, const T& b)
+	{
+		return a > b ? a : b;
+	}
+
+	template<typename T>
+	inline std::enable_if_t<std::is_trivially_constructible_v<T>, T> Min(T a, T b)
+	{
+		return a < b ? a : b;
+	}
+
+	template<typename T>
+	inline std::enable_if_t<!std::is_trivially_constructible_v<T>, const T&> Min(const T& a, const T& b)
+	{
+		return a < b ? a : b;
+	}
+
+	template<typename T>
+	inline std::enable_if_t<std::is_trivially_constructible_v<T>, T> Clamp(T value, T min, T max)
+	{
+		return Min(max, Max(min, value));
+	}
+
+	template<typename T>
+	inline std::enable_if_t<!std::is_trivially_constructible_v<T>, T> Clamp(const T& value, const T& min, const T& max)
+	{
+		return Min(max, Max(min, value));
 	}
 }

@@ -9,7 +9,7 @@
 	// #error(...)
 	// #endif
 // which demands that one of those two symbols must be defined
-// in order to built application
+// in order to build application
 #if !defined(NDEBUG)
 #define NDEBUG
 #define NDEBUG_DEFINED_HERE
@@ -22,6 +22,19 @@
 #undef NDEBUG
 #undef NDEBUG_DEFINED_HERE
 #endif
+
+class PhysicalBody;
+class MeshBase;
+
+struct TriggerInfo
+{
+
+};
+
+struct CollisionInfo
+{
+
+};
 
 class PhysicsErrorCallback : public physx::PxErrorCallback
 {
@@ -50,6 +63,8 @@ private:
 	physx::PxPvd* _pvd;
 	physx::PxPvdTransport* _pvdTransport;
 
+	physx::PxCooking* _cooking;
+
 private:
 	void PreSimulate(float deltaTime);
 	void Simulate(float deltaTime);
@@ -61,6 +76,9 @@ public:
 	void Shutdown();
 
 	void Update(float deltaTime);
+
+	bool CreateRigidbody(bool dynamic, float mass, PhysicalBody* physicalBody, physx::PxRigidActor** rigidbody);
+	bool CreateMeshShape(SharedPtr<MeshBase> mesh, physx::PxShape** shape);
 };
 
 extern const String CHANNEL_PHYSICS;

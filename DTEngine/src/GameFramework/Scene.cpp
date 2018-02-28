@@ -8,6 +8,9 @@
 #include "Components/MeshRenderer.h"
 #include "Components/HexagonalGrid.h"
 
+#include "Components/PhysicalBody.h"
+#include "Components/Colliders/MeshCollider.h"
+
 Scene::Scene(const String& scenePath) : _scenePath(scenePath)
 {}
 
@@ -60,6 +63,10 @@ void Scene::Load()
 		{
 			mr->SetMaterial(materialInstance);
 		}
+
+		SharedPtr<PhysicalBody> physicalBody = hexagon->GetOwner()->AddComponent<PhysicalBody>();
+		UniquePtr<Collider> mc = std::make_unique<MeshCollider>(mr->GetMesh());
+		physicalBody->AddCollider(std::move(mc));
 	}
 
 	//TODO: Put this something like FileSystem::Close(archive);

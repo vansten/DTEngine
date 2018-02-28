@@ -20,9 +20,7 @@ CameraControl::~CameraControl()
 
 SharedPtr<Component> CameraControl::Copy(SharedPtr<Entity> newOwner) const
 {
-	SharedPtr<CameraControl> copy = SharedPtr<CameraControl>(new CameraControl(*this));
-	copy->_owner = newOwner;
-	return StaticPointerCast<Component>(copy);
+	IMPLEMENT_COPY(CameraControl);
 }
 
 bool CameraControl::OnWPressed()

@@ -1,6 +1,9 @@
 #include "Physics.h"
 
 #include "Debug/Debug.h"
+#include "GameFramework/Components/PhysicalBody.h"
+#include "GameFramework/Entity.h"
+#include "Rendering/MeshBase.h"
 
 // Those libraries are commented here and not removed
 // to provide easy access to a lib when it's required
@@ -17,7 +20,7 @@
 #pragma comment(lib, "PhysX3CHECKED_x64.lib")
 //#pragma comment(lib, "PhysX3CharacterKinematicCHECKED_x64.lib")
 #pragma comment(lib, "PhysX3CommonCHECKED_x64.lib")
-//#pragma comment(lib, "PhysX3CookingCHECKED_x64.lib")
+#pragma comment(lib, "PhysX3CookingCHECKED_x64.lib")
 #pragma comment(lib, "PhysX3ExtensionsCHECKED.lib")
 //#pragma comment(lib, "PhysX3VehicleCHECKED.lib")
 #pragma comment(lib, "PxFoundationCHECKED_x64.lib")
@@ -35,7 +38,7 @@
 #pragma comment(lib, "PhysX3_x64.lib")
 //#pragma comment(lib, "PhysX3CharacterKinematic_x64.lib")
 #pragma comment(lib, "PhysX3Common_x64.lib")
-//#pragma comment(lib, "PhysX3Cooking_x64.lib")
+#pragma comment(lib, "PhysX3Cooking_x64.lib")
 #pragma comment(lib, "PhysX3Extensions.lib")
 //#pragma comment(lib, "PhysX3Vehicle.lib")
 #pragma comment(lib, "PxFoundation_x64.lib")
@@ -157,11 +160,20 @@ bool Physics::Initialize()
 		return false;
 	}
 
+	PxCookingParams cookingParams(scale);
+	_cooking = PxCreateCooking(PX_PHYSICS_VERSION, *_foundation, cookingParams);
+	if (!_cooking)
+	{
+		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot create physx::PxCooking instance"));
+		return false;
+	}
+
 	return true;
 }
 
 void Physics::Shutdown()
 {
+	RELEASE_PHYSX(_cooking);
 	RELEASE_PHYSX(_scene);
 	if (_cpuDispatcher)
 	{
@@ -213,4 +225,61 @@ void Physics::Update(float deltaTime)
 	PostSimulate(deltaTime);
 
 	ResolveCallbacks();
+}
+
+bool Physics::CreateRigidbody(bool dynamic, float mass, PhysicalBody* physicalBody, PxRigidActor** rigidbody)
+{
+	DT_ASSERT(physicalBody && rigidbody, DT_TEXT("Cannot create rigidbody either for null physical body or null rigidbody"));
+
+	if (dynamic)
+	{
+		(*rigidbody) = _physics->createRigidDynamic(physicalBody->GetOwner()->GetTransform());
+		PxRigidBody* rb = (*rigidbody)->is<PxRigidBody>();
+		if (rb)
+		{
+			rb->setMass(mass);
+		}
+	}
+	else
+	{
+		(*rigidbody) = _physics->createRigidStatic(physicalBody->GetOwner()->GetTransform());
+	}
+
+	(*rigidbody)->userData = physicalBody;
+
+	return (*rigidbody) != nullptr;
+}
+
+bool Physics::CreateMeshShape(SharedPtr<MeshBase> mesh, physx::PxShape** shape)
+{
+	DT_ASSERT(mesh && shape, DT_TEXT("Cannot create mesh shape either for null mesh or null shape"));
+	
+	const DynamicArray<MeshBase::VertexType>& vertices = mesh->GetVertices();
+	DynamicArray<Vector3> verticesPositions;
+
+	for (unsigned int i = 0; i < vertices.size(); ++i)
+	{
+		verticesPositions.push_back(vertices[i].Position);
+	}
+
+	PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = (PxU32)vertices.size();
+	convexDesc.points.stride = sizeof(Vector3);
+	convexDesc.points.data = verticesPositions.data();
+	convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+	PxDefaultMemoryOutputStream buf;
+	PxConvexMeshCookingResult::Enum result;
+
+	if (!_cooking->cookConvexMesh(convexDesc, buf, &result))
+	{
+		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot cook convex mesh!"));
+		return false;
+	}
+	PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+	PxConvexMesh* convexMesh = _physics->createConvexMesh(input);
+
+	(*shape) = _physics->createShape(PxConvexMeshGeometry(convexMesh), *(_physics->createMaterial(0.0f, 0.0f, 0.0f)));
+
+	return (*shape) != nullptr;
 }

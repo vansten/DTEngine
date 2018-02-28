@@ -148,9 +148,7 @@ void Camera::UnregisterCamera(SharedPtr<Camera> camera)
 
 SharedPtr<Component> Camera::Copy(SharedPtr<Entity> newOwner) const
 {
-	SharedPtr<Camera> copy = SharedPtr<Camera>(new Camera(*this));
-	copy->_owner = newOwner;
-	return StaticPointerCast<Component>(copy);
+	IMPLEMENT_COPY(Camera);
 }
 
 void Camera::OnInitialize()

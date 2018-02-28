@@ -56,9 +56,7 @@ Hexagon::~Hexagon()
 
 SharedPtr<Component> Hexagon::Copy(SharedPtr<Entity> newOwner) const
 {
-	SharedPtr<Hexagon> copy = SharedPtr<Hexagon>(new Hexagon(*this));
-	copy->_owner = newOwner;
-	return StaticPointerCast<Component>(copy);
+	IMPLEMENT_COPY(Hexagon);
 }
 
 void HexagonalGridPath::ReversePath()
@@ -103,9 +101,7 @@ HexagonalGrid::~HexagonalGrid()
 
 SharedPtr<Component> HexagonalGrid::Copy(SharedPtr<Entity> newOwner) const
 {
-	SharedPtr<HexagonalGrid> copy = SharedPtr<HexagonalGrid>(new HexagonalGrid(*this));
-	copy->_owner = newOwner;
-	return StaticPointerCast<Component>(copy);
+	IMPLEMENT_COPY(HexagonalGrid);
 }
 
 void HexagonalGrid::OnShutdown()

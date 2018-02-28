@@ -20,6 +20,11 @@ SharedPtr<const Type> SharedFromThis() const \
 } \
 private:
 
+#define IMPLEMENT_COPY(Type) \
+SharedPtr<Type> copy = SharedPtr<Type>(new Type(*this)); \
+copy->_owner = newOwner; \
+return StaticPointerCast<Component>(copy);
+
 class Component : public EnableSharedFromThis<Component>
 {
 	friend class Entity;
