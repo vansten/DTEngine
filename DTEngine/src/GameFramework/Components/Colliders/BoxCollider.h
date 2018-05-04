@@ -1,17 +1,18 @@
 #pragma once
 
 #include "GameFramework/Components/PhysicalBody.h"
-#include "Rendering/MeshBase.h"
 
-class MeshCollider : public Collider
+class BoxCollider : public Collider
 {
 private:
-	SharedPtr<MeshBase> _mesh;
+	Vector3 _size;
 
 public:
-	inline MeshCollider(SharedPtr<MeshBase> mesh) : Collider(), _mesh(mesh)
+	inline BoxCollider() : Collider(), _size(Vector3::ONE)
 	{}
-	inline MeshCollider(const MeshCollider& other) : Collider(other), _mesh(other._mesh)
+	inline BoxCollider(const Vector3& size) : Collider(), _size(size)
+	{}
+	inline BoxCollider(const BoxCollider& other) : Collider(other), _size(other._size)
 	{}
 
 protected:
@@ -23,4 +24,5 @@ protected:
 
 public:
 	virtual void MatchToMeshBoundingBox(const BoundingBox& boundingBox) override;
+	void SetSize(const Vector3& newSize);
 };

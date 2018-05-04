@@ -233,19 +233,34 @@ bool Physics::CreateRigidbody(bool dynamic, float mass, PhysicalBody* physicalBo
 
 	if (dynamic)
 	{
-		(*rigidbody) = _physics->createRigidDynamic(physicalBody->GetOwner()->GetTransform());
-		PxRigidBody* rb = (*rigidbody)->is<PxRigidBody>();
+		PxRigidBody* rb = _physics->createRigidDynamic(physicalBody->GetOwner()->GetTransform());
 		if (rb)
 		{
 			rb->setMass(mass);
 		}
+		*rigidbody = rb;
 	}
 	else
 	{
 		(*rigidbody) = _physics->createRigidStatic(physicalBody->GetOwner()->GetTransform());
 	}
 
-	(*rigidbody)->userData = physicalBody;
+	if ((*rigidbody))
+	{
+		(*rigidbody)->userData = physicalBody;
+
+#if DT_DEBUG
+
+		(*rigidbody)->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+
+#else
+
+		(*rigidbody)->setActorFlag(PxActorFlag::eVISUALIZATION, false);
+
+#endif
+
+		_scene->addActor(*(*rigidbody));
+	}
 
 	return (*rigidbody) != nullptr;
 }
@@ -255,31 +270,56 @@ bool Physics::CreateMeshShape(SharedPtr<MeshBase> mesh, physx::PxShape** shape)
 	DT_ASSERT(mesh && shape, DT_TEXT("Cannot create mesh shape either for null mesh or null shape"));
 	
 	const DynamicArray<MeshBase::VertexType>& vertices = mesh->GetVertices();
-	DynamicArray<Vector3> verticesPositions;
+	const DynamicArray<unsigned int>& indices = mesh->GetIndices();
 
-	for (unsigned int i = 0; i < vertices.size(); ++i)
+	PxTriangleMeshDesc triangleDesc;
+	triangleDesc.points.count = (PxU32)vertices.size();
+	triangleDesc.points.stride = sizeof(MeshBase::VertexType);
+	triangleDesc.points.data = vertices.data();
+	triangleDesc.triangles.count = (PxU32)indices.size() / 3;
+	triangleDesc.triangles.stride = sizeof(unsigned int) * 3;
+	triangleDesc.triangles.data = indices.data();
+
+#if DT_DEBUG
+
+	if (!_cooking->validateTriangleMesh(triangleDesc))
 	{
-		verticesPositions.push_back(vertices[i].Position);
-	}
-
-	PxConvexMeshDesc convexDesc;
-	convexDesc.points.count = (PxU32)vertices.size();
-	convexDesc.points.stride = sizeof(Vector3);
-	convexDesc.points.data = verticesPositions.data();
-	convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
-
-	PxDefaultMemoryOutputStream buf;
-	PxConvexMeshCookingResult::Enum result;
-
-	if (!_cooking->cookConvexMesh(convexDesc, buf, &result))
-	{
-		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Cannot cook convex mesh!"));
+		gDebug.Print(LogVerbosity::Error, CHANNEL_PHYSICS, DT_TEXT("Validation of triangle mesh failed!"));
 		return false;
 	}
-	PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-	PxConvexMesh* convexMesh = _physics->createConvexMesh(input);
 
-	(*shape) = _physics->createShape(PxConvexMeshGeometry(convexMesh), *(_physics->createMaterial(0.0f, 0.0f, 0.0f)));
+#endif
+
+	PxTriangleMesh* triangleMesh = _cooking->createTriangleMesh(triangleDesc, _physics->getPhysicsInsertionCallback());
+
+	(*shape) = _physics->createShape(PxTriangleMeshGeometry(triangleMesh), *(_physics->createMaterial(0, 0, 0)), true);
+
+	return (*shape) != nullptr;
+}
+
+bool Physics::CreateBoxShape(const Vector3& halfExtents, physx::PxShape** shape)
+{
+	DT_ASSERT(shape, DT_TEXT("Cannot create box shape if passed shape is null"));
+
+	(*shape) = _physics->createShape(PxBoxGeometry(ToPxVec3(halfExtents)), *(_physics->createMaterial(0, 0, 0)), true);
+
+	return (*shape) != nullptr;
+}
+
+bool Physics::CreateSphereShape(float radius, physx::PxShape** shape)
+{
+	DT_ASSERT(shape, DT_TEXT("Cannot create box shape if passed shape is null"));
+
+	(*shape) = _physics->createShape(PxSphereGeometry(radius), *(_physics->createMaterial(0, 0, 0)), true);
+
+	return (*shape) != nullptr;
+}
+
+bool Physics::CreateCapsuleShape(float radius, float halfHeight, physx::PxShape** shape)
+{
+	DT_ASSERT(shape, DT_TEXT("Cannot create box shape if passed shape is null"));
+
+	(*shape) = _physics->createShape(PxCapsuleGeometry(radius, halfHeight), *(_physics->createMaterial(0, 0, 0)), true);
 
 	return (*shape) != nullptr;
 }

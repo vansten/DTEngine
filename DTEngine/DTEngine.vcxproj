@@ -229,7 +229,10 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClCompile Include="src\GameFramework\Component.cpp" />
     <ClCompile Include="src\GameFramework\Components\Camera.cpp" />
     <ClCompile Include="src\GameFramework\Components\CameraControl.cpp" />
+    <ClCompile Include="src\GameFramework\Components\Colliders\BoxCollider.cpp" />
+    <ClCompile Include="src\GameFramework\Components\Colliders\CapsuleCollider.cpp" />
     <ClCompile Include="src\GameFramework\Components\Colliders\MeshCollider.cpp" />
+    <ClCompile Include="src\GameFramework\Components\Colliders\SphereCollider.cpp" />
     <ClCompile Include="src\GameFramework\Components\MeshRenderer.cpp" />
     <ClCompile Include="src\GameFramework\Components\PhysicalBody.cpp" />
     <ClCompile Include="src\GameFramework\Game.cpp" />
@@ -274,7 +277,10 @@ xcopy /y /i /e "$(ProjectDir)ThirdParty\Debug\Bin\Win64" "$(OutDir)"</Command>
     <ClInclude Include="src\GameFramework\Component.h" />
     <ClInclude Include="src\GameFramework\Components\Camera.h" />
     <ClInclude Include="src\GameFramework\Components\CameraControl.h" />
+    <ClInclude Include="src\GameFramework\Components\Colliders\BoxCollider.h" />
+    <ClInclude Include="src\GameFramework\Components\Colliders\CapsuleCollider.h" />
     <ClInclude Include="src\GameFramework\Components\Colliders\MeshCollider.h" />
+    <ClInclude Include="src\GameFramework\Components\Colliders\SphereCollider.h" />
     <ClInclude Include="src\GameFramework\Components\MeshRenderer.h" />
     <ClInclude Include="src\GameFramework\Components\PhysicalBody.h" />
     <ClInclude Include="src\GameFramework\Game.h" />

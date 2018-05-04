@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Platform.h"
+#include "Utility/Math.h"
 
 #if DT_RELEASE
 // Need to define NDEBUG if not defined one
@@ -78,11 +79,25 @@ public:
 	void Update(float deltaTime);
 
 	bool CreateRigidbody(bool dynamic, float mass, PhysicalBody* physicalBody, physx::PxRigidActor** rigidbody);
+	// Fills given PxShape with PxTriangleMeshGeometry based on given mesh
 	bool CreateMeshShape(SharedPtr<MeshBase> mesh, physx::PxShape** shape);
+	bool CreateBoxShape(const Vector3& halfExtents, physx::PxShape** shape);
+	bool CreateSphereShape(float radius, physx::PxShape** shape);
+	bool CreateCapsuleShape(float radius, float halfHeight, physx::PxShape** shape);
 };
 
 extern const String CHANNEL_PHYSICS;
 extern Physics gPhysics;
+
+inline physx::PxVec3 ToPxVec3(const Vector3& v)
+{
+	return *(reinterpret_cast<const physx::PxVec3*>(&v));
+}
+
+inline physx::PxQuat ToPxQuat(const Quaternion& q)
+{
+	return *(reinterpret_cast<const physx::PxQuat*>(&q));
+}
 
 #define RELEASE_PHYSX(ptr)	\
 if(ptr)						\

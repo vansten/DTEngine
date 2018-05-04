@@ -24,6 +24,7 @@ protected:
 	unsigned int _indicesCount;
 
 	DynamicArray<VertexType> _vertices;
+	DynamicArray<unsigned int> _indices;
 
 	BoundingBox _boundingBox;
 
@@ -61,6 +62,11 @@ public:
 	inline const DynamicArray<VertexType>& GetVertices() const
 	{
 		return _vertices;
+	}
+
+	inline const DynamicArray<unsigned int>& GetIndices() const
+	{
+		return _indices;
 	}
 
 	inline const BoundingBox& GetBoundingBox() const

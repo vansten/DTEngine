@@ -10,6 +10,9 @@
 
 #include "Components/PhysicalBody.h"
 #include "Components/Colliders/MeshCollider.h"
+#include "Components/Colliders/BoxCollider.h"
+#include "Components/Colliders/SphereCollider.h"
+#include "Components/Colliders/CapsuleCollider.h"
 
 Scene::Scene(const String& scenePath) : _scenePath(scenePath)
 {}
@@ -65,8 +68,10 @@ void Scene::Load()
 		}
 
 		SharedPtr<PhysicalBody> physicalBody = hexagon->GetOwner()->AddComponent<PhysicalBody>();
+		UniquePtr<Collider> cc = std::make_unique<CapsuleCollider>();
 		UniquePtr<Collider> mc = std::make_unique<MeshCollider>(mr->GetMesh());
 		physicalBody->AddCollider(std::move(mc));
+		physicalBody->AddCollider(std::move(cc));
 	}
 
 	//TODO: Put this something like FileSystem::Close(archive);

@@ -58,6 +58,8 @@ public:
 	virtual void Load(Archive& archive) override;
 	virtual void Save(Archive& archive) override;
 
+	virtual void OnOwnerTransformUpdated(const Transform& transform) override;
+
 	void SetIsDynamic(bool isDynamic);
 
 	void AddCollider(UniquePtr<Collider>&& collider);
@@ -69,6 +71,7 @@ class Collider
 
 protected:
 	physx::PxShape* _shape;
+	PhysicalBody* _physicalBody;
 
 public:
 	Collider() : _shape(nullptr)
@@ -78,11 +81,18 @@ public:
 
 protected:
 	virtual void Load(Archive& archive) = 0;
-	virtual void Initialize() = 0;
+	virtual void Initialize(PhysicalBody* physicalBody)
+	{
+		_physicalBody = physicalBody;
+	}
+
 	virtual void Shutdown()
 	{
 		RELEASE_PHYSX(_shape);
+		_physicalBody = nullptr;
 	}
+
+	virtual void SetScale(const Vector3& scale) = 0;
 
 public:
 	virtual void MatchToMeshBoundingBox(const BoundingBox& boundingBox) = 0;

@@ -1,17 +1,18 @@
 #pragma once
 
 #include "GameFramework/Components/PhysicalBody.h"
-#include "Rendering/MeshBase.h"
 
-class MeshCollider : public Collider
+class SphereCollider : public Collider
 {
 private:
-	SharedPtr<MeshBase> _mesh;
+	float _radius;
 
 public:
-	inline MeshCollider(SharedPtr<MeshBase> mesh) : Collider(), _mesh(mesh)
+	inline SphereCollider() : Collider(), _radius(1.0f)
 	{}
-	inline MeshCollider(const MeshCollider& other) : Collider(other), _mesh(other._mesh)
+	inline SphereCollider(float radius) : Collider(), _radius(radius)
+	{}
+	inline SphereCollider(const SphereCollider& other) : Collider(other), _radius(other._radius)
 	{}
 
 protected:
@@ -23,4 +24,5 @@ protected:
 
 public:
 	virtual void MatchToMeshBoundingBox(const BoundingBox& boundingBox) override;
+	void SetRadius(float newRadius);
 };

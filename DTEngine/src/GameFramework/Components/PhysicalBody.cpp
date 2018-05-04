@@ -1,6 +1,7 @@
 #include "PhysicalBody.h"
 
 #include "Debug/Debug.h"
+#include "GameFramework/Entity.h"
 
 SharedPtr<Component> PhysicalBody::Copy(SharedPtr<Entity> newOwner) const
 {
@@ -26,8 +27,9 @@ void PhysicalBody::OnInitialize()
 
 	for (const auto& collider : _colliders)
 	{
-		collider->Initialize();
+		collider->Initialize(this);
 		_rigidbody->attachShape(*(collider->_shape));
+		collider->SetScale(GetOwner()->GetScale());
 	}
 }
 
@@ -50,6 +52,14 @@ void PhysicalBody::Load(Archive& archive)
 void PhysicalBody::Save(Archive& archive)
 {
 
+}
+
+void PhysicalBody::OnOwnerTransformUpdated(const Transform& transform)
+{
+	for (const auto& collider : _colliders)
+	{
+		collider->SetScale(transform.GetScale());
+	}
 }
 
 void PhysicalBody::SetIsDynamic(bool isDynamic)
@@ -88,10 +98,11 @@ void PhysicalBody::SetIsDynamic(bool isDynamic)
 
 void PhysicalBody::AddCollider(UniquePtr<Collider>&& collider)
 {
-	collider->Initialize();
+	collider->Initialize(this);
 	if (_rigidbody && collider->_shape)
 	{
 		_rigidbody->attachShape(*(collider->_shape));
 	}
+	collider->SetScale(GetOwner()->GetScale());
 	_colliders.push_back(std::move(collider));
 }

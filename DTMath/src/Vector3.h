@@ -212,6 +212,13 @@ public:
 		return result;
 	}
 
+	// Returns vector which components are multiplication of components of two vectors
+	// (i.e. Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z)
+	inline static Vector3 Multiply(const Vector3& a, const Vector3& b)
+	{
+		return Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+	}
+
 	// Returns vector with length less or equal to given one
 	static Vector3 ClampLength(const Vector3& v, float length);
 };

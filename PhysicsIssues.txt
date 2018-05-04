@@ -1,3 +1,19 @@
+TODOS:
+-- Physics architecture			-- DONE (I hope)
+-- Rigidbody 					-- DONE
+-- Collider base				-- DONE
+-- BoxCollider					-- DONE
+-- SphereCollider				-- DONE
+-- CapsuleCollider				-- DONE
+-- MeshCollider					-- DONE
+-- UserData in PxRigidbody		-- DONE
+-- Simulation filtering
+-- Triggers (isTrigger checkbox)
+-- SceneQueries
+-- Camera::ScreenPointToRay
+-- Physics materials (with default one)
+-- PxShapeFlags in Create*Shape
+
 -- Read about PxScene PxGeometry, PxShape, PxRigidbody, PxActor etc.
 -- Think about physics architecture in DTEngine (colliders, rigidbodies, etc.)
 -- SceneQueries
